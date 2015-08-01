@@ -9,9 +9,9 @@ class conexao{
 	
 	public function __construct() {
 		$this->local = 'localhost';
-		$this->user = 'conselho';
-		$this->pass = '2e4asu8yd';
-		$this->db = 'ps4share_partilhas';
+		$this->user = '';
+		$this->pass = '';
+		$this->db = '';
 	}
 	
 	public function abreConexao(){
