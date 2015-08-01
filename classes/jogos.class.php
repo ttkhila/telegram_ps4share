@@ -25,10 +25,14 @@ class jogos{
         $this->setPlataformaId($res->plataforma_id); 
     }	
 //---------------------------------------------------------------------------------------------------------------
-	public function getAutocomplete($q){
+	public function getAutocomplete($q, $flag){
 		$q = $this->con->escape($q);
-		$sql = "SELECT j.*, p.nome_abrev as plataforma FROM jogos j, plataformas p 
-			where (j.plataforma_id = p.id) AND locate('$q', j.nome) > 0 AND (j.ativo = 1) order by locate('$q', j.nome) limit 10";
+		if ($flag == 1)	
+			$sql = "SELECT j.*, p.nome_abrev as plataforma FROM jogos j, plataformas p 
+				where (j.plataforma_id = p.id) AND locate('$q', j.nome) > 0 order by locate('$q', j.nome) limit 10";
+		else
+			$sql = "SELECT j.*, p.nome_abrev as plataforma FROM jogos j, plataformas p 
+				where (j.plataforma_id = p.id) AND locate('$q', j.nome) > 0 AND (j.ativo = 1) order by locate('$q', j.nome) limit 10";
 		return $res = $this->con->multiConsulta( $sql );
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -49,6 +53,23 @@ class jogos{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gravaJogo($dados){
+		//$dados = Ordem dos valores (NOME, PLATAFORMA)
+		$nome = addslashes(utf8_encode($dados[0]));
+		$plataforma = intval($dados[1]);
+		$query = "INSERT INTO jogos (nome, plataforma_id) VALUES ('$nome', $plataforma)";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function alteraJogo($dados){
+		//$dados = Ordem dos valores (ID, NOME, PLATAFORMA)
+		$id = intval($dados[0]);
+		$nome = addslashes(utf8_encode($dados[1]));
+		$plataforma = intval($dados[2]);
+		$query = "UPDATE jogos SET nome = '$nome', plataforma_id = $plataforma WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function gravaJogosCompartilhados($idGrupo, $dados){
 		foreach($dados as $key => $value){
 			//return $value;
@@ -62,7 +83,14 @@ class jogos{
 		}
 		return 1;
 	}
-//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------  
+	public function ativo_inativo_alterna($f){
+		$query = "UPDATE jogos SET ativo = $f WHERE id = ".$this->getId();
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
+		if($f == 1) return "Registro de jogo ATIVADO!";
+		else return "Registro de jogo DESATIVADO!";
+	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getPlataformas(){
 		$query = "SELECT * FROM plataformas ORDER BY nome";

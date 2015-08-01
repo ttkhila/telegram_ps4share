@@ -13,7 +13,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="./">Home</a></li>
             <li><a href="grupos.php">Gerenciar Grupos</a></li>
-            <li><a href="#">Gerenciar Jogos</a></li>
+            <li><a href="jogos.php">Gerenciar Jogos</a></li>
             <li><a href="#">Gerenciar Usuários</a></li>
             <li><a href="#">Perfil</a></li>
             <li><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>%%user%%</li>

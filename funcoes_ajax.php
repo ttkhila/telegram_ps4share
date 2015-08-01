@@ -348,11 +348,45 @@ function gravaRepasse(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function gravaJogo(){
+	$dados = $_POST['dados'];
+	$j = carregaClasse('Jogo');
+	$dado = array(); //Ordem dos valores (NOME, PLATAFORMA)
+	foreach($dados as $valor){
+		$valor = explode("=", $valor);
+		if (trim($valor[1]) == ""){ echo json_encode(array(1, "Preencha os campos")); exit; }
+		array_push($dado, rawurldecode($valor[1]));
+	}
+	//echo json_encode($dado);
+	$j->gravaJogo($dado);
+	echo json_encode(array(0, "Jogo Cadastrado"));
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
 //----------------------------------------------------------------------------------------------------------------------------
-
+function alteraJogo(){
+	$dados = $_POST['dados'];
+	$j = carregaClasse('Jogo');
+	$dado = array(); //Ordem dos valores (ID, NOME, PLATAFORMA)
+	foreach($dados as $valor){
+		$valor = explode("=", $valor);
+		if (trim($valor[1]) == ""){ echo json_encode(array(1, "Preencha os campos")); exit; }
+		array_push($dado, rawurldecode($valor[1]));
+	}
+	//echo json_encode($dado);exit;
+	$j->alteraJogo($dado);
+	echo json_encode(array(0, "Jogo Alterado"));
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function ativaInativaJogo(){
+	$id = $_POST['id'];
+	$flag = $_POST['flag'];
+	$j = carregaClasse('Jogo');
+	$j->carregaDados($id);
+	echo json_encode($j->ativo_inativo_alterna($flag));
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -397,8 +431,6 @@ function gravaRepasse(){
 
 //----------------------------------------------------------------------------------------------------------------------------
 // carrega classe solicitada e devolve uma instancia da mesma
-// ATENÇÃO: ESTA FUNÇÃO DEVE SER AÚLTIMA DA PÁGINA.
-// NÃO INSERIR NADA ABAIXO DESSA
 function carregaClasse($secao){
 	switch ($secao) {
 		case 'Compartilhamento':
