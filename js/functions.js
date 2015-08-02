@@ -253,8 +253,12 @@ $("#btn-add-jogo").click(function(e){
 	$("#div-jogos-extras").append($html);
 });
 //********************************************************************************
-//fecha div erro
-$(".sp-erro-msg").on("click", "span", function(){
+//fecha div msg erro
+$("#sp-erro-msg").on("click", ".badge", function(){
+	$(this).parent().hide();
+});
+//fecha div msg sucesso
+$("#sp-sucesso-msg").on("click", ".badge", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
@@ -544,10 +548,10 @@ $('#frm-altera-jogos').submit(function(e){
 	e.preventDefault();
 	$formulario = $(this);
 	if($("#nome-jogo-altera").val() == ""){
-		$(".sp-erro-msg")
+		$("#sp-sucesso-msg").hide();
+		$("#sp-erro-msg")
 			.fadeIn()
-			.css({ 'background-color': '#f00', 'color': '#ff0' })
-			.html("Preencha o nome do jogo.<span>x</span>");
+			.html("Preencha o nome do jogo.<span class='badge'>x</span>");
 		return false;
 	}
 	var $form = $(this).serialize();
@@ -566,13 +570,16 @@ $('#frm-altera-jogos').submit(function(e){
 		success: function(data){ 
 			console.log(data);
 			if(data[0] == 1){ //erro
-				$(".sp-erro-msg").css({ 'background-color': '#f00', 'color': '#ff0' });
+				//$(".sp-erro-msg").css({ 'background-color': '#f00', 'color': '#ff0' });
+				$("#sp-sucesso-msg").hide();
+				$("#sp-erro-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
 			} else { //ok
-				$(".sp-erro-msg").css({ 'background-color': '#0F16E4', 'color': '#fff' });
+				//$(".sp-erro-msg").css({ 'background-color': '#0F16E4', 'color': '#fff' });
+				$("#sp-erro-msg").hide();
+				$("#sp-sucesso-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
 				$("#jogo-nome-altera_autocomplete").val("");
 				$formulario[0].reset();
 			}
-			$(".sp-erro-msg").fadeIn().html(data[1]+"<span>x</span>");
 		}
 	});
 });
@@ -596,8 +603,10 @@ $("#div-altera-jogos").on("click", "[name='a-ativar']", function(e){
 			if($flag == 1) $html = "Jogo Ativo -> <a href='#' name='a-ativar' rel='0'>Desativar Jogo</a>";
 			else $html = "Jogo Desativado -> <a href='#' name='a-ativar' rel='1'>Ativar Jogo</a>";
 			$("#sp-ativo-altera").html($html);
-			$(".sp-erro-msg").css({ 'background-color': '#0F16E4', 'color': '#fff' });
-			$(".sp-erro-msg").fadeIn().html(data+"<span>x</span>");
+			$("#sp-erro-msg").hide();
+			$("#sp-sucesso-msg").fadeIn().html(data+"<span class='badge'>x</span>");
+			//$(".sp-erro-msg").css({ 'background-color': '#0F16E4', 'color': '#fff' });
+			//$(".sp-erro-msg").fadeIn().html(data+"<span>x</span>");
 		}
 	});
 });

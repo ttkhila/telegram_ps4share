@@ -16,6 +16,7 @@ div.autocomplete{
 	border:1px solid #7C7C7C;;
 	font-size:11px;
 	font-family: 'arial';
+	z-index: 9999;
 }
 div.autocomplete ul{
 	padding-left:0;
