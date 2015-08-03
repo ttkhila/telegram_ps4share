@@ -154,7 +154,7 @@ div#dialog table th, td{padding:5px;}
 .sp-campos-modal{display:inline-block; width:120px;}
 
 .sp-titulo-modal{font:bold 1.2em Verdana, Geneva, Arial, Helvetica, sans-serif;}
-#sp-erro-msg{ border-radius: 5px; background-color: #f00; color: #ff0; padding: 5px; display: none; margin-top:20px;  }
+#sp-erro-msg{ border-radius: 5px; background-color: #f00; color: #ff0; padding: 5px; display: none; margin-top:20px; border:solid 1px #000; }
 #sp-erro-msg > .badge { float: right; cursor: pointer; }
-#sp-sucesso-msg{ border-radius: 5px; background-color: #0F16E4; color: #fff; padding: 5px; display: none; }
+#sp-sucesso-msg{ border-radius: 5px; background-color: #0F16E4; color: #fff; padding: 5px; display: none; border:solid 1px #000; }
 #sp-sucesso-msg > .badge { float: right; cursor: pointer; }
