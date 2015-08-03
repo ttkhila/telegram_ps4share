@@ -282,9 +282,9 @@ $("#btn-grupo-novo").click(function(e){
 		$valor = $.trim($(this).val());
 		
 		if($(this).attr('required') && $valor == ''){
-			$(".sp-erro-msg")
+			$("#sp-erro-msg")
 				.fadeIn()
-				.html("Campo Requerido"+"<span>x</span>");
+				.html("Campo Requerido.<span class='badge'>x</span>");
 			$(this).focus();
 			cont++;
 		}
@@ -292,9 +292,9 @@ $("#btn-grupo-novo").click(function(e){
 		if($(this).attr('name') == 'valor'){
 			$valor = $valor.replace(",", ".");
 			if(!$.isNumeric($valor) && $valor != ""){
-				$(".sp-erro-msg")
+				$("#sp-erro-msg")
 					.fadeIn()
-					.html("Valor precisa ser numérico"+"<span>x</span>");
+					.html("Valor precisa ser numérico.<span class='badge'>x</span>");
 				$(this).focus();
 				cont++;
 			}
@@ -315,9 +315,9 @@ $("#btn-grupo-novo").click(function(e){
 	});
 	
 	if(cont <= 0){
-		$(".sp-erro-msg")
+		$("#sp-erro-msg")
 			.fadeIn()
-			.html("É necessário informar seu próprio ID numa das vagas do grupo."+"<span>x</span>");
+			.html("É necessário informar seu próprio ID numa das vagas do grupo.<span class='badge'>x</span>");
 		$("#original1_autocomplete").focus();
 		return false;
 	} 
@@ -325,9 +325,9 @@ $("#btn-grupo-novo").click(function(e){
 	//verifica se o email digitado é válido
 	if($("#email").val() != ""){
 		if(!IsEmail($("#email").val())){
-			$(".sp-erro-msg")
+			$("#sp-erro-msg")
 				.fadeIn()
-				.html("E-mail Inválido"+"<span>x</span>");
+				.html("E-mail Inválido.<span class='badge'>x</span>");
 			$("#email").focus();
 			return false;
 		}
@@ -336,7 +336,7 @@ $("#btn-grupo-novo").click(function(e){
 	$dados.push("moeda_id%=%"+$("#moedas option:selected").val());
 	$moeda_nome = $("#moedas option:selected").text(); 
 	$dados.push("fechado%=%"+$fechado);
-	$(".sp-erro-msg").fadeOut();
+	$("#sp-erro-msg").fadeOut();
 	//console.log($dados);
 
 	var pars = { dados: $dados, id: selfID, fechado: $fechado, moeda: $moeda_nome, funcao: 'novoGrupo'};
@@ -360,9 +360,9 @@ $("#btn-grupo-novo").click(function(e){
 						$error += item[z]+"<br />";
 				});
 				$(document).scrollTop( $("#foco").offset().top );
-				$(".sp-erro-msg")
+				$("#sp-erro-msg")
 					.fadeIn()
-					.html($error+"<span>x</span>");
+					.html($error+"<span class='badge'>x</span>");
 			}
 		}
 	});
@@ -513,9 +513,10 @@ $('#frm-cadastra-jogos').submit(function(e){
 	e.preventDefault();
 	$formulario = $(this);
 	if($("#nome-jogo").val() == ""){
-		$(".sp-erro-msg")
+		$("#sp-sucesso-msg").hide();
+		$("#sp-erro-msg")
 			.fadeIn()
-			.html("Preencha o nome do jogo.<span>x</span>");
+			.html("Preencha o nome do jogo.<span class='badge'>x</span>");
 		return false;
 	}
 	var $form = $(this).serialize();
@@ -534,12 +535,13 @@ $('#frm-cadastra-jogos').submit(function(e){
 		success: function(data){ 
 			console.log(data);
 			if(data[0] == 1){ //erro
-				$(".sp-erro-msg").css({ 'background-color': '#f00', 'color': '#ff0' });
+				$("#sp-sucesso-msg").hide();
+				$("#sp-erro-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
 			} else { //ok
-				$(".sp-erro-msg").css({ 'background-color': '#0F16E4', 'color': '#fff' });
+				$("#sp-erro-msg").hide();
+				$("#sp-sucesso-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
 				$formulario[0].reset();
 			}
-			$(".sp-erro-msg").fadeIn().html(data[1]+"<span>x</span>");
 		}
 	});
 });
@@ -584,7 +586,7 @@ $('#frm-altera-jogos').submit(function(e){
 	});
 });
 //********************************************************************************
-$("#div-altera-jogos").on("click", "[name='a-ativar']", function(e){
+$("#aba-altera-jogos").on("click", "[name='a-ativar']", function(e){
 	e.preventDefault();
 	var $flag = parseInt($(this).attr('rel'));
 	var $id = parseInt($("#jogo-nome-altera_id").val());

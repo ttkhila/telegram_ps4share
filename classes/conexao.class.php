@@ -9,9 +9,9 @@ class conexao{
 	
 	public function __construct() {
 		$this->local = 'localhost';
-		$this->user = '';
-		$this->pass = '';
-		$this->db = '';
+		$this->user = 'telegram_share';
+		$this->pass = 'telegram123';
+		$this->db = 'db_telegram_share';
 	}
 	
 	public function abreConexao(){
