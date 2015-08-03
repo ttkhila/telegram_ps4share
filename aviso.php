@@ -23,9 +23,13 @@
 <body>
 	<?php $menu = file_get_contents('menu.php'); echo login($menu); //insere menu ?>
 		<!-- Conteúdo Principal: Início --> 
-		
-		<div class="div-aviso"><?php echo $aviso; ?></div>
-	
+		<div class="help-block">
+			<div  class="alert alert-warning">
+				<hr>
+				<h4><?php echo $aviso; ?></h4>
+				<hr>
+			</div>
+		</div>
 		<!-- Conteúdo Principal: Fim -->
 	<?php $rodape = file_get_contents('rodape.html'); echo $rodape; //insere rodapé ?>
 	

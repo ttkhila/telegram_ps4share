@@ -57,12 +57,13 @@
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                   <div class="panel-body">
+			  <div class="list-group"><label id="sp-erro-msg" class="col-sm-12"></label></div><!-- mensagem de erro -->
                         <div class="form-group">
                             <h4>Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes.</h4>
                             <label for="exampleInputnome">Nome</label>
-                            <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome"> 
+                            <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" required /> 
                             <label for="exampleInputEmail1">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" placeholder="E-mail">         			
+                            <input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />         			
                 			
                             <label for="exampleInputEmail1">Moeda de Compra</label>
                 			<select class="form-control" id="moedas" name="moedas">                            
@@ -74,11 +75,11 @@
                 				?>
                 			</select>
                 			
-                			<!-- JOGOS-->
+                		<!-- JOGOS-->
                             <h3>Jogos</h3>
                             <label for="">Jogo1</label>
-                            <input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required>                			
-                            <input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" required/>
+                            <input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required />                			
+                            <input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" required />
                 			
                 			<span class="sp-form" id="jogo1_check"><img src="" /></span>
                             <!--campos dinamicos -->
