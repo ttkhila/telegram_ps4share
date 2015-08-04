@@ -73,8 +73,8 @@ $("#frmLogin").submit(function(e){
 			console.log(data);
 			if(data[0] == 0){ //error
 				$("#sp-erro-msg")
-					.fadeIn('fast')
-					.html(data[1]+"<span>x</span>");
+					.fadeIn()
+					.html(data[1]+"<span class='badge'>x</span>");
 			} else {
 				$(location).attr('href', 'index.php');
 			} 			
@@ -184,6 +184,31 @@ function originalRepasseCallback( par ){
 	$('#original-repasse_check img').prop({'src':"img/check.png"});
 }
 
+// Jogos - Alteração Cadastro
+$('#jogo-nome-altera_autocomplete').simpleAutoComplete('autocomplete_jogos_ajax.php',{
+autoCompleteClassName: 'autocomplete',
+	selectedClassName: 'sel',
+	attrCallBack: 'rel',
+	identifier: 'jogo-altera'
+},jogo_nome_altera);
+function jogo_nome_altera( par ){
+	/* par[0] = ID
+	 * par[1] = NOME
+	 * par[2] = plataforma_id
+	 * par[3] = Ativo/Inativo (1/0)
+	 */
+	var char1 = parseInt(par[1].indexOf("("));
+	var nome = par[1].substring(0, char1-1); //nome sem a abrev da plataforma
+	$('#jogo-nome-altera_autocomplete').val(par[1]);
+	$('#nome-jogo-altera').val(nome);
+	$('#jogo-nome-altera_id').val(par[0]);
+	$("#plataforma-altera").find("option[value='"+par[2]+"']").prop("selected", "selected");
+	$("#frm-altera-jogos").show();
+	if(par[3] == 1) $html = "Jogo Ativo -> <a href='#' name='a-ativar' rel='0'>Desativar Jogo</a>";
+	else $html = "Jogo Desativado -> <a href='#' name='a-ativar' rel='1'>Ativar Jogo</a>";
+	
+	$("#sp-ativo-altera").html($html);
+}
 
 //jogos
 $("#collapseOne").on("keydown","[name='jogo[]']",function(e) {
@@ -382,19 +407,9 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img").click(function()
 	});
 });
 //********************************************************************************
+//visualizar histórico
 $(".casulo-grupo-conteudo").on("click", "[name='historico-grupo']", function(e){
 	e.preventDefault();
-	/*
-	//$flag = $("#hidFlag").val();
-	if($flag == '1'){
-		$("#div-historico-grupo")
-			.html("")
-			.hide();
-		$("#hidFlag").val("0");
-		$elem.text("Ver Histórico");
-		return;
-	}
-	*/
 	$elem = $(this);
 	$elemTop = parseInt($elem.offset().top);
 	//alert($elemTop);return;
@@ -411,12 +426,13 @@ $(".casulo-grupo-conteudo").on("click", "[name='historico-grupo']", function(e){
 		success: function(data){ 
 			console.log(data);
 			//$("#div-historico-grupo").show().css("top", ($elemTop-100)).html(data);
-			abreModal("#dialog", closeModal()+data, $elemTop);
+			abreModal("#dialog", data, $elemTop);
 			//$("#hidFlag").val("1");
 			//$elem.text("Fechar");
 		}
 	});
 });
+
 //********************************************************************************
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
 	VAGA_REPASSE = $(this).attr('rel');
