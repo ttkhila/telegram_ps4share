@@ -22,36 +22,36 @@ $(function(){
 		//id->ID do elemento que recebe o conteúdo (com#)
 		//data->Conteúdo do elemento id
 		//top->Altura do elemento chamador (que será parametro para a altura de id)
-		var maskHeight = $(document).height();
-		var maskWidth = $(window).width();
+		//var maskHeight = $(document).height();
+		//var maskWidth = $(window).width();
 	
-		$('#mask').css({'width':maskWidth,'height':maskHeight});
-		$('#mask').fadeIn(1000);	
-		$('#mask').fadeTo("slow",0.8);	
+		//$('#mask').css({'width':maskWidth,'height':maskHeight});
+		//$('#mask').fadeIn(1000);	
+		//$('#mask').fadeTo("slow",0.8);	
 
-		var winH = $(window).height();
-		var winW = $(window).width();
+		//var winH = $(window).height();
+		//var winW = $(window).width();
               
-		$(id).css({ 'top': top-$(id).height()/2, 'left': winW/2-$(id).width()/2 });
+		//$(id).css({ 'top': top-$(id).height()/2, 'left': winW/2-$(id).width()/2 });
 	
-		$(id).fadeIn(2000); 
+		//$(id).fadeIn(2000); 
 		$(id).html(data);
 	}
 	
 	function closeModal(){
-		return '<a href="#" class="close">Fechar [X]</a>';
+		//return '<a href="#" class="close">Fechar [X]</a>';
 	}
 	
-	$('.window').on('click', '.close', function (e) {
-		e.preventDefault();
-		$('#mask').hide();
-		$('.window').hide();
-	});		
-	
-	$('#mask').click(function () {
-		$(this).hide();
-		$('.window').hide();
-	});			
+	//$('.window').on('click', '.close', function (e) {
+//		e.preventDefault();
+//		$('#mask').hide();
+//		$('.window').hide();
+//	});		
+//	
+//	$('#mask').click(function () {
+//		$(this).hide();
+//		$('.window').hide();
+	//});			
 //********************************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
@@ -72,7 +72,7 @@ $("#frmLogin").submit(function(e){
 		success: function(data){ 
 			console.log(data);
 			if(data[0] == 0){ //error
-				$(".sp-erro-msg")
+				$("#sp-erro-msg")
 					.fadeIn('fast')
 					.html(data[1]+"<span>x</span>");
 			} else {
@@ -184,31 +184,6 @@ function originalRepasseCallback( par ){
 	$('#original-repasse_check img').prop({'src':"img/check.png"});
 }
 
-// Jogos - Alteração Cadastro
-$('#jogo-nome-altera_autocomplete').simpleAutoComplete('autocomplete_jogos_ajax.php',{
-autoCompleteClassName: 'autocomplete',
-	selectedClassName: 'sel',
-	attrCallBack: 'rel',
-	identifier: 'jogo-altera'
-},jogo_nome_altera);
-function jogo_nome_altera( par ){
-	/* par[0] = ID
-	 * par[1] = NOME
-	 * par[2] = plataforma_id
-	 * par[3] = Ativo/Inativo (1/0)
-	 */
-	var char1 = parseInt(par[1].indexOf("("));
-	var nome = par[1].substring(0, char1-1); //nome sem a abrev da plataforma
-	$('#jogo-nome-altera_autocomplete').val(par[1]);
-	$('#nome-jogo-altera').val(nome);
-	$('#jogo-nome-altera_id').val(par[0]);
-	$("#plataforma-altera").find("option[value='"+par[2]+"']").prop("selected", "selected");
-	$("#frm-altera-jogos").show();
-	if(par[3] == 1) $html = "Jogo Ativo -> <a href='#' name='a-ativar' rel='0'>Desativar Jogo</a>";
-	else $html = "Jogo Desativado -> <a href='#' name='a-ativar' rel='1'>Ativar Jogo</a>";
-	
-	$("#sp-ativo-altera").html($html);
-}
 
 //jogos
 $("#collapseOne").on("keydown","[name='jogo[]']",function(e) {
@@ -262,7 +237,7 @@ $("#sp-sucesso-msg").on("click", ".badge", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
-$(".btn-limpar").click(function(e){
+$(".btn-danger").click(function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var id = $(this).attr('id');
 	$("#original"+id+"_id").val("");
@@ -468,7 +443,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 	
 	if($data_venda == "") { $erros.push("- Data Inválida."); }
 	if($erros.length > 0){
-		$(".sp-erro-msg-modal")
+		$("#sp-erro-msg-modal")
 			.fadeIn()
 			.html($erros)
 			.delay(2000)
@@ -498,7 +473,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 						$error += "- "+item[z]+"<br />";
 				});
 				//$(document).scrollTop( $("#foco").offset().top );
-				$(".sp-erro-msg-modal")
+				$("#sp-erro-msg-modal")
 					.fadeIn()
 					.html($error)
 					.delay(2500)
