@@ -244,19 +244,19 @@ function mostraGrupo(){
 	if($c->getFechado() == 1){
 		
 	
-		$saida .= "<span class='sp-spaces'>&nbsp;</span><span class='sp-login'><a href='#' name='historico-grupo' id='historico_".$c->getId()."'>Ver Histórico</a></span>
-			<span style='width:47px;'></span><span class='sp-valores-totais-grupos'>Valor Total: </span>
-			<span class='sp-valores-totais-grupos'>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</span>";
+		$saida .= "<span>&nbsp;</span><span><a href='#' name='historico-grupo' data-toggle='modal' data-target='#historico' id='historico_".$c->getId()."'>Ver Histórico</a></span>
+			<span></span><span>Valor Total: </span>
+			<span>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</span>";
 		if($c->getMoedaId() != 1){ //moeda estrangeira - mostrar conversão
-			$saida .= "<br /><span class='sp-spaces'>&nbsp;</span><span class='sp-login'></span><span style='width:47px;'></span>
-				<span class='sp-valores-totais-grupos'>Convertido(R$): </span>
-				<span class='sp-valores-totais-grupos'>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</span><br />";
-			$saida .= "<span class='sp-spaces'>&nbsp;</span><span class='sp-login'>&nbsp;</span><span style='width:47px;'></span>
-				<span class='sp-fator-conversao-grupos'>Fator Conversão: </span>
-				<span class='sp-fator-conversao-grupos'>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</span><br />";
+			$saida .= "<br /><span>&nbsp;</span><span></span><span></span>
+				<span>Convertido(R$): </span>
+				<span>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</span><br />";
+			$saida .= "<span>&nbsp;</span><span>&nbsp;</span><span></span>
+				<span>Fator Conversão: </span>
+				<span>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</span><br />";
 		}
 	}
-	$saida .= "<span class='sp-version'>*Valores originais referentes a compra da conta sem levar em consideração os repasses da mesma.</span>";
+	$saida .= "<span>*Valores originais referentes a compra da conta sem levar em consideração os repasses da mesma.</span>";
 	$saida .= "</div>";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
@@ -273,7 +273,7 @@ function mostraHistorico(){
 	$dadosIniciais = $c->getDadosHistoricoInicial($idGrupo);
 	$dadosHist = $c->getDadosHistorico($idGrupo);
 	$saida = "";
-	$saida .= "<table><thead>";
+	$saida .= "<table class='table'><thead>";
 	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Hist&oacute;rico do Grupo: ".stripslashes(utf8_decode($c->getNome()))."</th></tr>";
 	$saida .= "<tr><th width='40%'>Linha do Tempo</th><th width='20%'>Original 1</th><th width='20%'>Original 2</th><th width='20%'>Fantasma</th></tr></thead>";
 	$saida .= "<tbody><tr>";

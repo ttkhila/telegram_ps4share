@@ -57,11 +57,11 @@
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                   <div class="panel-body">
-			  <div class="list-group"><label id="sp-erro-msg" class="col-sm-12"></label></div><!-- mensagem de erro -->
                         <div class="form-group">
                             <h4>Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes.</h4>
+                            <p class="bg-danger" id="sp-erro-msg" style="display:none;"></p>
                             <label for="exampleInputnome">Nome</label>
-                            <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" required /> 
+                            <input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome" /> 
                             <label for="exampleInputEmail1">Email</label>
                             <input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />         			
                 			
@@ -75,7 +75,7 @@
                 				?>
                 			</select>
                 			
-                		<!-- JOGOS-->
+                			<!-- JOGOS-->
                             <h3>Jogos</h3>
                             <label for="">Jogo1</label>
                             <input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required />                			
@@ -176,7 +176,9 @@
             				<div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                             <h4 class="modal-title" id="myModalLabel">Dados do Comprador</h4>
                             </div>
                             <div class="modal-body">
@@ -195,7 +197,7 @@
                                     Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" />
                                 </label>
             				
-            				<span class='sp-erro-msg-modal'></span>
+            				<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
             			</div>
                         <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -204,4 +206,12 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="modal fade" id="historico" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div id="dialog" class="window"></div>
+            </div>
+          </div>
+        </div>
             
