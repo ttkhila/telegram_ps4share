@@ -408,7 +408,7 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img").click(function()
 });
 //********************************************************************************
 //visualizar histórico
-$(".casulo-grupo-conteudo").on("click", "[name='historico-grupo']", function(e){
+$(".list-group").on("click", "[name='historico-grupo']", function(e){
 	e.preventDefault();
 	$elem = $(this);
 	$elemTop = parseInt($elem.offset().top);

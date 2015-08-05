@@ -182,7 +182,6 @@ function mostraGrupo(){
 		$orig1ID = $u->getId();
 		$valorPago = $c->getValorPago();
 		$valor1 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.') : "N/D";
-		
 	}
 	
 	if($c->getOrig2() == 0){ $orig2 = "Vaga em aberto"; $orig2Nome = "Vaga em aberto"; $orig2ID = 0;  $valor2 = "N/D";} 
@@ -207,24 +206,50 @@ function mostraGrupo(){
 		$valor3 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.'): "N/D";
 	}
 
+	//identado por HTML
+	$saida .= "<div class='list-group-item-heading col-md-8'>";
+		$saida .= "<div class='list-group-item active'>Vagas/Valores originais* ($nomeMoeda):</div>";
+		//Original 1, 2 e fantasma
+		$saida .= "<div class='list-group-item-info' style='padding:10px 0px;'>";
+			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Original 1: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 %%opcoes1%%</label>
+				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor1</label></div>";
+			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Original 2: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%</label>
+				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor2</label></div>";
+			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Fantasma: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%</label>
+				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor3</label></div>";
+		$saida .= "<br /><br /><br /></div>";
+	
+		if($c->getFechado() == 1){
+			$saida .= "<div class='list-group-item-success'>";
+				$saida .= "<label class='col-xs-6'><a href='#' name='historico-grupo' data-toggle='modal' data-target='#historico' id='historico_".$c->getId()."'>Ver Histórico</a></label>";
+				$saida .= "<label class='col-xs-3'>Valor Total: </label><label class='col-xs-3' style='font-weight:normal;'>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</label>";	
+			if($c->getMoedaId() != 1){ //moeda estrangeira - mostrar conversão
+				$saida .= "<label class='col-xs-6'></label><label class='col-xs-3'>Convertido(R$): </label>
+					<label class='col-xs-3' style='font-weight:normal;'>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</label>";
+				$saida .= "<label class='col-xs-6'></label><label class='col-xs-3'>Fator Conversão: </label>
+					<label class='col-xs-3' style='font-weight:normal;'>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</label>";
+			}
+			$saida .= "</div>";
+		}
+		$saida .= "<div class='panel-footer'>*Valores originais referentes a compra da conta sem levar em consideração os repasses da mesma.</div>";
+	$saida .= "<br /></div>";
+		
 	//recupera os jogos da conta
 	$jogos = $j->getJogosGrupo($idGrupo);
-	$saida .= "<table class='table table-bordered'>";
-		
-	$saida .= "<span class='sp-sub-titulo-grupos'>Jogos:</span><br />";
+	$saida .= "<div class='list-group-item-heading col-md-4'>";
+		$saida .= "<div class='list-group-item active'>Jogos:</div>";
+		$saida .= "<div class='list-group-item list-group-item-info'>";
+			while($d = $jogos->fetch_object()){
+				$saida .= "<span>- ".stripslashes(utf8_decode($d->jogo))." (".$d->nome_abrev.")</span><br />";	
+			}
+		$saida .= "</div>";
+	$saida .= "</div>";
 	
-	while($d = $jogos->fetch_object()){
-		$saida .= "<span>- ".stripslashes(utf8_decode($d->jogo))." (".$d->nome_abrev.")</span><br />";
-		
-	}
-	$saida .= "</table>";
-
-	$saida .= "<div class='casulo-conteudo-esquerda'>";
-	
+	//Opções de repasse e disponibilizar vaga
 	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
 	else $opcoes1 = "<span class='sp-opcoes-vagas'></span>";
-	
+
 	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
 	else $opcoes2 = "<span class='sp-opcoes-vagas'></span>";
@@ -232,32 +257,6 @@ function mostraGrupo(){
 	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
 	else $opcoes3 = "<span class='sp-opcoes-vagas'></span>";
-	
-	
-	$saida .= "<span class='sp-sub-titulo-grupos'>Vagas/Valores originais* ($nomeMoeda):</span><br />";
-	
-	$saida .= "<span class='sp-spaces'>Original 1:</span><span class='sp-login' title='$orig1Nome'>$orig1</span>%%opcoes1%%<span><strong>Valor pago: </strong></span><span>$valor1</span><br />";
-	
-	$saida .= "<span class='sp-spaces'>Original 2:</span><span class='sp-login' title='$orig2Nome'>$orig2</span>%%opcoes2%%<span><strong>Valor pago: </strong></span><span>$valor2</span><br />";
-	$saida .= "<span class='sp-spaces'>Fantasma:</span><span class='sp-login' title='$orig3Nome'>$orig3</span>%%opcoes3%%<span><strong>Valor pago: </strong></span><span>$valor3</span><br />";
-	
-	if($c->getFechado() == 1){
-		
-	
-		$saida .= "<span>&nbsp;</span><span><a href='#' name='historico-grupo' data-toggle='modal' data-target='#historico' id='historico_".$c->getId()."'>Ver Histórico</a></span>
-			<span></span><span>Valor Total: </span>
-			<span>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</span>";
-		if($c->getMoedaId() != 1){ //moeda estrangeira - mostrar conversão
-			$saida .= "<br /><span>&nbsp;</span><span></span><span></span>
-				<span>Convertido(R$): </span>
-				<span>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</span><br />";
-			$saida .= "<span>&nbsp;</span><span>&nbsp;</span><span></span>
-				<span>Fator Conversão: </span>
-				<span>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</span><br />";
-		}
-	}
-	$saida .= "<span>*Valores originais referentes a compra da conta sem levar em consideração os repasses da mesma.</span>";
-	$saida .= "</div>";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
 	$saida = str_replace("%%opcoes3%%", $opcoes3, $saida);
