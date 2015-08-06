@@ -271,6 +271,7 @@ $(".btn-danger").click(function(e){
 });
 //********************************************************************************
 $("#btn-grupo-novo").click(function(e){
+	e.preventDefault(); //previne o evento 'normal'
 	var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
 	var $dados = new Array();
 	if($("#fechado").is(':checked')){ $('#email').attr('required', 'required');  $fechado = 1;}//se marcar grupo como FECHADO, assinala EMAIL como requerido
@@ -337,7 +338,7 @@ $("#btn-grupo-novo").click(function(e){
 	$moeda_nome = $("#moedas option:selected").text(); 
 	$dados.push("fechado%=%"+$fechado);
 	$("#sp-erro-msg").fadeOut();
-	//console.log($dados);
+	//console.log($dados);return;
 
 	var pars = { dados: $dados, id: selfID, fechado: $fechado, moeda: $moeda_nome, funcao: 'novoGrupo'};
 	$.ajax({
@@ -349,7 +350,7 @@ $("#btn-grupo-novo").click(function(e){
 		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
 		complete: function(){ $("img.pull-right").fadeOut('fast'); },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); 
 			if(data == 1){ //sucesso
 				location.reload();
 			} else { //erro
@@ -370,10 +371,9 @@ $("#btn-grupo-novo").click(function(e){
 
 //********************************************************************************
 //LISTAGEM DE GRUPOS
-$("#div-listagem-grupos").find("[name='div-casulo-grupo'] img").click(function(){
+$("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").click(function(){
 	var $selfId = $("#selfID").val();
 	var $id = $(this).parent().parent().attr('id').split("_")[1]; //ID do grupo
-    
 	if($(this).attr("id") == "_0"){
 		$("#grupo-conteudo_"+$id)
 			.slideUp();
@@ -408,7 +408,7 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img").click(function()
 });
 //********************************************************************************
 //visualizar histórico
-$(".casulo-grupo-conteudo").on("click", "[name='historico-grupo']", function(e){
+$(".list-group").on("click", "[name='historico-grupo']", function(e){
 	e.preventDefault();
 	$elem = $(this);
 	$elemTop = parseInt($elem.offset().top);

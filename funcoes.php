@@ -2,11 +2,11 @@
 //---------------------------------------------------------------------------------------
 function login($mn){
 	if(!isset($_SESSION['login']))
-		$msg = "<li style='color:#ff0;padding-top:5px;'>Ol&aacute;, Visitante!<a href='login.php' style='padding:0'>[login]</a></li>";
+		$msg = "<p class='navbar-inverse navbar-text'>Ol&aacute;, Visitante!<br /><a href='login.php' style='padding:0'>[login]</a></p>";
 	else  
-		$msg = "<li style='color:#ff0;padding-top:5px;'>Ol&aacute;, ".$_SESSION['login']."!<br />
-			<a href='/fifa_telegram/adm/index.php' id='' style='padding:0;display:inline-table'></a>
-			<a href='#' id='deslogar' style='padding:0;display:inline-table'>[sair]</a></li>";
+		$msg = "<p class='navbar-inverse navbar-text'>Ol&aacute;, ".$_SESSION['login']."!<br />
+			<a href='/fifa_telegram/adm/index.php' id=''></a>
+			<a href='#' id='deslogar'>[sair]</a></p>";
 		
 	$mn = str_replace("%%user%%", $msg, $mn);
 	
