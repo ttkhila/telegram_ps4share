@@ -101,26 +101,7 @@ $("#deslogar").click(function(e){
 });
 //********************************************************************************	
 //TOOLTIP
-$('.masterTooltip').hover(function(){
-	// Hover over code
-	var title = $(this).attr('title');
-	$(this).data('tipText', title).removeAttr('title');
-	$('<p class="tooltip_help"></p>')
-	.html(title)
-	.appendTo('body')
-	.slideDown('fast');
-}, function() {
-    // Hover out code
-    $(this).attr('title', $(this).data('tipText'));
-    $('.tooltip_help').remove();
-}).mousemove(function(e) {
-    var mousex = e.pageX + 15; //Get X coordinates
-    var mousey = e.pageY + 3; //Get Y coordinates
-    $('.tooltip_help')
-    	.css({ top: mousey, left: mousex });
-}).click(function(e){
-	e.preventDefault(); //previne o evento 'normal'
-});
+$('[data-toggle="tooltip"]').tooltip(); 
 //********************************************************************************
 //AUTOCOMPLETE 
 //Original 1
@@ -246,10 +227,16 @@ $("#collapseOne").on("blur","[name='jogo[]']",function(e) {
 $("#btn-add-jogo").click(function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	QTD_JOGOS_CADASTRO++;
-	var $html = "<label class=''>Jogo "+QTD_JOGOS_CADASTRO+":</label>";
-	$html += "<input type='hidden' class='form-control' name='jogo_id[]' id='jogo"+QTD_JOGOS_CADASTRO+"_id' />";
-	$html += "<input type='text' class='form-control' name='jogo[]' id='jogo"+QTD_JOGOS_CADASTRO+"_autocomplete' placeholder='Digite parte do nome do jogo "+QTD_JOGOS_CADASTRO+"' />";
-	$html += "<span class='sp-form' id='jogo"+QTD_JOGOS_CADASTRO+"_check'><img scr='' /></span>";
+	var $html = "<div class='form-group col-md-12'>"
+		$html += "<label class='control-label col-sm-2'>Jogo "+QTD_JOGOS_CADASTRO+":</label>";
+		$html += "<div class='col-sm-8'>";
+			$html += "<input type='hidden' class='form-control' name='jogo_id[]' id='jogo"+QTD_JOGOS_CADASTRO+"_id' />";
+			$html += "<input type='text' class='form-control' name='jogo[]' id='jogo"+QTD_JOGOS_CADASTRO+"_autocomplete' placeholder='Digite parte do nome do jogo "+QTD_JOGOS_CADASTRO+"' />";
+		$html += "</div>";
+		$html += "<div class='col-sm-2'>";
+			$html += "<span id='jogo"+QTD_JOGOS_CADASTRO+"_check'><img scr='' /></span>";
+		$html += "</div>";
+	$html += "</div>";
 	$("#div-jogos-extras").append($html);
 });
 //********************************************************************************
@@ -297,6 +284,7 @@ $("#btn-grupo-novo").click(function(e){
 					.fadeIn()
 					.html("Valor precisa ser numérico.<span class='badge'>x</span>");
 				$(this).focus();
+				$(document).scrollTop( $("#foco").offset().top );
 				cont++;
 			}
 		}	
@@ -320,6 +308,7 @@ $("#btn-grupo-novo").click(function(e){
 			.fadeIn()
 			.html("É necessário informar seu próprio ID numa das vagas do grupo.<span class='badge'>x</span>");
 		$("#original1_autocomplete").focus();
+		$(document).scrollTop( $("#foco").offset().top );
 		return false;
 	} 
 	

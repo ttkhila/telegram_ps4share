@@ -248,15 +248,15 @@ function mostraGrupo(){
 	//Opções de repasse e disponibilizar vaga
 	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
-	else $opcoes1 = "<span class='sp-opcoes-vagas'></span>";
+	else $opcoes1 = "";
 
 	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
-	else $opcoes2 = "<span class='sp-opcoes-vagas'></span>";
+	else $opcoes2 = "";
 	
 	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
-	else $opcoes3 = "<span class='sp-opcoes-vagas'></span>";
+	else $opcoes3 = "";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
 	$saida = str_replace("%%opcoes3%%", $opcoes3, $saida);

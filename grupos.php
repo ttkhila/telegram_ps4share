@@ -29,14 +29,6 @@
 				$(this).prop('name', 'abre');
 			}
 		});
-		
-		$("[name='lista_jogos']").mousemove(function(e){
-			e.preventDefault(); //previne o evento 'normal'
-			$(".div-suspenso-jogos").slideDown('slow');
-		}).click(function(e){ e.preventDefault(); });
-		
-		$("[name='fecha_lista_jogos']").click(function(e){ $(this).parent().parent().fadeOut(); });
-
 	});	
 </script>
 </head>
@@ -55,71 +47,120 @@
 			</div>
 			<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 				<div class="panel-body">
-					<div class="form-group">
-						<h4>Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes.</h4>
-						<p class="bg-danger" id="sp-erro-msg" style="display:none;"></p>
-						<label for="exampleInputnome">Nome</label>
-						<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome" /> 
-						<label for="exampleInputEmail1">Email</label>
-						<input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />         			
-                			
-						<label for="exampleInputEmail1">Moeda de Compra</label>
-						<select class="form-control" id="moedas" name="moedas">                            
-							<?php
-							while($m = $moedas->fetch_object()){
-								if($m->pais == "BRL") echo "<option value='".$m->id."' selected='selected'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
-								else echo "<option value='".$m->id."'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
-							}
-							?>
-						</select>
-                			
-						<!-- JOGOS-->
-						<h3>Jogos</h3>
-						<label for="">Jogo1</label>
-						<input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required />                			
-						<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" required />
-                			
-						<span class="sp-form" id="jogo1_check"><img src="" /></span>
-						<div id="div-jogos-extras"></div><br /><br /><!--campos dinamicos -->
-						<button class="btn btn-primary" id="btn-add-jogo" type="button">+ Jogo</button>
-					</div> 
+
+					<p class="bg-danger col-sm-10" id="sp-erro-msg" style="display:none;"></p>
+					
+					<div class="form-group col-md-12">
+						<label for="exampleInputnome" class="control-label col-md-2">Nome</label>
+						<div class="col-md-8">
+							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome" />
+						</div>
+						<div class="col-md-2">
+							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
+						</div>
+					</div>
+					
+					<div class="form-group col-md-12">
+						<label for="exampleInputEmail1" class="control-label col-md-2">Email</label>
+						<div class="col-md-8">
+							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />
+						</div>  	
+						<div class="col-md-2">
+							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
+								title="E-mail da conta de jogo. N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo, a n&atilde;o ser que seja um grupo j&aacute; fechado." />
+						</div>
+					</div>
+				
+					<div class="form-group col-md-12">
+						<label for="exampleInputEmail1" class="control-label col-md-2">Moeda de Compra</label>
+						<div class="col-md-4">
+							<select class="form-control" id="moedas" name="moedas">                            
+								<?php
+								while($m = $moedas->fetch_object()){
+									if($m->pais == "BRL") echo "<option value='".$m->id."' selected='selected'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
+									else echo "<option value='".$m->id."'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
+								}
+								?>
+							</select>
+						</div>
+					</div>
+				
+					<!-- JOGOS-->
+					<div class="form-group col-md-12">
+						<h3>
+							Jogos <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
+								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo." />
+						</h3>
+					</div>
+					<div class="form-group col-md-12">
+						<label for="jogo1_id" class="control-label col-sm-2">Jogo1</label>
+						<div class="col-sm-8">     
+							<input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required /> 
+							<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" required />
+						</div>
+						<div class="col-sm-2">
+							<span id="jogo1_check"><img src="" /></span>
+						</div>
+					</div>
+					<div id="div-jogos-extras" class="form-group"></div><!--campos dinamicos -->
+					<div class="form-group col-md-12">
+						<div class="col-md-12">   
+							<button class="btn btn-primary" id="btn-add-jogo" type="button">+ Jogo</button>
+						</div>
+					</div>
 
                 			<!-- VAGAS-->
-					<form class="form-inline">
-						<h3>Vagas</h3>
-						<form class="form-group">                        			
-							<label class="exampleInputEmail1">Original 1 / ID:</label>
-							<input type="hidden" name="original1_id" id="original1_id" />
-							<input type="text" name="original1" class="form-control" id="original1_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
-							<label class="exampleInputEmail1">Valor:</label>
-							<input type="text" class="form-control" name="valor" id="valor1" maxlength="10" />
-							<button class="btn btn-danger" id="1">Limpar</button>
+                			<div class="form-group col-md-12">
+						<h3>
+							Vagas <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
+							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento do seu pr&oacute;prio ID numa das vagas." />
+						</h3>
+					</div>
+					<div class="form-group col-md-12">
+						<form class="form-inline">
+							<form class="form-group">                        			
+								<label class="exampleInputEmail1">Original 1 / ID:</label>
+								<input type="hidden" name="original1_id" id="original1_id" />
+								<input type="text" name="original1" class="form-control" id="original1_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
+								<label class="exampleInputEmail1">Valor:</label>
+								<input type="text" class="form-control" name="valor" id="valor1" maxlength="10" />
+								<button class="btn btn-danger" id="1">Limpar</button>
+
+							</form>
 						</form>
-					</form>
-					<form class="form-inline">   
-						<form class="form-group">	
-							<label class="exampleInputEmail1">Original 2 / ID:</label>
-							<input type="hidden" name="original2_id" id="original2_id" />
-							<input type="text" name="original2" class="form-control" id="original2_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
-							<label class="exampleInputEmail1">Valor:</label>
-							<input type="text" class="form-control" name="valor" id="valor2" maxlength="10" />
-							<button class="btn btn-danger" id="2">Limpar</button>
+					</div>
+					<div class="form-group col-md-12">
+						<form class="form-inline">   
+							<form class="form-group">	
+								<label class="exampleInputEmail1">Original 2 / ID:</label>
+								<input type="hidden" name="original2_id" id="original2_id" />
+								<input type="text" name="original2" class="form-control" id="original2_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
+								<label class="exampleInputEmail1">Valor:</label>
+								<input type="text" class="form-control" name="valor" id="valor2" maxlength="10" />
+								<button class="btn btn-danger" id="2">Limpar</button>
+							</form>
 						</form>
-					</form>
-					<form class="form-inline">
-						<form class="form-group">	
-							<label class="exampleInputEmail1">Fantasma / ID:</label>
-							<input type="hidden" name="original3_id" id="original3_id" />
-							<input type="text" name="original3" class="form-control" id="original3_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
-							<label class="sp-form-direita">Valor:</label>
-							<input type="text" class="form-control" name="valor" id="valor3" maxlength="10" />
-							<button class="btn btn-danger" id="3">Limpar</button><br /><br />
-							<div class="checkbox">
-								<label><input type="checkbox" id="fechado" name="fechado" /><span class="sp-form">&nbsp;&nbsp;Grupo j&aacute; fechado?</span>&nbsp;&nbsp;</label> 
-							</div><br /><p></p>
-							<button id="btn-grupo-novo" class="btn btn-success">Criar Grupo</button>
+					</div>
+					<div class="form-group col-md-12">
+						<form class="form-inline">
+							<form class="form-group">	
+								<label class="exampleInputEmail1">Fantasma / ID:</label>
+								<input type="hidden" name="original3_id" id="original3_id" />
+								<input type="text" name="original3" class="form-control" id="original3_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
+								<label class="sp-form-direita">Valor:</label>
+								<input type="text" class="form-control" name="valor" id="valor3" maxlength="10" />
+								<button class="btn btn-danger" id="3">Limpar</button><br /><br />
+								<div class="checkbox">
+									<label><input type="checkbox" id="fechado" name="fechado" /><span class="sp-form">&nbsp;&nbsp;Grupo j&aacute; fechado?</span>&nbsp;&nbsp;</label> 
+									<label>
+										<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
+										title="Se esse campo for marcado, ser&aacute; obrigat&oacute;rio o preenchimento de pelo menos uma vaga, os valores das vagas preenchidas, assim como o e-mail da conta criada." />
+									</label>
+								</div><br /><p></p>
+								<button id="btn-grupo-novo" class="btn btn-success">Criar Grupo</button>
+							</form>
 						</form>
-					</form>
+					</div>
                         	</div><!-- panel-body -->
 			</div><!-- panel-collapse collapse -->
                </div><!-- panel panel-default -->
@@ -142,7 +183,7 @@
 								if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 								echo "<div id ='grupo_".$d->id."' class='panel'>";
 									echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
-										echo "<div><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+										echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
 										echo " (criado por: ".stripslashes(utf8_decode($d->login)).") $fechado</div>";
 									echo "</div>";
 									echo "<div id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
