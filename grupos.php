@@ -142,7 +142,7 @@
 								if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 								echo "<div id ='grupo_".$d->id."' class='panel'>";
 									echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
-										echo "<div><img src='img/plus.png' width='16' height='16' id='_1' /> ".stripslashes(utf8_decode($d->nome));
+										echo "<div><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
 										echo " (criado por: ".stripslashes(utf8_decode($d->login)).") $fechado</div>";
 									echo "</div>";
 									echo "<div id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";

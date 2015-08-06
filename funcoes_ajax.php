@@ -211,23 +211,23 @@ function mostraGrupo(){
 		$saida .= "<div class='list-group-item active'>Vagas/Valores originais* ($nomeMoeda):</div>";
 		//Original 1, 2 e fantasma
 		$saida .= "<div class='list-group-item-info' style='padding:10px 0px;'>";
-			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Original 1: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 %%opcoes1%%</label>
-				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor1</label></div>";
-			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Original 2: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%</label>
-				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor2</label></div>";
-			$saida .= "<div class='list-group-item-text'><label class='col-xs-2'>Fantasma: </label><label class='col-xs-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%</label>
-				<label class='col-xs-3'>Valor pago: </label><label class='col-xs-3' style='font-weight:normal;'>$valor3</label></div>";
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 1: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 %%opcoes1%%</label>
+				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor1</label></div>";
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 2: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%</label>
+				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor2</label></div>";
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Fantasma: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%</label>
+				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor3</label></div>";
 		$saida .= "<br /><br /><br /></div>";
 	
 		if($c->getFechado() == 1){
 			$saida .= "<div class='list-group-item-success'>";
-				$saida .= "<label class='col-xs-6'><a href='#' name='historico-grupo' data-toggle='modal' data-target='#historico' id='historico_".$c->getId()."'>Ver Histórico</a></label>";
-				$saida .= "<label class='col-xs-3'>Valor Total: </label><label class='col-xs-3' style='font-weight:normal;'>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</label>";	
+				$saida .= "<label class='col-sm-6'><a href='#' name='historico-grupo' data-toggle='modal' data-target='#historico' id='historico_".$c->getId()."'>Ver Histórico</a></label>";
+				$saida .= "<label class='col-sm-3'>Valor Total: </label><label class='col-sm-3' style='font-weight:normal;'>".$simboloMoeda." ".number_format($c->getValor(), 2, ',', '.')."</label>";	
 			if($c->getMoedaId() != 1){ //moeda estrangeira - mostrar conversão
-				$saida .= "<label class='col-xs-6'></label><label class='col-xs-3'>Convertido(R$): </label>
-					<label class='col-xs-3' style='font-weight:normal;'>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</label>";
-				$saida .= "<label class='col-xs-6'></label><label class='col-xs-3'>Fator Conversão: </label>
-					<label class='col-xs-3' style='font-weight:normal;'>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</label>";
+				$saida .= "<label class='col-sm-6'></label><label class='col-sm-3'>Convertido(R$): </label>
+					<label class='col-sm-3' style='font-weight:normal;'>R$ ".number_format($c->getValorConvertido(), 2, ',', '.')."</label>";
+				$saida .= "<label class='col-sm-6'></label><label class='col-sm-3'>Fator Conversão: </label>
+					<label class='col-sm-3' style='font-weight:normal;'>".$simboloMoeda." 1,00 = R$ ".str_replace(".", ",", number_format($c->getFatorConversao(), 2))."</label>";
 			}
 			$saida .= "</div>";
 		}
@@ -246,16 +246,16 @@ function mostraGrupo(){
 	$saida .= "</div>";
 	
 	//Opções de repasse e disponibilizar vaga
-	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
+	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
 	else $opcoes1 = "<span class='sp-opcoes-vagas'></span>";
 
-	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
+	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
 	else $opcoes2 = "<span class='sp-opcoes-vagas'></span>";
 	
-	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<span class='sp-opcoes-vagas'><img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' /></span>";
+	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
 	else $opcoes3 = "<span class='sp-opcoes-vagas'></span>";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);

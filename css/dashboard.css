@@ -65,7 +65,13 @@ body {
   color: #fff;
   background-color: #428bca;
 }
-
+.navbar-inverse .navbar-text {
+  color: #ff0;
+}
+.navbar-text a {
+  text-decoration: underline;
+  color: #fff;
+}
 
 /*
  * Main content
