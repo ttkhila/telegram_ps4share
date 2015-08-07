@@ -179,6 +179,14 @@ class compartilhamentos{
 		else if ($vaga == 2)  $vaga = "original2_id";
 		else $vaga = "original3_id";
 		
+		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
+		//Nesse caso não acusa problema
+		$query = "SELECT $vaga as dono FROM compartilhamentos WHERE id = $idGrupo";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		$dono = $res->dono;
+		if ($dono == 0)
+			return TRUE;
+		
 		$query = "SELECT * from compartilhamentos WHERE id = $idGrupo AND $vaga = $idUsuario";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		if($res->num_rows == 0)
@@ -191,6 +199,23 @@ class compartilhamentos{
 		if($vaga == 1) $vagaNome = "original1_id";
 		else if ($vaga == 2)  $vagaNome = "original2_id";
 		else $vagaNome = "original3_id";
+		
+		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
+		//NEsse caso não cria registro de HISTÓRICO, somente altera o existente
+		$query = "SELECT $vagaNome as dono FROM compartilhamentos WHERE id = $grupoID";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		$dono = $res->dono;
+		if ($dono == 0){
+			//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
+			$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
+			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			
+			$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
+				WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
+			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			return TRUE;
+		}
+		
 		//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
 		$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
@@ -201,6 +226,8 @@ class compartilhamentos{
 		
 		return TRUE;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	//protected function alteraValor( 
 //---------------------------------------------------------------------------------------------------------------
 }
 ?>

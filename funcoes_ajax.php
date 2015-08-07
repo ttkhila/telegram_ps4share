@@ -129,9 +129,8 @@ function novoGrupo(){
 			require_once 'funcoes.php';
 			$data = date('Y-m-d');
 			$moeda = between("(", ")", $moeda);
-			//$fator = 3.14; //provisório
-			// Não está funcionando para ambiente externo dentro do banco
 			
+			//$fator = 3.14; //provisório //Não está funcionando para ambiente externo dentro do banco
 			$url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20(%22".$moeda."BRL%22)&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
 			$xml = simplexml_load_file($url);
 			$fator = number_format(floatval($xml->results->rate->Rate), 2);
@@ -208,7 +207,13 @@ function mostraGrupo(){
 
 	//identado por HTML
 	$saida .= "<div class='list-group-item-heading col-md-8'>";
-		$saida .= "<div class='list-group-item active'>Vagas/Valores originais* ($nomeMoeda):</div>";
+		$saida .= "<div class='list-group-item active'>Vagas/Valores originais* ($nomeMoeda) ";
+		if($c->getFechado() == 0){ //insere botão Fechar Grupo
+			$saida .= "<div class='badge'><a role='button' id='grupo_$idGrupo' name='btn-fechar-grupo'>Fechar Grupo</a> ";
+			$saida .= "<img src='img/help.png' width='16' height='16' data-toggle='tooltip' data-placement='right' 
+										title='Informa que o grupo já possui suas vagas preenchidas, com os respectivos valores dessas vagas e a conta se encontra devidamente criada na PSN/Live.' /></div>";
+		}
+		$saida .= "</div>";
 		//Original 1, 2 e fantasma
 		$saida .= "<div class='list-group-item-info' style='padding:10px 0px;'>";
 			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 1: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 %%opcoes1%%</label>
@@ -247,15 +252,21 @@ function mostraGrupo(){
 	
 	//Opções de repasse e disponibilizar vaga
 	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga sem dono a venda
 	else $opcoes1 = "";
 
 	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() == 0) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga sem dono a venda
 	else $opcoes2 = "";
 	
 	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() == 0) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga sem dono a venda
 	else $opcoes3 = "";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
@@ -273,7 +284,7 @@ function mostraHistorico(){
 	$dadosHist = $c->getDadosHistorico($idGrupo);
 	$saida = "";
 	$saida .= "<table class='table'><thead>";
-	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Hist&oacute;rico do Grupo: ".stripslashes(utf8_decode($c->getNome()))."</th></tr>";
+	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Grupo: ".stripslashes(utf8_decode($c->getNome()))."</th></tr>";
 	$saida .= "<tr><th width='40%'>Linha do Tempo</th><th width='20%'>Original 1</th><th width='20%'>Original 2</th><th width='20%'>Fantasma</th></tr></thead>";
 	$saida .= "<tbody><tr>";
 	$cont = 0;

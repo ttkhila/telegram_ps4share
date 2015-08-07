@@ -18,41 +18,10 @@ $(function(){
         return string;
     }
     
-	function abreModal(id, data, top){
-		//id->ID do elemento que recebe o conteúdo (com#)
-		//data->Conteúdo do elemento id
-		//top->Altura do elemento chamador (que será parametro para a altura de id)
-		//var maskHeight = $(document).height();
-		//var maskWidth = $(window).width();
-	
-		//$('#mask').css({'width':maskWidth,'height':maskHeight});
-		//$('#mask').fadeIn(1000);	
-		//$('#mask').fadeTo("slow",0.8);	
+//********************** MODAIS ****************************************
+	function abreModal(id, data){ $(id).html(data); }	
+//***********************************************************************
 
-		//var winH = $(window).height();
-		//var winW = $(window).width();
-              
-		//$(id).css({ 'top': top-$(id).height()/2, 'left': winW/2-$(id).width()/2 });
-	
-		//$(id).fadeIn(2000); 
-		$(id).html(data);
-	}
-	
-	function closeModal(){
-		//return '<a href="#" class="close">Fechar [X]</a>';
-	}
-	
-	//$('.window').on('click', '.close', function (e) {
-//		e.preventDefault();
-//		$('#mask').hide();
-//		$('.window').hide();
-//	});		
-//	
-//	$('#mask').click(function () {
-//		$(this).hide();
-//		$('.window').hide();
-	//});			
-//********************************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
@@ -101,7 +70,11 @@ $("#deslogar").click(function(e){
 });
 //********************************************************************************	
 //TOOLTIP
-$('[data-toggle="tooltip"]').tooltip(); 
+//$('[data-toggle="tooltip"]').tooltip(); 
+$('body').tooltip({
+	selector: '[data-toggle="tooltip"]',
+	container: 'body'
+}); 
 //********************************************************************************
 //AUTOCOMPLETE 
 //Original 1
@@ -426,9 +399,7 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
 	VAGA_REPASSE = $(this).attr('rel');
 	GRUPO_REPASSE = parseInt($(this).attr("id").split("_")[1]);
-	$elemTop = parseInt($(this).offset().top);
-	$(".close").html("");
-	abreModal("#repasse", closeModal()+$("#repasse").html(), $elemTop);
+	abreModal("#repasse", $("#repasse").html());
 });
 //********************************************************************************
 $("#repasse").on("click", "#btn-confirma-repasse", function(){

@@ -192,7 +192,7 @@
 							}
 						}
 					?>
-					<span><strong>Legenda (grupos fechados):</strong></span><br />
+					<span><strong>Legenda:</strong></span><br />
 					<span><img src='img/cash.gif' />&nbsp;&nbsp;Informar vaga repassada</span><br />
 					<span><img src='img/checkout.png' />&nbsp;&nbsp;Colocar vaga a venda</span>
 				</div><!-- div-listagem-grupos -->
@@ -235,6 +235,10 @@
 		<div class="modal fade" id="historico" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 			<div class="modal-dialog">
 				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Histórico</h4>
+					</div>
 					<div id="dialog" class="window"></div>
 				</div>
 			</div>
