@@ -373,8 +373,6 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 $(".list-group").on("click", "[name='historico-grupo']", function(e){
 	e.preventDefault();
 	$elem = $(this);
-	$elemTop = parseInt($elem.offset().top);
-	//alert($elemTop);return;
 	$idGrupo = $(this).attr("id").split("_")[1];
 	var pars = { id: $idGrupo, funcao: 'mostraHistorico'};
 	$.ajax({
@@ -387,10 +385,7 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 		complete: function(){ $("img.pull-right").fadeOut('fast'); },
 		success: function(data){ 
 			console.log(data);
-			//$("#div-historico-grupo").show().css("top", ($elemTop-100)).html(data);
-			abreModal("#dialog", data, $elemTop);
-			//$("#hidFlag").val("1");
-			//$elem.text("Fechar");
+			abreModal("#dialog", data);
 		}
 	});
 });
@@ -561,6 +556,108 @@ $("#aba-altera-jogos").on("click", "[name='a-ativar']", function(e){
 	});
 });
 //********************************************************************************  
+//Mostra tela de Fechamento de Grupo
+$("[name='div-casulo-conteudo-grupo']").on('click', "[name='btn-fechar-grupo']", function(){
+	var idGrupo = parseInt($(this).attr('id').split("_")[1]);
+	var pars = { id: idGrupo, funcao: 'mostraFechamentoGrupo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			//alert(data);
+			abreModal("#modal-conteudo-fechamento-grupo", data);
+		}
+	});
+
+});
+//********************************************************************************
+//Grava fechamento de grupo
+$("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var $erros = new Array();
+	var $campos = new Array();
+	var $valores = new Array();
+
+	var idGrupo = parseInt($("#id-grupo-fechamento").val());
+	var nomeGrupo = $.trim($("#nome-fechamento").val());
+	var moeda_id = parseInt($("#moedas-fechamento option:selected").val());
+
+	if($("#email-fechamento").length) var email = $.trim($("#email-fechamento").val());
+	var id1 = parseInt($("#id1-fechamento").val());
+	var id2 = parseInt($("#id2-fechamento").val());
+	var id3 = parseInt($("#id3-fechamento").val());
+	var valor1 = $.trim($("#valor-fechamento-1").val()).replace(",", ".");
+	var valor2 = $.trim($("#valor-fechamento-2").val()).replace(",", ".");
+	var valor3 = $.trim($("#valor-fechamento-3").val()).replace(",", ".");
+
+	if(nomeGrupo == "") $erros.push("- Informe o nome do Grupo.<br />"); 
+	else { $campos.push("nome"); $valores.push(nomeGrupo); }
+	
+	if(typeof email !== 'undefined'){ //se a var email existe
+		if(email != ""){
+			if(!IsEmail(email)) { //verifica se o email digitado é válido
+				$erros.push("- E-mail do grupo Inválido.<br />");
+			} else { $campos.push("email"); $valores.push(email); }
+		} else {
+			$erros.push("- Informe o e-mail do grupo.<br />"); 
+		}
+	}
+
+	$campos.push("moeda_id"); $valores.push(moeda_id);
+
+	if(id1 > 0){
+		if(valor1 == "") $erros.push("- Informe o valor pago pelo Original 1.<br />");
+		else if(!$.isNumeric(valor1) && valor1 != "") $erros.push("- Valor1 precisa ser um valor válido.<br />");
+		else { $campos.push("valor1"); $valores.push(valor1); } 
+	}
+	if(id2 > 0){
+		if(valor2 == "") $erros.push("- Informe o valor pago pelo Original 2.<br />");
+		else if(!$.isNumeric(valor2) && valor2 != "") $erros.push("- Valor2 precisa ser um valor válido.<br />");
+		else { $campos.push("valor2"); $valores.push(valor2); }
+	}
+	if(id3 > 0){
+		if(valor3 == "") $erros.push("- Informe o valor pago pelo Fantasma.<br />");
+		else if(!$.isNumeric(valor3) && valor3 != "") $erros.push("- Valor3 precisa ser um valor válido.<br />");
+		else { $campos.push("valor3"); $valores.push(valor3); }
+	}
+	
+	if($erros.length > 0){
+		$("#sp-erro-msg-modal2")
+			.fadeIn()
+			.html($erros)
+			.delay(2000)
+			.fadeOut('slow');
+		return;
+	}
+	$campos.push("senha_alterada");
+	if ($("#alterou_senha-fechamento").is(":checked")) $valores.push(1); else $valores.push(0);
+	//console.log($campos); return;
+	var pars = { id: idGrupo, campos: $campos, valores: $valores, moeda: moeda_id, funcao: 'gravaFechamentoGrupo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$("#sp-erro-msg-modal2")
+					.fadeIn()
+					.html(data);
+			}
+		}
+	});
+});
 
 //********************************************************************************  
 

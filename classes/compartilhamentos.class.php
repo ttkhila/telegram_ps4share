@@ -98,6 +98,20 @@ class compartilhamentos{
 		$this->setSenhaAlterada($d->senha_alterada);
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getDados(){
+		$dados = array("id"=>$this->getId(), "email"=>$this->getEmail(), "nome"=>$this->getNome(), "orig1"=>$this->getOrig1(), 
+			"orig2"=>$this->getOrig2(), "orig3"=>$this->getOrig3(), "valor"=>$this->getValor(), "valorConvertido"=>$this->getValorConvertido(), 
+			"fatorConversao"=>$this->getFatorConversao(), "moedaId"=>$this->getMoedaId(), "data"=>$this->getData(), 
+			"ativo"=>$this->getAtivo(), "fechado"=>$this->getFechado(), "criadorId"=>$this->getCriadorId());
+        return $dados;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getDadosFechamento(){
+		$dados = array("id"=>$this->getId(), "email"=>$this->getEmail(), "nome"=>$this->getNome(), "orig1"=>$this->getOrig1(), 
+			"orig2"=>$this->getOrig2(), "orig3"=>$this->getOrig3(), "moedaId"=>$this->getMoedaId());
+        return $dados;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function recupera_dados_moedas($moeda_id){
 		$query = "SELECT * FROM moedas WHERE id = $moeda_id";
 		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
@@ -147,7 +161,7 @@ class compartilhamentos{
 		WHERE id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 		
-		$query = "UPDATE historicos SET data_venda = '$data' WHERE compartilhamento_id = $idGrupo AND (vaga = '1' OR vaga = '2' OR vaga = '3')";
+		$query = "UPDATE historicos SET data_venda = '$data' WHERE compartilhamento_id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -227,7 +241,41 @@ class compartilhamentos{
 		return TRUE;
 	}
 //---------------------------------------------------------------------------------------------------------------
-	//protected function alteraValor( 
+	public function gravaGrupoFechamento($id, $dados){
+		foreach ($dados as $value) {
+			$parte = explode("%=%", $value);
+			$parte[1] = addslashes(utf8_encode($parte[1]));
+			$query = "UPDATE compartilhamentos SET $parte[0] = '$parte[1]' WHERE id = $id";
+			try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+		}
+		//grava FECHADO = 1
+		$query = "UPDATE compartilhamentos SET fechado = 1 WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+	}
+//---------------------------------------------------------------------------------------
+	public function gravaHistoricoFechamento($id, $dados){
+		$valorTotal = 0;
+		foreach ($dados as $value) {
+			$parte = explode("%=%", $value);
+			if(strstr($parte[0], "valor")){
+				$vaga = substr($parte[0], -1, 1);
+				$query = "UPDATE historicos SET valor_pago = $parte[1] WHERE compartilhamento_id = $id AND vaga = '$vaga'";
+				$valorTotal += $parte[1];
+			} else if (strstr($parte[0], "senha"))
+				$query = "UPDATE historicos SET $parte[0] = $parte[1] WHERE compartilhamento_id = $id";
+
+			try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+		}
+
+		return $valorTotal;
+	}
+//---------------------------------------------------------------------------------------
+	public function converteMoeda($PaisMoeda){
+		$url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20(%22".$PaisMoeda."BRL%22)&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+		$xml = simplexml_load_file($url);
+		$fator = number_format(floatval($xml->results->rate->Rate), 2);
+		return $fator;
+	}
 //---------------------------------------------------------------------------------------------------------------
 }
 ?>

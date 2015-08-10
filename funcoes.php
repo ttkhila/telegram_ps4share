@@ -12,7 +12,6 @@ function login($mn){
 	
 	return $mn; 
 }
-
 //---------------------------------------------------------------------------------------
 function after ($this, $inthat){
 	if (!is_bool(strpos($inthat, $this)))

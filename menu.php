@@ -10,10 +10,6 @@
           <a class="navbar-brand" href="#">Telegram - Partilhas</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Pesquisar no site...">
-            <button type="submit" class="btn btn-default">Buscar</button>
-          </form>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="./">Home</a></li>
             <li><a href="grupos.php">Gerenciar Grupos</a></li>
@@ -22,7 +18,11 @@
             <li><a href="#">Perfil</a></li>
             <li style='margin-right:70px;'>%%user%%</li>
           </ul>
-          </div>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Pesquisar no site...">
+            <button type="submit" class="btn btn-default">Buscar</button>
+          </form>
+     	</div>
       </div>
     </nav>
           <div class="container">

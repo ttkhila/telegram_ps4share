@@ -51,9 +51,9 @@
 					<p class="bg-danger col-sm-10" id="sp-erro-msg" style="display:none;"></p>
 					
 					<div class="form-group col-md-12">
-						<label for="exampleInputnome" class="control-label col-md-2">Nome</label>
+						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
 						<div class="col-md-8">
-							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome" />
+							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" />
 						</div>
 						<div class="col-md-2">
 							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
@@ -61,9 +61,9 @@
 					</div>
 					
 					<div class="form-group col-md-12">
-						<label for="exampleInputEmail1" class="control-label col-md-2">Email</label>
+						<label for="exampleInputEmail1" class="control-label col-md-2">Email da conta</label>
 						<div class="col-md-8">
-							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail" />
+							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail da conta" />
 						</div>  	
 						<div class="col-md-2">
 							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
@@ -184,9 +184,9 @@
 								echo "<div id ='grupo_".$d->id."' class='panel'>";
 									echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
 										echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
-										echo " (criado por: ".stripslashes(utf8_decode($d->login)).") $fechado</div>";
+										echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 									echo "</div>";
-									echo "<div id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
+									echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
 									//echo "<hr />";
 								echo "</div>";
 							}
@@ -203,44 +203,65 @@
 </div><!-- ROW - menu.php -->
 </div><!-- CONTAINER - menu.php -->
 
-
-	<div class="modal fade" id="repasse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"><!-- DIV que vai receber formulario para cadastro de comprador da vaga -->
+	<!-- DIV que vai receber formulario para cadastro de comprador da vaga -->
+	<div class="modal fade" id="repasse" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel">Dados do Comprador</h4>
-				</div>
-					<div class="modal-body">
-						<input type="hidden" name="original-repasse_id" id="original-repasse_id" />
-						<label class="sp-campos-modal">ID Comprador:</label>
-						<input type="text" class="form-control" name="original-repasse" id="original-repasse_autocomplete" autocomplete="off" placeholder="Digite parte do ID do comprador" required="" /></span>
-						<span class="sp-form" id="original-repasse_check"><img src="" alt="" /></span><br />
-						<label class="sp-campos-modal">Valor (em reais):</label>
-						<input type="text" class="form-control" name="valor" id="valor" maxlength="10" required="" />
-						<label class="sp-campos-modal">Data da venda:</label>
-						<input type="date" class="form-control" name="data_venda" id="data_venda" value="<?php echo date('Y-m-d'); ?>" />
-						<div class="checkbox">
-							<label>Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" /></label>
-							<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" id="btn-confirma-repasse" class="btn btn-primary">Confirmar Repasse</button>
-						</div>
-					</div><!-- modal-body -->
 				</div><!-- modal-header -->
+				<div class="modal-body">
+					<input type="hidden" name="original-repasse_id" id="original-repasse_id" />
+					<label class="sp-campos-modal">ID Comprador:</label>
+					<input type="text" class="form-control" name="original-repasse" id="original-repasse_autocomplete" autocomplete="off" placeholder="Digite parte do ID do comprador" required="" /></span>
+					<span class="sp-form" id="original-repasse_check"><img src="" alt="" /></span><br />
+					<label class="sp-campos-modal">Valor (em reais):</label>
+					<input type="text" class="form-control" name="valor" id="valor" maxlength="10" required="" />
+					<label class="sp-campos-modal">Data da venda:</label>
+					<input type="date" class="form-control" name="data_venda" id="data_venda" value="<?php echo date('Y-m-d'); ?>" />
+					<div class="checkbox">
+						<label>Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" /></label>
+						<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" id="btn-confirma-repasse" class="btn btn-primary">Confirmar Repasse</button>
+					</div>
+				</div><!-- modal-body -->
 			</div><!-- modal-content -->
 		</div><!-- modal-dialog -->
-		<div class="modal fade" id="historico" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Histórico</h4>
-					</div>
-					<div id="dialog" class="window"></div>
+	</div><!-- modal fade -->
+
+	<!--recebe infos do historico das contas -->
+	<div class="modal fade" id="historico" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="mySmallModalLabel">Histórico</h4>
 				</div>
+				<div id="dialog" class="window" style="padding:10px;"></div>
 			</div>
 		</div>
-        </div>    
+	</div>
+
+
+	<!-- Formulário de fechamento de grupos abertos -->
+	<div class="modal fade" id="fecha-grupo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Dados do Grupo</h4>
+				</div>
+				<div class="modal-body form-horizontal">
+					<div class="window" id="modal-conteudo-fechamento-grupo"></div>
+				</div><!-- modal-body -->
+			</div>
+		</div>
+	</div><!-- modal fade -->
+
+
+
+    </div>    
