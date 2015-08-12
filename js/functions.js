@@ -394,7 +394,15 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
 	VAGA_REPASSE = $(this).attr('rel');
 	GRUPO_REPASSE = parseInt($(this).attr("id").split("_")[1]);
-	abreModal("#repasse", $("#repasse").html());
+	dataID = $(this).data('id');
+	//abreModal("#repasse", $("#repasse").html());
+	if (dataID == '1'){
+		$("#sp-tipo-moeda").text('(Valores em Real)');
+		$("#repasse").find("#lbl-alterou-senha").show();
+	} else {
+		$("#sp-tipo-moeda").text('(Valores em '+dataID+')');
+		$("#repasse").find("#lbl-alterou-senha").hide();
+	}
 });
 //********************************************************************************
 $("#repasse").on("click", "#btn-confirma-repasse", function(){
@@ -451,6 +459,44 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 					.fadeOut('slow');
 			}
 		
+		}
+	});
+});
+//********************************************************************************
+//Abre DIV para confrmar disponibilização de vaga
+$(".container-grupos").on("click", "[name='img-disponibiliza']", function(){
+	var parte = $(this).attr('id').split("_");
+	var id = parte[1];
+	var vaga = parte[2];
+	$("#input-valor_"+id+"_"+parte[2]).show();
+});
+//Fecha a DIV acima
+$(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
+	$(this).parent().hide();
+});
+//********************************************************************************
+// Grava a disponibilização da vaga
+$(".container-grupos").on("click", "[name='input-valor'] button", function(){
+	parte = $(this).attr('id').split("_");
+	grupo = parte[1];
+	$vaga = parte[2];
+	$valor = $("#txt-valor-venda_"+grupo+"_"+$vaga).val();
+	$valor = $valor.replace(",", ".");
+	if(!$.isNumeric($valor) && $.trim($valor) != ""){ alert("Valor precisa ser numérico!"); return false; }
+	//alert("grupo: "+grupo+" / Valor: "+$valor+" / Vaga: "+$vaga);
+	var pars = { valor: $valor, id: grupo, vaga: $vaga, funcao: 'gravaDisponibilidadeVaga'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1){ alert("Vaga colocada a venda com sucesso!"); location.reload(); }
+			else alert(data["valor"][0]);
 		}
 	});
 });

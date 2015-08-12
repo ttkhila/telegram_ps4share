@@ -241,6 +241,21 @@ class compartilhamentos{
 		return TRUE;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gravaDisponibilidadeVaga($idGrupo, $vaga, $valor, $usuarioID){
+		if (trim($valor) == "") $valor = "NULL";
+ 		$query = "UPDATE historicos SET a_venda = 1, valor_venda = $valor 
+			WHERE id in (
+			      SELECT * FROM (
+				     SELECT id 
+				     FROM historicos 
+				     WHERE (compartilhamento_id = $idGrupo) AND (vaga = '$vaga') AND ((comprador_id = $usuarioID) OR (comprador_id = 0))
+				     ORDER BY id DESC limit 0, 1
+			      ) 
+			      as t);";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function gravaGrupoFechamento($id, $dados){
 		foreach ($dados as $value) {
 			$parte = explode("%=%", $value);

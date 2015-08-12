@@ -130,8 +130,8 @@ function novoGrupo(){
 			$data = date('Y-m-d');
 			$moeda = between("(", ")", $moeda);
 			
-			//$fator = 3.14; //provisório //Não está funcionando para ambiente externo dentro do banco
-			$fator = $c->converteMoeda($moeda);
+			$fator = 3.14; //provisório //Não está funcionando para ambiente externo dentro do banco
+			//$fator = $c->converteMoeda($moeda);
 			
 			if ($moeda != "BRL") $valor_convertido = $soma * $fator;
 			else $valor_convertido = $soma;
@@ -208,13 +208,24 @@ function mostraGrupo(){
 										title='Informa que o grupo já possui suas vagas preenchidas, com os respectivos valores dessas vagas e a conta se encontra devidamente criada na PSN/Live.' /></div>";
 		}
 		$saida .= "</div>";
+		
+
 		//Original 1, 2 e fantasma
 		$saida .= "<div class='list-group-item-info' style='padding:10px 0px;'>";
-			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 1: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 %%opcoes1%%</label>
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 1: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 
+				<div name='input-valor' id='input-valor_".$idGrupo."_1' class='form-group div-input-valor'>Valor em reais (opcional):<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+				<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' /><button class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button></div> 
+				%%opcoes1%%</label>
 				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor1</label></div>";
-			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 2: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%</label>
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 2: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 
+				<div name='input-valor' id='input-valor_".$idGrupo."_2' class='form-group div-input-valor'>Valor em reais (opcional):<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+				<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' /><button class='btn btn-xs btn-primary' rel='2' id='btn-grupo_".$idGrupo."_2'>Confirma</button></div> 
+				%%opcoes2%%</label>
 				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor2</label></div>";
-			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Fantasma: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%</label>
+			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Fantasma: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 
+				<div name='input-valor' id='input-valor_".$idGrupo."_3' class='form-group div-input-valor'>Valor em reais (opcional):<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+				<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' /><button class='btn btn-xs btn-primary' rel='3' id='btn-grupo_".$idGrupo."_3'>Confirma</button></div> 
+				%%opcoes3%%</label>
 				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor3</label></div>";
 		$saida .= "<br /><br /><br /></div>";
 	
@@ -245,22 +256,29 @@ function mostraGrupo(){
 	$saida .= "</div>";
 	
 	//Opções de repasse e disponibilizar vaga
-	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
+	// ORIGINAL 1
+	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
+	else if($orig1ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso
 	else $opcoes1 = "";
-
-	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() == 0) $opcoes2 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga sem dono a venda
+	// ORIGINAL 2
+	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() == 0) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($orig2ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else $opcoes2 = "";
-	
-	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />";
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() == 0) $opcoes3 = "<img name='img-repasse' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga sem dono a venda
+	// FANTASMA
+	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() == 0) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($orig3ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else $opcoes3 = "";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
@@ -352,6 +370,27 @@ function gravaRepasse(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function gravaDisponibilidadeVaga(){
+	session_start();
+	$idGrupo = $_POST['id'];	
+	$valor = $_POST['valor'];
+	$vaga = $_POST['vaga'];
+	$usuarioID = $_SESSION['ID'];
+	$c = carregaClasse('Compartilhamento');
+	$v = carregaClasse('Validacao');
+	//echo json_encode($vaga); exit;
+	if(trim($valor) != "") $v->set("valor", str_replace(",", ".", $valor))->is_float(); //VALOR
+	
+	if($v->validate()){
+		$c->gravaDisponibilidadeVaga($idGrupo, $vaga, $valor, $usuarioID);
+		echo json_encode(1);
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
 function gravaJogo(){
 	$dados = $_POST['dados'];
 	$j = carregaClasse('Jogo');
@@ -366,7 +405,6 @@ function gravaJogo(){
 	echo json_encode(array(0, "Jogo Cadastrado"));
 	exit;
 }
-//----------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------
 function alteraJogo(){
 	$dados = $_POST['dados'];
@@ -551,7 +589,6 @@ function gravaFechamentoGrupo(){
 	$campos_historico_result = array();
 
 	$c = carregaClasse('Compartilhamento');
-	$v = carregaClasse('Validacao');
 	$j = carregaClasse('Jogo');
 	
 	// 'monta' um array ($campos_conta_result) com campos%=%valores
@@ -583,7 +620,7 @@ function gravaFechamentoGrupo(){
 	//$fator = 3.14; //provisório //Não está funcionando para ambiente externo dentro do banco
 	$moeda = $c->recupera_dados_moedas($moeda_id);
 	if($moeda_id == 1) $fator = 1;//real
-	else $fator = $c->converteMoeda($moeda->pais);
+	else $fator = 3.14; //$fator = $c->converteMoeda($moeda->pais);
 
 	$valor_convertido = $valorTotal * $fator;
 	$valor_convertido = str_replace(",", "", number_format($valor_convertido, 2));

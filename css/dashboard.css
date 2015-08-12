@@ -166,3 +166,13 @@ div#dialog table th, td{padding:5px;}
 #sp-sucesso-msg > .badge { float: right; cursor: pointer; }
 #modal-conteudo-fechamento-grupo{padding:10px;}
 .label-personalizada{background-color: #DEB887; border:solid 1px #CD853F; padding:5px; border-radius:4px; text-align: center;}
+
+.div-input-valor {
+	position:absolute;
+	z-index:9000;  
+	background-color:#fff; 
+	display:none;
+	padding:5px;
+	border: solid 1px #337ab7;
+	top:0;
+}
