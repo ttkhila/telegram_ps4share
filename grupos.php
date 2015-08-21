@@ -164,42 +164,42 @@
                         	</div><!-- panel-body -->
 			</div><!-- panel-collapse collapse -->
                </div><!-- panel panel-default -->
-       </div><!-- panel-group -->
-	<div class="panel panel-default">
-		<div class="panel-heading" role="tab" id="headingTwo">
-			<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
-              </div><!-- panel-heading -->
-		<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
-			<div class="panel-body">
-				<div id="div-listagem-grupos" class="container-grupos">
-					<h3>Meus Grupos</h3>
-					<?php
-						if ($dados1->num_rows == 0){
-							echo "<span>Não há nenhum grupo ativo para este usuário!<br />
-							Clique no ícone <img src='img/add.png' width='20' height='20'  /> acima para criar um novo grupo.
-							</span>";
-						} else {
-							while($d = $dados1->fetch_object()){
-								if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
-								echo "<div id ='grupo_".$d->id."' class='panel'>";
-									echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
-										echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
-										echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="headingTwo">
+				<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
+			</div><!-- panel-heading -->
+			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+				<div class="panel-body">
+					<div id="div-listagem-grupos" class="container-grupos">
+						<h3>Meus Grupos</h3>
+						<?php
+							if ($dados1->num_rows == 0){
+								echo "<span>Não há nenhum grupo ativo para este usuário!<br />
+								Clique no ícone <img src='img/add.png' width='20' height='20'  /> acima para criar um novo grupo.
+								</span>";
+							} else {
+								while($d = $dados1->fetch_object()){
+									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
+									echo "<div id ='grupo_".$d->id."' class='panel'>";
+										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
+											echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
+										echo "</div>";
+										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
+										//echo "<hr />";
 									echo "</div>";
-									echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
-									//echo "<hr />";
-								echo "</div>";
+								}
 							}
-						}
-					?>
-					<span><strong>Legenda:</strong></span><br />
-					<span><img src='img/cash.gif' />&nbsp;&nbsp;Informar vaga repassada</span><br />
-					<span><img src='img/checkout.png' />&nbsp;&nbsp;Colocar vaga a venda</span>
-				</div><!-- div-listagem-grupos -->
-			</div><!-- panel-body -->
-			<input type="hidden" id="hidFlag" value="0" />
-		</div><!-- collapseTwo -->
-	</div><!-- panel panel-default -->
+						?>
+						<span><strong>Legenda:</strong></span><br />
+						<span><img src='img/cash.gif' />&nbsp;&nbsp;Informar vaga repassada</span><br />
+						<span><img src='img/checkout.png' />&nbsp;&nbsp;Colocar vaga a venda</span>
+					</div><!-- div-listagem-grupos -->
+				</div><!-- panel-body -->
+				<input type="hidden" id="hidFlag" value="0" />
+			</div><!-- collapseTwo -->
+		</div><!-- panel panel-default -->
+	</div><!-- panel-group -->
 </div><!-- ROW - menu.php -->
 </div><!-- CONTAINER - menu.php -->
 

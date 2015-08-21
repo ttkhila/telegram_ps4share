@@ -342,7 +342,7 @@ function gravaRepasse(){
 	$data_venda = $_POST['data_venda'];
 	$vendedor = $_SESSION['ID'];
 	$alterou_senha = $_POST['alterou_senha'];
-	
+	//echo json_encode("--".$idGrupo."--"); exit;
 	$v = carregaClasse('Validacao');
 	$c = carregaClasse('Compartilhamento');
 	//echo json_encode("GRUPO ".$idGrupo." / vaga ".$vaga." / comprador ".$compradorID." / valor ".$valor." / Data ".$data_venda." / Vendedor ".$vendedor);
@@ -632,11 +632,56 @@ function gravaFechamentoGrupo(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function executaFiltro(){
+	$dados = $_POST['dados'];
+	$tipoValor = $_POST['tipoValor'];
+	//echo json_encode($dados["fechado"]); exit;
+	$c = carregaClasse("Compartilhamento");
+	$dados = array_filter($dados); //elimina arrays vazios ou nulos
+	$ret = $c->buscaVagasClassificados($dados, $tipoValor);
+	//echo json_encode($ret); exit;
+	$tela = montaResultadoBuscaClassificados($ret);
+	echo json_encode($tela);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
+function montaResultadoBuscaClassificados($dados){
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
+		if($d->original1_id == 0) $login1 = "Vaga aberta"; else $login1 = stripslashes(utf8_decode($d->login1));
+		if($d->original2_id == 0) $login2 = "Vaga aberta"; else $login2 = stripslashes(utf8_decode($d->login2));
+		if($d->original3_id == 0) $login3 = "Vaga aberta"; else $login3 = stripslashes(utf8_decode($d->login3));
+		$saida .= "
+			<tr>
+				<td>".stripslashes(utf8_decode($d->nomeJogo))."</td>
+				<td>
+					<span>Original 1: $login1</span>
+					<span>Original 2: $login2</span>
+					<span>Fantasma: $login3</span>
+				</td>
+				<td>".number_format($d->valor_venda, 2, ',', '.')."</td>
+				<td>".stripslashes(utf8_decode($d->loginCriador))."</td>
+				<td>".$d->dataCompra."</td>
+				<td>$stt</td>
+			</tr>";
+	}
+	return $saida;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
+/*
+SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, c.data_compra, c.fechado, c.criador_id, 
+				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login, u2.login, u3.login, u4.login as loginCriador 
+				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3 
+				WHERE h.comprador_id = 3 AND jc.jogo_id = 5 AND h.vaga = '1' AND  (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id)
+<th>Jogo(s)</th>
+<th>Proprietários das vagas</th>
+<th>Preço da vaga</th>
+<th>Criador</th>
+<th>Data criação</th>
+<th>Status</th>
+*/
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

@@ -12,19 +12,49 @@
 	$(function(){ 
 		$("#btn-envia-busca").click(function(){
 			//$("#headingTwo").find("[data-toggle='collapse']").trigger('click');
-		});
+			var $dados = {}; //Object JASON
+			$dados.jogo_id = $("#jogo1_id").val();
+			$dados.comprador_id = $("#original1_id").val();
+			$dados.vaga = "";
+			$.each($("#optVaga:checked"), function(i, item){
+				$dados.vaga += $(this).val()+"-";
+			});
+			var $tipoValor = parseInt($("#selValor :selected").val());
+			switch($tipoValor){
+				case 1:
+					$dados.valor1 = $("#valor1").val();
+					$dados.valor2 = $("#valor2").val();
+					break;
+				case 2:
+				case 3:
+					$dados.valor1 = $("#valor1").val();
+					break;
+				default:
+					alert("erro");
+					return false;
+			}
+			$("#optFechado").is(":checked") ? $dados.fechado = 1 : $dados.fechado = -1; 
+			//alert($dados.fechado); return;
+			var pars = { dados: $dados, tipoValor: $tipoValor, funcao: 'executaFiltro'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#collapseTwo tbody").html(data);
+					//$("#collapseTwo").class("panel-collapse collapse in");
+					//$("#headingTwo").find("[data-toggle='collapse']").trigger('click');
+					//id="collapseTwo" class="panel-collapse collapse"
+				}	
+			});
 		
 		
-		/*
-		*
-		*
-		* Buscar uma maneira de montar uma parte de uma query toda vez que um campo do formulario for alterado
-		*
-		*
-		*/
-		$("#form-busca").find("input").click(function(){
-			alert("sim");
-		});
+	});
 	});	
 </script>
 </head>
@@ -74,8 +104,8 @@
 						<div class="form-group col-md-12">
 							<label class="control-label col-sm-2">- por Valor:</label>
 							<form class="form-inline col-sm-8">
-								<select class="form-control">
-									<option value="1">entre</option>
+								<select id="selValor" class="form-control">
+									<option value="1" selected>entre</option>
 									<option value="2">maior que</option>
 									<option value="3">menor que</option>
 								</select>
@@ -90,33 +120,36 @@
 							</div>
 						</div>
 						<div class="form-group col-md-12">
-							<button id="btn-envia-busca" class="btn btn-default">Enviar</button>
+							<button id="btn-envia-busca" class="btn btn-default"  data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Enviar</button>
 						</div>
 					</div><!-- form-group -->
 				</div><!-- panel-body -->
 			</div><!-- collapseOne -->
 		</div><!-- panel panel-default -->
-	</div><!-- panel-group -->
 	
-	<div class="panel-group" id="accordion2" role="tablist" aria-multiselectable="true">
 		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="headingTwo" style="display:none">
-				<h4 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Resultados</a>
-				</h4>
-			</div>
-			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+			
+			<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Jogo</th>
-								<th>Vendedor</th>
-								<th>Valor</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
+					<div class="table-responsive"> 
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th colspan="3">&nbsp;</th>
+									<th colspan="3" class="text-center success">Dados do Grupo</th>
+								</tr>
+								<tr class="success">
+									<th >Jogo(s)</th>
+									<th >Proprietários das vagas atuais</th>
+									<th>Preço da vaga</th>
+									<th>Criador</th>
+									<th>Data criação</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div><!-- table-responsive -->
 				</div><!-- panel-body -->
 			</div><!-- collapseTwo -->
 		</div><!-- panel panel-default -->

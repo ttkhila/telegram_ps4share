@@ -234,6 +234,10 @@ class compartilhamentos{
 		$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 		
+		//coloca registros anteriores de mesmo grupo e mesma vaga com valor de venda = 0;
+		$query = "UPDATE historicos SET a_venda = 0 WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
 		//insere novo Histórico
 		$query = "INSERT INTO historicos (compartilhamento_id, vendedor_id, comprador_id, vaga, valor_pago, data_venda, senha_alterada) VALUES ($grupoID, $vendedorID, $compradorID, '$vaga', $valor_pago, '$data', $senha_alterada)";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
@@ -292,11 +296,61 @@ class compartilhamentos{
 		return $fator;
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function buscaVagasClassificados($where = 0){
-		//if($where == 0) //tudo
-			//$query = 
+	public function buscaVagasClassificados($dados, $tipoValor){
+		if(isset($dados["valor1"])){
+			if($tipoValor == 1) $where = "h.valor_venda >= ".$dados['valor1']." AND h.valor_venda <= ".$dados['valor2'];
+			else if($tipoValor == 2) $where = "h.valor_venda > ".$dados['valor1'];
+			else $where = "h.valor_venda < ".$dados['valor1'];
+		} else $where = "";
+		
+		if($dados["fechado"] == '1') { 
+			$where = $this->checaWhere($where);
+			$where .= "c.fechado = 1"; 
+		} 
+		if(isset($dados["comprador_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "h.comprador_id = ".$dados["comprador_id"];
+		}
+		
+		if(isset($dados["jogo_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "jc.jogo_id = ".$dados["jogo_id"];
+		}
+		
+		if(isset($dados["vaga"])){
+			$vagas = explode("-", $dados["vaga"]);
+			$whereVaga = "("; //essa variavel faz o 'OR', se for preciso, dentro das vagas. Ex.: Orig1 OR orig2
+			$where = $this->checaWhere($where);
+			array_pop($vagas); //elimina último elemento do array, que está vazio
+			foreach ($vagas as $vaga){
+				if ($whereVaga != "(")
+					$whereVaga .= " OR ";
+				$whereVaga .= "h.vaga = '$vaga'";
+			}
+			$whereVaga .= ")";
+			$where .= $whereVaga; //concatena a query original com a query das vagas
+		}
+		
+		$where = $this->checaWhere($where);
+		//return $where;
+		$query = "SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dataCompra, c.fechado, c.criador_id, u4.login as loginCriador, 
+				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
+				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
+				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id";
+		//return $query;
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		//return $query;
+		return $res;
+
 	}
 //---------------------------------------------------------------------------------------------------------------
+	private function checaWhere($where){
+		if ($where != "")
+			$where .= " AND ";
+		
+		return $where;
+	}
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------

@@ -440,7 +440,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
 		complete: function(){ $("img.pull-right").fadeOut('fast'); },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); 
 		
 			if(data == 1){ //sucesso
 				location.reload();
