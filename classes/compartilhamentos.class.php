@@ -98,6 +98,20 @@ class compartilhamentos{
 		$this->setSenhaAlterada($d->senha_alterada);
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getDados(){
+		$dados = array("id"=>$this->getId(), "email"=>$this->getEmail(), "nome"=>$this->getNome(), "orig1"=>$this->getOrig1(), 
+			"orig2"=>$this->getOrig2(), "orig3"=>$this->getOrig3(), "valor"=>$this->getValor(), "valorConvertido"=>$this->getValorConvertido(), 
+			"fatorConversao"=>$this->getFatorConversao(), "moedaId"=>$this->getMoedaId(), "data"=>$this->getData(), 
+			"ativo"=>$this->getAtivo(), "fechado"=>$this->getFechado(), "criadorId"=>$this->getCriadorId());
+        return $dados;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getDadosFechamento(){
+		$dados = array("id"=>$this->getId(), "email"=>$this->getEmail(), "nome"=>$this->getNome(), "orig1"=>$this->getOrig1(), 
+			"orig2"=>$this->getOrig2(), "orig3"=>$this->getOrig3(), "moedaId"=>$this->getMoedaId());
+        return $dados;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function recupera_dados_moedas($moeda_id){
 		$query = "SELECT * FROM moedas WHERE id = $moeda_id";
 		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
@@ -147,7 +161,7 @@ class compartilhamentos{
 		WHERE id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 		
-		$query = "UPDATE historicos SET data_venda = '$data' WHERE compartilhamento_id = $idGrupo AND (vaga = '1' OR vaga = '2' OR vaga = '3')";
+		$query = "UPDATE historicos SET data_venda = '$data' WHERE compartilhamento_id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -179,6 +193,14 @@ class compartilhamentos{
 		else if ($vaga == 2)  $vaga = "original2_id";
 		else $vaga = "original3_id";
 		
+		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
+		//Nesse caso não acusa problema
+		$query = "SELECT $vaga as dono FROM compartilhamentos WHERE id = $idGrupo";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		$dono = $res->dono;
+		if ($dono == 0)
+			return TRUE;
+		
 		$query = "SELECT * from compartilhamentos WHERE id = $idGrupo AND $vaga = $idUsuario";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		if($res->num_rows == 0)
@@ -191,8 +213,29 @@ class compartilhamentos{
 		if($vaga == 1) $vagaNome = "original1_id";
 		else if ($vaga == 2)  $vagaNome = "original2_id";
 		else $vagaNome = "original3_id";
+		
+		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
+		//NEsse caso não cria registro de HISTÓRICO, somente altera o existente
+		$query = "SELECT $vagaNome as dono FROM compartilhamentos WHERE id = $grupoID";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		$dono = $res->dono;
+		if ($dono == 0){
+			//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
+			$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
+			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			
+			$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
+				WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
+			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			return TRUE;
+		}
+		
 		//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
 		$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
+		//coloca registros anteriores de mesmo grupo e mesma vaga com valor de venda = 0;
+		$query = "UPDATE historicos SET a_venda = 0 WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 		
 		//insere novo Histórico
@@ -201,6 +244,116 @@ class compartilhamentos{
 		
 		return TRUE;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaDisponibilidadeVaga($idGrupo, $vaga, $valor, $usuarioID){
+		if (trim($valor) == "") $valor = "NULL";
+ 		$query = "UPDATE historicos SET a_venda = 1, valor_venda = $valor 
+			WHERE id in (
+			      SELECT * FROM (
+				     SELECT id 
+				     FROM historicos 
+				     WHERE (compartilhamento_id = $idGrupo) AND (vaga = '$vaga') AND ((comprador_id = $usuarioID) OR (comprador_id = 0))
+				     ORDER BY id DESC limit 0, 1
+			      ) 
+			      as t);";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+			
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaGrupoFechamento($id, $dados){
+		foreach ($dados as $value) {
+			$parte = explode("%=%", $value);
+			$parte[1] = addslashes(utf8_encode($parte[1]));
+			$query = "UPDATE compartilhamentos SET $parte[0] = '$parte[1]' WHERE id = $id";
+			try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+		}
+		//grava FECHADO = 1
+		$query = "UPDATE compartilhamentos SET fechado = 1 WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+	}
+//---------------------------------------------------------------------------------------
+	public function gravaHistoricoFechamento($id, $dados){
+		$valorTotal = 0;
+		foreach ($dados as $value) {
+			$parte = explode("%=%", $value);
+			if(strstr($parte[0], "valor")){
+				$vaga = substr($parte[0], -1, 1);
+				$query = "UPDATE historicos SET valor_pago = $parte[1] WHERE compartilhamento_id = $id AND vaga = '$vaga'";
+				$valorTotal += $parte[1];
+			} else if (strstr($parte[0], "senha"))
+				$query = "UPDATE historicos SET $parte[0] = $parte[1] WHERE compartilhamento_id = $id";
+
+			try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
+		}
+
+		return $valorTotal;
+	}
+//---------------------------------------------------------------------------------------
+	public function converteMoeda($PaisMoeda){
+		$url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20(%22".$PaisMoeda."BRL%22)&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+		$xml = simplexml_load_file($url);
+		$fator = number_format(floatval($xml->results->rate->Rate), 2);
+		return $fator;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function buscaVagasClassificados($dados, $tipoValor){
+		if(isset($dados["valor1"])){
+			if($tipoValor == 1) $where = "h.valor_venda >= ".$dados['valor1']." AND h.valor_venda <= ".$dados['valor2'];
+			else if($tipoValor == 2) $where = "h.valor_venda > ".$dados['valor1'];
+			else $where = "h.valor_venda < ".$dados['valor1'];
+		} else $where = "";
+		
+		if($dados["fechado"] == '1') { 
+			$where = $this->checaWhere($where);
+			$where .= "c.fechado = 1"; 
+		} 
+		if(isset($dados["comprador_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "h.comprador_id = ".$dados["comprador_id"];
+		}
+		
+		if(isset($dados["jogo_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "jc.jogo_id = ".$dados["jogo_id"];
+		}
+		
+		if(isset($dados["vaga"])){
+			$vagas = explode("-", $dados["vaga"]);
+			$whereVaga = "("; //essa variavel faz o 'OR', se for preciso, dentro das vagas. Ex.: Orig1 OR orig2
+			$where = $this->checaWhere($where);
+			array_pop($vagas); //elimina último elemento do array, que está vazio
+			foreach ($vagas as $vaga){
+				if ($whereVaga != "(")
+					$whereVaga .= " OR ";
+				$whereVaga .= "h.vaga = '$vaga'";
+			}
+			$whereVaga .= ")";
+			$where .= $whereVaga; //concatena a query original com a query das vagas
+		}
+		
+		$where = $this->checaWhere($where);
+		//return $where;
+		$query = "SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dataCompra, c.fechado, c.criador_id, u4.login as loginCriador, 
+				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
+				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
+				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id";
+		//return $query;
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		//return $query;
+		return $res;
+
+	}
+//---------------------------------------------------------------------------------------------------------------
+	private function checaWhere($where){
+		if ($where != "")
+			$where .= " AND ";
+		
+		return $where;
+	}
+//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 }
 ?>

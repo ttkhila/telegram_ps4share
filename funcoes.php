@@ -5,14 +5,13 @@ function login($mn){
 		$msg = "<p class='navbar-inverse navbar-text'>Ol&aacute;, Visitante!<br /><a href='login.php' style='padding:0'>[login]</a></p>";
 	else  
 		$msg = "<p class='navbar-inverse navbar-text'>Ol&aacute;, ".$_SESSION['login']."!<br />
-			<a href='/fifa_telegram/adm/index.php' id=''></a>
+			<a href='/adm/index.php' id=''></a>
 			<a href='#' id='deslogar'>[sair]</a></p>";
 		
 	$mn = str_replace("%%user%%", $msg, $mn);
 	
 	return $mn; 
 }
-
 //---------------------------------------------------------------------------------------
 function after ($this, $inthat){
 	if (!is_bool(strpos($inthat, $this)))

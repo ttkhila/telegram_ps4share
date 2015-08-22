@@ -18,41 +18,10 @@ $(function(){
         return string;
     }
     
-	function abreModal(id, data, top){
-		//id->ID do elemento que recebe o conteúdo (com#)
-		//data->Conteúdo do elemento id
-		//top->Altura do elemento chamador (que será parametro para a altura de id)
-		//var maskHeight = $(document).height();
-		//var maskWidth = $(window).width();
-	
-		//$('#mask').css({'width':maskWidth,'height':maskHeight});
-		//$('#mask').fadeIn(1000);	
-		//$('#mask').fadeTo("slow",0.8);	
+//********************** MODAIS ****************************************
+	function abreModal(id, data){ $(id).html(data); }	
+//***********************************************************************
 
-		//var winH = $(window).height();
-		//var winW = $(window).width();
-              
-		//$(id).css({ 'top': top-$(id).height()/2, 'left': winW/2-$(id).width()/2 });
-	
-		//$(id).fadeIn(2000); 
-		$(id).html(data);
-	}
-	
-	function closeModal(){
-		//return '<a href="#" class="close">Fechar [X]</a>';
-	}
-	
-	//$('.window').on('click', '.close', function (e) {
-//		e.preventDefault();
-//		$('#mask').hide();
-//		$('.window').hide();
-//	});		
-//	
-//	$('#mask').click(function () {
-//		$(this).hide();
-//		$('.window').hide();
-	//});			
-//********************************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
@@ -101,26 +70,11 @@ $("#deslogar").click(function(e){
 });
 //********************************************************************************	
 //TOOLTIP
-$('.masterTooltip').hover(function(){
-	// Hover over code
-	var title = $(this).attr('title');
-	$(this).data('tipText', title).removeAttr('title');
-	$('<p class="tooltip_help"></p>')
-	.html(title)
-	.appendTo('body')
-	.slideDown('fast');
-}, function() {
-    // Hover out code
-    $(this).attr('title', $(this).data('tipText'));
-    $('.tooltip_help').remove();
-}).mousemove(function(e) {
-    var mousex = e.pageX + 15; //Get X coordinates
-    var mousey = e.pageY + 3; //Get Y coordinates
-    $('.tooltip_help')
-    	.css({ top: mousey, left: mousex });
-}).click(function(e){
-	e.preventDefault(); //previne o evento 'normal'
-});
+//$('[data-toggle="tooltip"]').tooltip(); 
+$('body').tooltip({
+	selector: '[data-toggle="tooltip"]',
+	container: 'body'
+}); 
 //********************************************************************************
 //AUTOCOMPLETE 
 //Original 1
@@ -246,10 +200,16 @@ $("#collapseOne").on("blur","[name='jogo[]']",function(e) {
 $("#btn-add-jogo").click(function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	QTD_JOGOS_CADASTRO++;
-	var $html = "<label class=''>Jogo "+QTD_JOGOS_CADASTRO+":</label>";
-	$html += "<input type='hidden' class='form-control' name='jogo_id[]' id='jogo"+QTD_JOGOS_CADASTRO+"_id' />";
-	$html += "<input type='text' class='form-control' name='jogo[]' id='jogo"+QTD_JOGOS_CADASTRO+"_autocomplete' placeholder='Digite parte do nome do jogo "+QTD_JOGOS_CADASTRO+"' />";
-	$html += "<span class='sp-form' id='jogo"+QTD_JOGOS_CADASTRO+"_check'><img scr='' /></span>";
+	var $html = "<div class='form-group col-md-12'>"
+		$html += "<label class='control-label col-sm-2'>Jogo "+QTD_JOGOS_CADASTRO+":</label>";
+		$html += "<div class='col-sm-8'>";
+			$html += "<input type='hidden' class='form-control' name='jogo_id[]' id='jogo"+QTD_JOGOS_CADASTRO+"_id' />";
+			$html += "<input type='text' class='form-control' name='jogo[]' id='jogo"+QTD_JOGOS_CADASTRO+"_autocomplete' placeholder='Digite parte do nome do jogo "+QTD_JOGOS_CADASTRO+"' />";
+		$html += "</div>";
+		$html += "<div class='col-sm-2'>";
+			$html += "<span id='jogo"+QTD_JOGOS_CADASTRO+"_check'><img scr='' /></span>";
+		$html += "</div>";
+	$html += "</div>";
 	$("#div-jogos-extras").append($html);
 });
 //********************************************************************************
@@ -297,6 +257,7 @@ $("#btn-grupo-novo").click(function(e){
 					.fadeIn()
 					.html("Valor precisa ser numérico.<span class='badge'>x</span>");
 				$(this).focus();
+				$(document).scrollTop( $("#foco").offset().top );
 				cont++;
 			}
 		}	
@@ -320,6 +281,7 @@ $("#btn-grupo-novo").click(function(e){
 			.fadeIn()
 			.html("É necessário informar seu próprio ID numa das vagas do grupo.<span class='badge'>x</span>");
 		$("#original1_autocomplete").focus();
+		$(document).scrollTop( $("#foco").offset().top );
 		return false;
 	} 
 	
@@ -411,8 +373,6 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 $(".list-group").on("click", "[name='historico-grupo']", function(e){
 	e.preventDefault();
 	$elem = $(this);
-	$elemTop = parseInt($elem.offset().top);
-	//alert($elemTop);return;
 	$idGrupo = $(this).attr("id").split("_")[1];
 	var pars = { id: $idGrupo, funcao: 'mostraHistorico'};
 	$.ajax({
@@ -425,10 +385,7 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 		complete: function(){ $("img.pull-right").fadeOut('fast'); },
 		success: function(data){ 
 			console.log(data);
-			//$("#div-historico-grupo").show().css("top", ($elemTop-100)).html(data);
-			abreModal("#dialog", data, $elemTop);
-			//$("#hidFlag").val("1");
-			//$elem.text("Fechar");
+			abreModal("#dialog", data);
 		}
 	});
 });
@@ -437,9 +394,15 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
 	VAGA_REPASSE = $(this).attr('rel');
 	GRUPO_REPASSE = parseInt($(this).attr("id").split("_")[1]);
-	$elemTop = parseInt($(this).offset().top);
-	$(".close").html("");
-	abreModal("#repasse", closeModal()+$("#repasse").html(), $elemTop);
+	dataID = $(this).data('id');
+	//abreModal("#repasse", $("#repasse").html());
+	if (dataID == '1'){
+		$("#sp-tipo-moeda").text('(Valores em Real)');
+		$("#repasse").find("#lbl-alterou-senha").show();
+	} else {
+		$("#sp-tipo-moeda").text('(Valores em '+dataID+')');
+		$("#repasse").find("#lbl-alterou-senha").hide();
+	}
 });
 //********************************************************************************
 $("#repasse").on("click", "#btn-confirma-repasse", function(){
@@ -477,7 +440,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
 		complete: function(){ $("img.pull-right").fadeOut('fast'); },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); 
 		
 			if(data == 1){ //sucesso
 				location.reload();
@@ -496,6 +459,44 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 					.fadeOut('slow');
 			}
 		
+		}
+	});
+});
+//********************************************************************************
+//Abre DIV para confrmar disponibilização de vaga
+$(".container-grupos").on("click", "[name='img-disponibiliza']", function(){
+	var parte = $(this).attr('id').split("_");
+	var id = parte[1];
+	var vaga = parte[2];
+	$("#input-valor_"+id+"_"+parte[2]).show();
+});
+//Fecha a DIV acima
+$(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
+	$(this).parent().hide();
+});
+//********************************************************************************
+// Grava a disponibilização da vaga
+$(".container-grupos").on("click", "[name='input-valor'] button", function(){
+	parte = $(this).attr('id').split("_");
+	grupo = parte[1];
+	$vaga = parte[2];
+	$valor = $("#txt-valor-venda_"+grupo+"_"+$vaga).val();
+	$valor = $valor.replace(",", ".");
+	if(!$.isNumeric($valor) && $.trim($valor) != ""){ alert("Valor precisa ser numérico!"); return false; }
+	//alert("grupo: "+grupo+" / Valor: "+$valor+" / Vaga: "+$vaga);
+	var pars = { valor: $valor, id: grupo, vaga: $vaga, funcao: 'gravaDisponibilidadeVaga'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1){ alert("Vaga colocada a venda com sucesso!"); location.reload(); }
+			else alert(data["valor"][0]);
 		}
 	});
 });
@@ -601,6 +602,108 @@ $("#aba-altera-jogos").on("click", "[name='a-ativar']", function(e){
 	});
 });
 //********************************************************************************  
+//Mostra tela de Fechamento de Grupo
+$("[name='div-casulo-conteudo-grupo']").on('click', "[name='btn-fechar-grupo']", function(){
+	var idGrupo = parseInt($(this).attr('id').split("_")[1]);
+	var pars = { id: idGrupo, funcao: 'mostraFechamentoGrupo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			//alert(data);
+			abreModal("#modal-conteudo-fechamento-grupo", data);
+		}
+	});
+
+});
+//********************************************************************************
+//Grava fechamento de grupo
+$("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var $erros = new Array();
+	var $campos = new Array();
+	var $valores = new Array();
+
+	var idGrupo = parseInt($("#id-grupo-fechamento").val());
+	var nomeGrupo = $.trim($("#nome-fechamento").val());
+	var moeda_id = parseInt($("#moedas-fechamento option:selected").val());
+
+	if($("#email-fechamento").length) var email = $.trim($("#email-fechamento").val());
+	var id1 = parseInt($("#id1-fechamento").val());
+	var id2 = parseInt($("#id2-fechamento").val());
+	var id3 = parseInt($("#id3-fechamento").val());
+	var valor1 = $.trim($("#valor-fechamento-1").val()).replace(",", ".");
+	var valor2 = $.trim($("#valor-fechamento-2").val()).replace(",", ".");
+	var valor3 = $.trim($("#valor-fechamento-3").val()).replace(",", ".");
+
+	if(nomeGrupo == "") $erros.push("- Informe o nome do Grupo.<br />"); 
+	else { $campos.push("nome"); $valores.push(nomeGrupo); }
+	
+	if(typeof email !== 'undefined'){ //se a var email existe
+		if(email != ""){
+			if(!IsEmail(email)) { //verifica se o email digitado é válido
+				$erros.push("- E-mail do grupo Inválido.<br />");
+			} else { $campos.push("email"); $valores.push(email); }
+		} else {
+			$erros.push("- Informe o e-mail do grupo.<br />"); 
+		}
+	}
+
+	$campos.push("moeda_id"); $valores.push(moeda_id);
+
+	if(id1 > 0){
+		if(valor1 == "") $erros.push("- Informe o valor pago pelo Original 1.<br />");
+		else if(!$.isNumeric(valor1) && valor1 != "") $erros.push("- Valor1 precisa ser um valor válido.<br />");
+		else { $campos.push("valor1"); $valores.push(valor1); } 
+	}
+	if(id2 > 0){
+		if(valor2 == "") $erros.push("- Informe o valor pago pelo Original 2.<br />");
+		else if(!$.isNumeric(valor2) && valor2 != "") $erros.push("- Valor2 precisa ser um valor válido.<br />");
+		else { $campos.push("valor2"); $valores.push(valor2); }
+	}
+	if(id3 > 0){
+		if(valor3 == "") $erros.push("- Informe o valor pago pelo Fantasma.<br />");
+		else if(!$.isNumeric(valor3) && valor3 != "") $erros.push("- Valor3 precisa ser um valor válido.<br />");
+		else { $campos.push("valor3"); $valores.push(valor3); }
+	}
+	
+	if($erros.length > 0){
+		$("#sp-erro-msg-modal2")
+			.fadeIn()
+			.html($erros)
+			.delay(2000)
+			.fadeOut('slow');
+		return;
+	}
+	$campos.push("senha_alterada");
+	if ($("#alterou_senha-fechamento").is(":checked")) $valores.push(1); else $valores.push(0);
+	//console.log($campos); return;
+	var pars = { id: idGrupo, campos: $campos, valores: $valores, moeda: moeda_id, funcao: 'gravaFechamentoGrupo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$("#sp-erro-msg-modal2")
+					.fadeIn()
+					.html(data);
+			}
+		}
+	});
+});
 
 //********************************************************************************  
 

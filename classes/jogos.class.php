@@ -45,11 +45,23 @@ class jogos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	//jogos para listagem de grupos
-	public function getJogosGrupo($idGrupo){ //sobrecarga
-		$query = "SELECT j.nome as jogo, p.nome as plataforma, p.nome_abrev FROM jogos j, jogos_compartilhados jc, plataformas p  
+	public function getJogosGrupo($idGrupo){ 
+		//$arr = devolve jogos em formato de array.
+
+		$query = "SELECT j.id as idJogo, j.nome as jogo, p.nome as plataforma, p.nome_abrev FROM jogos j, jogos_compartilhados jc, plataformas p  
 			WHERE (j.id = jc.jogo_id) AND (p.id = j.plataforma_id) AND (jc.compartilhamento_id = $idGrupo)";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
-		
+		/*
+		if($arr != 0){
+			$jogos = array();
+			$cont=1;
+			while($j = $res->fetch_object()){
+				$jogos["jogo".$cont] = $j->idJogo;
+				$cont++;
+			}
+			return $jogos;
+		}
+		*/
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
