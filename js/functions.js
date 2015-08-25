@@ -44,6 +44,8 @@ $("#frmLogin").submit(function(e){
 				$("#sp-erro-msg")
 					.fadeIn()
 					.html(data[1]+"<span class='badge'>x</span>");
+			} else if (data[0] == 2) { //primeiro acesso
+				$(location).attr('href', 'primeiro_acesso.php?id='+data[1]);	
 			} else {
 				$(location).attr('href', 'index.php');
 			} 			
@@ -89,6 +91,10 @@ function original1Callback( par ){
 	$('#original1_autocomplete').val(par[1]);
 	$('#original1_id').val(par[0]);
 }
+$('#original1_autocomplete').keyup(function(){ //limpar ID quando campo estiver vazio
+	if($('#original1_autocomplete').val() == "" || $('#original1_autocomplete').val().length <= 0)
+		$('#original1_id').val("");
+});
 
 //Original 2
 $('#original2_autocomplete').simpleAutoComplete('autocomplete_ajax.php',{
@@ -102,6 +108,10 @@ function original2Callback( par ){
 	$('#original2_autocomplete').val(par[1]);
 	$('#original2_id').val(par[0]);
 }
+$('#original2_autocomplete').keyup(function(){ //limpar ID quando campo estiver vazio
+	if($('#original2_autocomplete').val() == "" || $('#original2_autocomplete').val().length <= 0)
+		$('#original2_id').val("");
+});
 
 //Fantasma - "Original 3"
 $('#original3_autocomplete').simpleAutoComplete('autocomplete_ajax.php',{
@@ -114,6 +124,10 @@ function original3Callback( par ){
 	$('#original3_autocomplete').val(par[1]);
 	$('#original3_id').val(par[0]);
 }
+$('#original3_autocomplete').keyup(function(){ //limpar ID quando campo estiver vazio
+	if($('#original3_autocomplete').val() == "" || $('#original3_autocomplete').val().length <= 0)
+		$('#original3_id').val("");
+});
 
 //Repasse de conta
 $("#repasse").on("keydown","#original-repasse_autocomplete",function(e) {
@@ -497,6 +511,33 @@ $(".container-grupos").on("click", "[name='input-valor'] button", function(){
 			console.log(data);
 			if (data == 1){ alert("Vaga colocada a venda com sucesso!"); location.reload(); }
 			else alert(data["valor"][0]);
+		}
+	});
+});
+//********************************************************************************
+//Exclui usuario de vaga de grupo aberto
+$(".container-grupos").on("click", "[name='img-excluir']", function(){
+	if(!confirm("Deseja realmente excluir o usuário desta vaga?")) return false;
+	
+	var partes = $(this).attr("id").split("_");
+	var $grupo = parseInt(partes[1]);
+	var $user = parseInt(partes[2]);
+	var $vaga = partes[3];
+	
+	//alert("GRUPO: "+$grupo+" / USER: "+$user+" / VAGA: "+$vaga); return;
+	var pars = { grupo: $grupo, user: $user, vaga: $vaga, funcao: 'excluiUsuarioVaga'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1)
+				location.reload();
 		}
 	});
 });

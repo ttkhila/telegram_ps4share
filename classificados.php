@@ -11,7 +11,6 @@
 <script>
 	$(function(){ 
 		$("#btn-envia-busca").click(function(){
-			//$("#headingTwo").find("[data-toggle='collapse']").trigger('click');
 			var $dados = {}; //Object JASON
 			$dados.jogo_id = $("#jogo1_id").val();
 			$dados.comprador_id = $("#original1_id").val();
@@ -19,22 +18,27 @@
 			$.each($("#optVaga:checked"), function(i, item){
 				$dados.vaga += $(this).val()+"-";
 			});
+			if (!$.isNumeric($.trim($("[name='filtro-valor']").val()).replace(",", ".")) && $.trim($("[name='filtro-valor']").val()) != ""){
+				alert("valor precisa ser numérico");
+				return false;
+			} 
 			var $tipoValor = parseInt($("#selValor :selected").val());
 			switch($tipoValor){
 				case 1:
-					$dados.valor1 = $("#valor1").val();
-					$dados.valor2 = $("#valor2").val();
+					$dados.valor1 = $.trim($("#valor1").val()).replace(",", ".");
+					$dados.valor2 = $.trim($("#valor2").val()).replace(",", ".");
+					if($dados.valor1 != "" && $dados.valor2 == ""){ alert("preencha o valor 2"); return false; }
 					break;
 				case 2:
 				case 3:
-					$dados.valor1 = $("#valor1").val();
+					$dados.valor1 = $.trim($("#valor1").val()).replace(",", ".");
 					break;
 				default:
 					alert("erro");
 					return false;
 			}
 			$("#optFechado").is(":checked") ? $dados.fechado = 1 : $dados.fechado = -1; 
-			//alert($dados.fechado); return;
+			//alert($dados.comprador_id); return;
 			var pars = { dados: $dados, tipoValor: $tipoValor, funcao: 'executaFiltro'};
 			$.ajax({
 				url: 'funcoes_ajax.php',
@@ -47,14 +51,26 @@
 				success: function(data){ 
 					console.log(data); 
 					$("#collapseTwo tbody").html(data);
-					//$("#collapseTwo").class("panel-collapse collapse in");
-					//$("#headingTwo").find("[data-toggle='collapse']").trigger('click');
-					//id="collapseTwo" class="panel-collapse collapse"
 				}	
 			});
+		});
 		
+		$("#selValor").change(function(){
+			var opt = parseInt($(this).val());
+			if(opt >= 2) $("#valor-parte2").hide();
+			else $("#valor-parte2").show();
+		});
 		
-	});
+		$("[name='filtro-valor']").keydown(function(e){
+			var tecla = e.which
+			//alert(tecla);
+			if((tecla>47 && tecla<58) || (tecla>95 && tecla < 106)) return true;
+			else{
+				if (tecla==8 || tecla==0 || tecla ==188 || tecla==46) return true;
+					else  return false;
+				}	
+		});
+		
 	});	
 </script>
 </head>
@@ -109,8 +125,8 @@
 									<option value="2">maior que</option>
 									<option value="3">menor que</option>
 								</select>
-								<input type="text" class="form-control" id="valor1" name="valor1" />
-								<span id="valor-parte2>">&nbsp;&nbsp;e&nbsp;&nbsp;<input type="text" class="form-control" id="valor2" name="valor2" /></span>
+								<input type="text" class="form-control" id="valor1" name="filtro-valor" maxlength="8" />
+								<span id="valor-parte2">&nbsp;&nbsp;e&nbsp;&nbsp;<input type="text" class="form-control" id="valor2" name="filtro-valor" maxlength="8" /></span>
 							</form>
 						</div>
 						<div class="form-group col-md-12">
@@ -120,7 +136,7 @@
 							</div>
 						</div>
 						<div class="form-group col-md-12">
-							<button id="btn-envia-busca" class="btn btn-default"  data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Enviar</button>
+							<button id="btn-envia-busca" class="btn btn-primary"  data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Enviar</button>
 						</div>
 					</div><!-- form-group -->
 				</div><!-- panel-body -->

@@ -73,13 +73,18 @@ class usuarios{
 	}
 //---------------------------------------------------------------------------------------------------------------
     public function validaLogin($dados){
-		
-		$query = "SELECT * FROM usuarios WHERE login='".addslashes(utf8_encode($dados['login']))."' AND senha='".md5(trim($dados['senha']))."'";
+	$query = "SELECT * FROM usuarios WHERE login='".addslashes(utf8_encode($dados['login']))."' AND senha='".md5(trim($dados['senha']))."'";
 
         $res = $this->con->multiConsulta($query);
         
         if ($res->num_rows > 0) //login OK
             return $res->fetch_object();
+    }
+ //---------------------------------------------------------------------------------------------------------------
+    public function troca_senha($id, $senhaNova){
+        //$senhaNova = md5($senhaNova);
+        $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0 WHERE id = $id";
+        try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
  //---------------------------------------------------------------------------------------------------------------
 	
@@ -372,13 +377,6 @@ class usuarios{
             'grupo' => 'Grupo'
         );
         return $campos;
-    }
-
-//---------------------------------------------------------------------------------------------------------------
-    public function troca_senha($id, $senhaNova){
-        $senhaNova = md5($senhaNova);
-        $query = "UPDATE usuarios SET senha = '$senhaNova', senha_temp = '', trocar_senha = 0, ativo = 1 WHERE id = $id";
-        $this->con->executa($query);
     }
 //---------------------------------------------------------------------------------------------------------------
 	private function getAdministradores($out){

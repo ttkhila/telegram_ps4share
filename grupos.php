@@ -181,13 +181,13 @@
 								while($d = $dados1->fetch_object()){
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
-										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title casulo-grupo-titulo'>";
+										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
 											echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
 											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
 										//echo "<hr />";
-									echo "</div>";
+									echo "</div><br />";
 								}
 							}
 						?>
@@ -249,12 +249,12 @@
 
 
 	<!-- Formulário de fechamento de grupos abertos -->
-	<div class="modal fade" id="fecha-grupo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal fade" id="fecha-grupo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="myModalLabel">Dados do Grupo</h4>
+					<h4 class="modal-title" id="myModalLabel2">Dados do Grupo</h4>
 				</div>
 				<div class="modal-body form-horizontal">
 					<div class="window" id="modal-conteudo-fechamento-grupo"></div>
