@@ -224,8 +224,22 @@ class compartilhamentos{
 			$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
 			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 			
+			
 			$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
-				WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
+			WHERE id in (
+			      SELECT * FROM (
+				     SELECT id 
+				     FROM historicos 
+				     WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'
+				     ORDER BY id DESC limit 0, 1
+			      ) 
+			      as t);";
+			
+			
+			
+			
+			//$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
+				//WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
 			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 			return TRUE;
 		}
@@ -258,6 +272,30 @@ class compartilhamentos{
 			      as t);";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 			
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function excluiUsuarioVaga($idGrupo, $vaga, $usuarioID){
+		if($vaga == 1) $vagaNome = "original1_id";
+		else if ($vaga == 2)  $vagaNome = "original2_id";
+		else $vagaNome = "original3_id";
+		
+		// Atualiza grupo
+		$query = "UPDATE compartilhamentos SET $vagaNome = 0 WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
+		// Atualiza histórico
+		$query = "UPDATE historicos SET comprador_id = 0, valor_pago = NULL, data_venda = NULL, a_venda = 0, valor_venda = NULL 
+			WHERE id in (
+			      SELECT * FROM (
+				     SELECT id 
+				     FROM historicos 
+				     WHERE (compartilhamento_id = $idGrupo) AND (vaga = '$vaga') AND (comprador_id = $usuarioID) 
+				     ORDER BY id DESC limit 0, 1
+			      ) 
+			      as t);";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
+		return 1;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gravaGrupoFechamento($id, $dados){
@@ -297,10 +335,11 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function buscaVagasClassificados($dados, $tipoValor){
+		//return "a-> ".$dados["valor1"];
 		if(isset($dados["valor1"])){
-			if($tipoValor == 1) $where = "h.valor_venda >= ".$dados['valor1']." AND h.valor_venda <= ".$dados['valor2'];
-			else if($tipoValor == 2) $where = "h.valor_venda > ".$dados['valor1'];
-			else $where = "h.valor_venda < ".$dados['valor1'];
+			if($tipoValor == 1) $where = "h.valor_venda >= ".floatval($dados['valor1'])." AND h.valor_venda <= ".floatval($dados['valor2']);
+			else if($tipoValor == 2) $where = "h.valor_venda > ".floatval($dados['valor1']);
+			else $where = "h.valor_venda < ".floatval($dados['valor1']);
 		} else $where = "";
 		
 		if($dados["fechado"] == '1') { 
@@ -311,7 +350,7 @@ class compartilhamentos{
 			$where = $this->checaWhere($where);
 			$where .= "h.comprador_id = ".$dados["comprador_id"];
 		}
-		
+		//return $where;
 		if(isset($dados["jogo_id"])){
 			$where = $this->checaWhere($where);
 			$where .= "jc.jogo_id = ".$dados["jogo_id"];

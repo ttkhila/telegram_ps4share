@@ -27,6 +27,11 @@ function realizaLogin(){
     if(is_null($resp)){
         $result = array(0, "Usuário/Senha Inválidos");
     } else { //LOGIN OK! Carregar os dados 
+        $primeiro_acesso = $resp->primeiro_acesso;
+        if ($primeiro_acesso == 1){
+		echo json_encode(array(2, $resp->id));
+		exit;
+	}	
         
         session_start();
         $_SESSION['login'] = stripslashes(utf8_decode($resp->login)); //PSN ID
@@ -262,8 +267,11 @@ function mostraGrupo(){
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
 	else if($orig1ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
-		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso
+		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso	
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() != 0 && $c->getOrig1() != $selfID) $opcoes1 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig1()."_1' rel='1' 
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
 	else $opcoes1 = "";
+	
 	// ORIGINAL 2
 	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
@@ -271,7 +279,10 @@ function mostraGrupo(){
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($orig2ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() != 0 && $c->getOrig2() != $selfID) $opcoes2 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig2()."_2' rel='2' 
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
 	else $opcoes2 = "";
+	
 	// FANTASMA
 	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
@@ -279,6 +290,8 @@ function mostraGrupo(){
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($orig3ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() != 0 && $c->getOrig3() != $selfID) $opcoes3 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig3()."_3' rel='3' 
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
 	else $opcoes3 = "";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
@@ -314,20 +327,22 @@ function mostraHistorico(){
 	
 	if($dadosHist->num_rows > 0){ //a conta já foi repassada ao menos uma vez depois da criação
 		while($d = $dadosHist->fetch_object()){ //dados do histórico da conta já repassada
+			if($d->senha_alterada == 1) $img = "<img src='img/senha_alterada.jpg' title='alterou senha' />"; else $img = "";
 			$phpdate = strtotime($d->data_venda);
 			$data_venda = date( 'd-m-Y', $phpdate );
 			$saida .= "<tr><td>$data_venda</td>";
 			if($d->vaga == '1') { //Original 1
-				$saida .= "<td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))."</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
-			} else if($d->vaga == '2') { //Original 1
-				$saida .= "<td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))."</td><td>&nbsp;</td></tr>";
-			} else if($d->vaga == '3') { //Original 1
-				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))."</td></tr>";
+				$saida .= "<td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+			} else if($d->vaga == '2') { //Original 2
+				$saida .= "<td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
+			} else if($d->vaga == '3') { //Fantasma
+				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
 			}	
 		}
 	}
 	$saida .= "</tbody>";
 	$saida .= "</table>";
+	$saida .= "<div><img src='img/senha_alterada.jpg' /> = Senha foi alterada.</div>";
 	
 	echo json_encode($saida);
 	exit;
@@ -388,6 +403,17 @@ function gravaDisponibilidadeVaga(){
 		 $erros = $v->get_errors();
 		 echo json_encode($erros);
 	}
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function excluiUsuarioVaga(){
+	$idGrupo = $_POST['grupo'];	
+	$idUsuario = $_POST['user'];
+	$vaga = $_POST['vaga'];
+	$c = carregaClasse('Compartilhamento');
+	
+	$ret = $c->excluiUsuarioVaga($idGrupo, $vaga, $idUsuario);
+	echo json_encode($ret);
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
@@ -635,9 +661,9 @@ function gravaFechamentoGrupo(){
 function executaFiltro(){
 	$dados = $_POST['dados'];
 	$tipoValor = $_POST['tipoValor'];
-	//echo json_encode($dados["fechado"]); exit;
 	$c = carregaClasse("Compartilhamento");
-	$dados = array_filter($dados); //elimina arrays vazios ou nulos
+	$dados= array_filter($dados, 'is_not_null'); //elimina nulls e vazios (""). Mantem 0 (zero)
+	//$dados = array_filter($dados); //elimina arrays vazios ou nulos
 	$ret = $c->buscaVagasClassificados($dados, $tipoValor);
 	//echo json_encode($ret); exit;
 	$tela = montaResultadoBuscaClassificados($ret);
@@ -645,20 +671,52 @@ function executaFiltro(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function is_not_null($val){
+	if ($val == "") $val = NULL;
+	return !is_null($val);
+}
+//----------------------------------------------------------------------------------------------------------------------------
 function montaResultadoBuscaClassificados($dados){
 	$saida = "";
+	if($dados->num_rows == 0) return "<tr><td colspan='6'><label class='text-warning'>Nenhum registro encontrado para os filtros informados!</label></td></tr>";
+	$j = carregaClasse("Jogo");
 	while($d = $dados->fetch_object()){
+		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
+		if($jogos->num_rows > 1) { 
+			$title = "<b>Jogos nesta conta:</b><br />";
+			while($jogo = $jogos->fetch_object()){
+				$nome = stripslashes(utf8_decode($jogo->jogo));
+				$nomeAbrev = $jogo->nome_abrev;
+				$title .= "- $nome ($nomeAbrev)<br />";
+			}
+			$plus = "<a id='mais-jogos_".$d->idGrupo."' data-toggle='tooltip' data-placement='right' data-html='true' title='$title'>[ + ]</a>";
+		}
+		else $plus = "";
+		
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
 		if($d->original1_id == 0) $login1 = "Vaga aberta"; else $login1 = stripslashes(utf8_decode($d->login1));
 		if($d->original2_id == 0) $login2 = "Vaga aberta"; else $login2 = stripslashes(utf8_decode($d->login2));
 		if($d->original3_id == 0) $login3 = "Vaga aberta"; else $login3 = stripslashes(utf8_decode($d->login3));
 		$saida .= "
 			<tr>
-				<td>".stripslashes(utf8_decode($d->nomeJogo))."</td>
-				<td>
-					<span>Original 1: $login1</span>
-					<span>Original 2: $login2</span>
-					<span>Fantasma: $login3</span>
+				<td>".stripslashes(utf8_decode($d->nomeJogo))."<br /> $plus</td>
+				<td>";
+					if($d->vaga == "1")
+						$saida .= "<label class='text-info'>Original 1: $login1</label><br />";
+					else
+						$saida .= "<label class='text-muted small'>Original 1: $login1</label><br />";
+					
+					if($d->vaga == "2")
+						$saida .= "<label class='text-info'>Original 2: $login2</label><br />";
+					else	
+						$saida .= "<label class='text-muted small'>Original 2: $login2</label><br />";
+						
+					if($d->vaga == "3")
+						$saida .= "<label class='text-info'>Fantasma: $login3</label>";
+					else
+						$saida .= "<label class='text-muted small'>Fantasma: $login3</label>";
+					
+				$saida .= "
 				</td>
 				<td>".number_format($d->valor_venda, 2, ',', '.')."</td>
 				<td>".stripslashes(utf8_decode($d->loginCriador))."</td>
