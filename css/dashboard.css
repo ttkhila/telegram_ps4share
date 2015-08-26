@@ -73,6 +73,8 @@ body {
   color: #fff;
 }
 
+.panel-body a {padding-left: 10px;}
+
 /*
  * Main content
  */
@@ -172,13 +174,14 @@ div#dialog table th, td{padding:5px;}
 .label-personalizada{background-color: #DEB887; border:solid 1px #CD853F; padding:5px; border-radius:4px; text-align: center;}
 
 .div-input-valor {
+  width: 200px;
 	position:absolute;
 	z-index:9000;  
 	background-color:#fff; 
 	display:none;
-	padding:5px;
+	padding:2px;
 	border: solid 1px #337ab7;
 	top:0;
 }
 .tooltip-content{ padding:5px; }
-.deleterow, .readrow{cursor:pointer}
+.deleterow, .readrow, .glyph_click{cursor:pointer}
