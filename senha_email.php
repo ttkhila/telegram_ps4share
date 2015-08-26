@@ -8,15 +8,15 @@ $mail = new PHPMailer;
 $mail->isSMTP();                                      // Set mailer to use SMTP
 $mail->Host = 'smtp.mail.yahoo.com.br';  // Specify main and backup SMTP servers
 $mail->SMTPAuth = true;                               // Enable SMTP authentication
-$mail->Username = 'e_rocha78@yahoo.com.br';                 // SMTP username
-$mail->Password = 'Ttkhi||@7E58';                           // SMTP password
+$mail->Username = 'email';                 // SMTP username
+$mail->Password = 'senha';                           // SMTP password
 $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
 $mail->Port = 587;                                    // TCP port to connect to
 
 $mail->From = 'e_rocha78@yahoo.com.br';
 $mail->FromName = 'Telegram Ps4 Share';
-$mail->addAddress('estevao.bom@gmail.com', 'Estevão Rocha');     // Add a recipient
-$mail->addAddress('gameplay.zueira@gmail.com');               // Name is optional
+$mail->addAddress('email', 'nome');     // Add a recipient
+$mail->addAddress('outro email');               // Name is optional
 //$mail->addReplyTo('info@example.com', 'Information');
 //$mail->addCC('cc@example.com');
 //$mail->addBCC('bcc@example.com');
