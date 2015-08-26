@@ -111,7 +111,7 @@
 						</div>
 						<div class="form-group col-md-12">
 							<label class="control-label col-sm-2">- por Vaga:</label>
-							<div class="checkbox-inline col-sm-8">
+							<div class="form-group col-sm-8">
 								<label><input type="checkbox" id="optVaga" name="optOrig1" value="1" /><span>&nbsp;&nbsp;Original 1</span>&nbsp;&nbsp;</label> &nbsp;&nbsp;
 								<label><input type="checkbox" id="optVaga" name="optOrig2" value="2" /><span>&nbsp;&nbsp;Original 2</span>&nbsp;&nbsp;</label> &nbsp;&nbsp;
 								<label><input type="checkbox" id="optVaga" name="optOrig3" value="3" /><span>&nbsp;&nbsp;Fantasma</span>&nbsp;&nbsp;</label> 
@@ -131,7 +131,7 @@
 						</div>
 						<div class="form-group col-md-12">
 							<label class="control-label col-sm-2">- adicional:</label>
-							<div class="checkbox-inline col-sm-8">
+							<div class="control-label col-sm-8">
 								<label><input type="checkbox" id="optFechado" name="optFechado" value="1" /><span>&nbsp;&nbsp;Somente grupos fechados</span>&nbsp;&nbsp;</label> 
 							</div>
 						</div>

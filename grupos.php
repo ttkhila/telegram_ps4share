@@ -18,17 +18,6 @@
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
 	$(function(){ 
-		$('#imgNovo').click(function(e){ 
-			if($(this).attr('name') == 'abre'){
-				$('#div-novo-grupo').slideDown(); 
-				$(this).prop({'src':"img/close.png",'width':'18','height':'18'});
-				$(this).prop('name', 'fecha');
-			} else {
-				$('#div-novo-grupo').slideUp(); 
-				$(this).prop({'src':"img/add.png",'width':'20','height':'20'});
-				$(this).prop('name', 'abre');
-			}
-		});
 	});	
 </script>
 </head>
@@ -175,14 +164,14 @@
 						<?php
 							if ($dados1->num_rows == 0){
 								echo "<span>Não há nenhum grupo ativo para este usuário!<br />
-								Clique no ícone <img src='img/add.png' width='20' height='20'  /> acima para criar um novo grupo.
+								Clique NOVO GRUPO acima para criar um novo grupo.
 								</span>";
 							} else {
 								while($d = $dados1->fetch_object()){
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
 										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
-											echo "<div><img src='img/plus.png' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+											echo "<div><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
 											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
@@ -192,8 +181,9 @@
 							}
 						?>
 						<span><strong>Legenda:</strong></span><br />
-						<span><img src='img/cash.gif' />&nbsp;&nbsp;Informar vaga repassada</span><br />
-						<span><img src='img/checkout.png' />&nbsp;&nbsp;Colocar vaga a venda</span>
+						<span><div class='glyphicon glyphicon-transfer'>&nbsp;Informar vaga repassada</div><br />
+						<span><div class='glyphicon glyphicon-shopping-cart'>&nbsp;Colocar vaga a venda</div><br />
+						<span><div class='glyphicon glyphicon-trash'>&nbsp;Excluir usuário da vaga (somente grupos abertos)</div>
 					</div><!-- div-listagem-grupos -->
 				</div><!-- panel-body -->
 				<input type="hidden" id="hidFlag" value="0" />
@@ -220,7 +210,7 @@
 					<input type="text" class="form-control" name="valor" id="valor" maxlength="10" required="" /><br />
 					<label class="label-control">Data da venda:</label>
 					<input type="date" class="form-control" name="data_venda" id="data_venda" value="<?php echo date('Y-m-d'); ?>" />
-					<div class="checkbox">
+					<div class="label-control">
 						<label id="lbl-alterou-senha" class="label-control">Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" /></label>
 						<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
 					</div>
