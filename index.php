@@ -5,97 +5,99 @@
 	include 'funcoes.php';
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
+<script>
+	$(function(){ 
+		$(".deleterow").on("click", function(){
+			var $killrow = $(this).parent('tr');
+			var $aviso = parseInt($(this).parent('tr').attr('id').split("_")[1]); 
+			$killrow.addClass("danger");
+			var pars = { aviso: $aviso, funcao: 'removeAviso'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					$killrow.fadeOut(1000, function(){
+						$(this).remove();
+					});
+				}	
+			});	
+		});
+		
+		$(".readrow").on("click", function(){
+			var $readrow = $(this).parent('tr').find('td:first img');
+			var $this_tr = $(this).parent('tr');
+			var $aviso = parseInt($(this).parent('tr').attr('id').split("_")[1]); 
+			var pars = { aviso: $aviso, funcao: 'marcaLidoAviso'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					$readrow.fadeOut(1000,function(){
+						$readrow.prop({'src': 'img/lida.png', 'title': 'Aviso lido'}).fadeIn(1000);
+						$this_tr.find(".readrow").html("");
+					});
+				}	
+			});
+
+		});
+		
+		
+	});	
+</script>
 </head>
 <body>
 <?php $menu = file_get_contents('menu.php'); echo login($menu); //insere menu ?>
-<!-- aqui inicia o corpo -->
-          <h1 class="page-header">Painel de Controle</h1>
-          <h2 class="sub-header">News</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>Fusce</td>
-                  <td>nec</td>
-                  <td>tellus</td>
-                  <td>sed</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>augue</td>
-                  <td>semper</td>
-                  <td>porta</td>
-                  <td>Mauris</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+	<!-- aqui inicia o corpo -->
+	<h2 class="page-header">Telegram Share - Painel do Usuário</h2>
+	<?php
+	if(!isset($_SESSION['login'])){
+		echo "<div class='panel'>Faça <a href='login.php'>login</a> para visualizar sua área personalizada.</div>";
+	} else {
+		include 'classes/avisos.class.php';
+		$a = new avisos();
+		$avisos = $a->getAvisos($_SESSION['ID']);
+	?>
+		<div class="table-responsive">
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr><th colspan="4" class="text-center">Quadro de Avisos</th></tr>
+				</thead>
+				<tbody>
+				<?php 
+					if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
+					else { 
+						while($dados = $avisos->fetch_object()){ 
+							if($dados->lido == 1){ 
+								$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
+								$lido_icon = "";
+							} else {
+								$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
+								$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
+							}
+							echo "
+							<tr id='aviso_".$dados->id."'>
+								<td>$lido</td>
+								<td>".stripslashes(utf8_decode($dados->texto))."</td>
+								<td class='readrow'>$lido_icon</td>
+								<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
+							</tr>";
+						}
+					}
+				?>
+				</tbody>
+			</table>
+		</div>
+	<?php
+	}
+	?>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
