@@ -213,19 +213,19 @@ class compartilhamentos{
 		if($vaga == 1) $vagaNome = "original1_id";
 		else if ($vaga == 2)  $vagaNome = "original2_id";
 		else $vagaNome = "original3_id";
-		
+
 		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
 		//NEsse caso não cria registro de HISTÓRICO, somente altera o existente
 		$query = "SELECT $vagaNome as dono FROM compartilhamentos WHERE id = $grupoID";
 		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
 		$dono = $res->dono;
+		
+		//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
+		$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
+		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		
 		if ($dono == 0){
-			//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
-			$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
-			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
-			
-			
-			$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
+			$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada, a_venda = 0 
 			WHERE id in (
 			      SELECT * FROM (
 				     SELECT id 
@@ -234,19 +234,12 @@ class compartilhamentos{
 				     ORDER BY id DESC limit 0, 1
 			      ) 
 			      as t);";
-			
-			
-			
-			
-			//$query = "UPDATE historicos SET comprador_id = $compradorID, valor_pago = $valor_pago, data_venda = '$data', senha_alterada = $senha_alterada 
-				//WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";
 			try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 			return TRUE;
-		}
-		
+		}	
 		//grava alteração no registro de compartilhamento inserindo novo dono na vaga correspondente
-		$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
-		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		//$query = "UPDATE compartilhamentos SET $vagaNome = $compradorID WHERE id = $grupoID";
+		//try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 		
 		//coloca registros anteriores de mesmo grupo e mesma vaga com valor de venda = 0;
 		$query = "UPDATE historicos SET a_venda = 0 WHERE compartilhamento_id = $grupoID AND vaga = '$vaga'";

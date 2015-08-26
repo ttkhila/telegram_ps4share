@@ -214,8 +214,9 @@ function mostraGrupo(){
 		}
 		$saida .= "</div>";
 		
-
+		
 		//Original 1, 2 e fantasma
+		/* BACKUP
 		$saida .= "<div class='list-group-item-info' style='padding:10px 0px;'>";
 			$saida .= "<div class='list-group-item-text'><label class='col-sm-2'>Original 1: </label><label class='col-sm-4' style='font-weight:normal;' title='$orig1Nome'>$orig1 
 				<div name='input-valor' id='input-valor_".$idGrupo."_1' class='form-group div-input-valor'>Valor em reais (opcional):<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
@@ -233,6 +234,44 @@ function mostraGrupo(){
 				%%opcoes3%%</label>
 				<label class='col-sm-3'>Valor pago: </label><label class='col-sm-3' style='font-weight:normal;'>$valor3</label></div>";
 		$saida .= "<br /><br /><br /></div>";
+		*/
+		$saida .= "
+			<div class='list-group-'>
+				<div class='list-group-item-info'>
+					<div class='list-group-item-text'>
+						<label>Original 1: </label>
+						<label title='$orig1Nome'>$orig1 %%opcoes1%%</label>
+						<div name='input-valor' id='input-valor_".$idGrupo."_1' class='form-group div-input-valor'>Valor em reais (opcional):
+							<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+							<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' /><button class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button>
+						</div> 
+						<label>Valor pago: </label>
+						<label style='font-weight:normal;'>$valor1</label>
+					</div>
+				
+					<div class='list-group-item-text'>
+						<label class='col-sm-2'>Original 2: </label>
+						<label class='col-sm-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%</label>
+						<div name='input-valor' id='input-valor_".$idGrupo."_2' class='form-group div-input-valor'>Valor em reais (opcional):
+							<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+							<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' /><button class='btn btn-xs btn-primary' rel='2' id='btn-grupo_".$idGrupo."_2'>Confirma</button>
+						</div> 
+						<label class='col-sm-3'>Valor pago: </label>
+						<label class='col-sm-3' style='font-weight:normal;'>$valor2</label>
+					</div>
+					
+					<div class='list-group-item-text'>
+						<label class='col-sm-2'>Fantasma: </label>
+						<label class='col-sm-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%</label>
+						<div name='input-valor' id='input-valor_".$idGrupo."_3' class='form-group div-input-valor'>Valor em reais (opcional):
+							<span aria-label='Close' class='close' name='sp-close-input-valor'>&times;</span>
+							<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' /><button class='btn btn-xs btn-primary' rel='3' id='btn-grupo_".$idGrupo."_3'>Confirma</button>
+						</div> 
+						<label class='col-sm-3'>Valor pago: </label>
+						<label class='col-sm-3' style='font-weight:normal;'>$valor3</label>
+					</div>
+				</div>
+			</div>";
 	
 		if($c->getFechado() == 1){
 			$saida .= "<div class='list-group-item-success'>";
@@ -261,37 +300,48 @@ function mostraGrupo(){
 	$saida .= "</div>";
 	
 	//Opções de repasse e disponibilizar vaga
-	// ORIGINAL 1
+	// ORIGINAL 1   
+	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<div class='glyphicon glyphicon-transfer' name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada'></div>
+		&nbsp;&nbsp;<div class='glyphicon glyphicon-shopping-cart' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda'></div>"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
+	else if($selfID == $c->getCriadorId() && $c->getOrig1() == 0) $opcoes1 = "<div class='glyphicon glyphicon-transfer list-inline' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' /></div>
+		&nbsp;&nbsp;<div class='glyphicon glyphicon-shopping-cart' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' /></div>"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
+	else if($orig1ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes1 = "<div name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' /></div>
+		&nbsp;&nbsp;<div name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' /></div>";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso	
+	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() != 0 && $c->getOrig1() != $selfID) $opcoes1 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig1()."_1' rel='1' 
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
+	else $opcoes1 = "";
+	
+	/* BACKUP
 	if($orig1ID == $selfID && $c->getFechado() == 1) $opcoes1 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
+	else if($selfID == $c->getCriadorId() && $c->getOrig1() == 0) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
 	else if($orig1ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes1 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  title='Colocar vaga a venda' src='img/checkout.png' />";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso	
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() != 0 && $c->getOrig1() != $selfID) $opcoes1 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig1()."_1' rel='1' 
 		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
 	else $opcoes1 = "";
-	
+	*/
 	// ORIGINAL 2
 	if($orig2ID == $selfID && $c->getFechado() == 1) $opcoes2 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() == 0) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
+	else if($selfID == $c->getCriadorId() && $c->getOrig2() == 0) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($orig2ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes2 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() != 0 && $c->getOrig2() != $selfID) $opcoes2 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig2()."_2' rel='2' 
-		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />";
 	else $opcoes2 = "";
 	
 	// FANTASMA
 	if($orig3ID == $selfID && $c->getFechado() == 1) $opcoes3 = "<img name='img-repasse' data-id='1' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
-	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() == 0) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
+	else if($selfID == $c->getCriadorId() && $c->getOrig3() == 0) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($orig3ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) $opcoes3 = "<img name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada' src='img/cash.gif' />
 		&nbsp;&nbsp;<img name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  title='Colocar vaga a venda' src='img/checkout.png' />"; 
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() != 0 && $c->getOrig3() != $selfID) $opcoes3 = "<img name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig3()."_3' rel='3' 
-		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
+		title='Excluir usuário desta vaga' src='img/excluir.jpg' />"; 
 	else $opcoes3 = "";
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
@@ -376,6 +426,19 @@ function gravaRepasse(){
 	
 	if($v->validate()){
 		$ret = $c->gravaRepasse($idGrupo, $vendedor, $compradorID, $vaga, $valor, $data_venda, $alterou_senha);
+
+		//grava aviso
+		$a = carregaClasse("Aviso");
+		$c->carregaDados($idGrupo);
+		$vendedorLogin = $_SESSION["login"];
+		$nomeGrupo = $c->getNome();
+		if ($vaga == 1) $vagaNome = "Original 1";
+		else if ($vaga == 2) $vagaNome = "Original 2";
+		else $vagaNome = "Fantasma";
+		$texto = "O usuário $vendedorLogin repassou a vaga de $vagaNome da conta '$nomeGrupo' para você em ".date('d-m-Y', strtotime($data_venda)).".";
+		$texto = addslashes(utf8_encode($texto));
+		$a->insereAviso($compradorID, $texto);
+
 		if($ret) echo json_encode(1);
 		else echo json_encode($ret);
 	}else{
@@ -727,21 +790,19 @@ function montaResultadoBuscaClassificados($dados){
 	return $saida;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-/*
-SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, c.data_compra, c.fechado, c.criador_id, 
-				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login, u2.login, u3.login, u4.login as loginCriador 
-				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3 
-				WHERE h.comprador_id = 3 AND jc.jogo_id = 5 AND h.vaga = '1' AND  (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
-				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id)
-<th>Jogo(s)</th>
-<th>Proprietários das vagas</th>
-<th>Preço da vaga</th>
-<th>Criador</th>
-<th>Data criação</th>
-<th>Status</th>
-*/
+function marcaLidoAviso(){
+	$idAviso = $_POST['aviso'];
+	$a = carregaClasse("Aviso");
+	$a->marcaLido($idAviso);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
+function removeAviso(){
+	$idAviso = $_POST['aviso'];
+	$a = carregaClasse("Aviso");
+	$a->removeAviso($idAviso);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -788,9 +849,9 @@ function carregaClasse($secao){
 			require_once 'classes/jogos.class.php';
 			$inst = new jogos();
 			break;
-		case 'Mensagem':
-			require_once 'classes/mensagens.class.php';
-			$inst = new mensagens();
+		case 'Aviso':
+			require_once 'classes/avisos.class.php';
+			$inst = new avisos();
 			break;
 		case 'Campeonato':
 			require_once 'classes/campeonatos.class.php';
