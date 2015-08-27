@@ -203,15 +203,15 @@
 				</div><!-- modal-header -->
 				<div class="modal-body">
 					<input type="hidden" name="original-repasse_id" id="original-repasse_id" />
-					<label class="label-control">ID Comprador:</label>
+					<label class="control-label">ID Comprador:</label>
 					<input type="text" class="form-control" name="original-repasse" id="original-repasse_autocomplete" autocomplete="off" placeholder="Digite parte do ID do comprador" required="" /></span>
 					<span class="sp-form" id="original-repasse_check"><img src="" alt="" /></span><br />
-					<label class="label-control">Valor <span id='sp-tipo-moeda'></span>:</label>
+					<label class="control-label">Valor <span id='sp-tipo-moeda'></span>:</label>
 					<input type="text" class="form-control" name="valor" id="valor" maxlength="10" required="" /><br />
-					<label class="label-control">Data da venda:</label>
+					<label class="control-label">Data da venda:</label>
 					<input type="date" class="form-control" name="data_venda" id="data_venda" value="<?php echo date('Y-m-d'); ?>" />
-					<div class="label-control">
-						<label id="lbl-alterou-senha" class="label-control">Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" /></label>
+					<div class="control-label">
+						<label id="lbl-alterou-senha" class="control-label">Alterou a senha? <input type="checkbox" name="alterou_senha" id="alterou_senha" /></label>
 						<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
 					</div>
 					<div class="modal-footer">

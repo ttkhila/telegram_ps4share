@@ -1,7 +1,13 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['login']))
-		header('Location: aviso.php?a=2');
+	if(!isset($_SESSION['login'])){ header('Location: aviso.php?a=2'); exit; }
+	else{ //checa permissões
+		include_once 'classes/grupos_acesso.class.php';
+		$ga = new grupos_acesso();
+		$ga->setPermissao($_SESSION['ID']);
+		if($ga->getManipulaJogos() == 0)
+			header('Location: aviso.php?a=3');
+	}		
 		
 	include 'funcoes.php';
 	include_once 'classes/jogos.class.php';

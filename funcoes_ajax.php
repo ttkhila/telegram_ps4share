@@ -459,12 +459,12 @@ function gravaRepasse(){
 		//grava aviso
 		$a = carregaClasse("Aviso");
 		$c->carregaDados($idGrupo);
-		$vendedorLogin = $_SESSION["login"];
-		$nomeGrupo = $c->getNome();
+		$vendedorLogin = stripslashes(utf8_decode($_SESSION["login"]));
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
 		if ($vaga == 1) $vagaNome = "Original 1";
 		else if ($vaga == 2) $vagaNome = "Original 2";
 		else $vagaNome = "Fantasma";
-		$texto = "O usuário $vendedorLogin repassou a vaga de $vagaNome da conta '$nomeGrupo' para você em ".date('d-m-Y', strtotime($data_venda)).".";
+		$texto = "O usuário <b>$vendedorLogin</b> repassou a vaga de $vagaNome da conta <b>'$nomeGrupo'</b> para você em ".date('d-m-Y', strtotime($data_venda)).".";
 		$texto = addslashes(utf8_encode($texto));
 		$a->insereAviso($compradorID, $texto);
 
@@ -505,6 +505,22 @@ function excluiUsuarioVaga(){
 	$c = carregaClasse('Compartilhamento');
 	
 	$ret = $c->excluiUsuarioVaga($idGrupo, $vaga, $idUsuario);
+	
+	//grava aviso
+	$a = carregaClasse("Aviso");
+	$u = carregaClasse("Usuario");
+	$c->carregaDados($idGrupo);
+	$criadorID = $c->getCriadorId();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$u->carregaDados($criadorID);
+	$criadorNome = stripslashes(utf8_decode($u->getLogin()));
+	if ($vaga == 1) $vagaNome = "Original 1";
+	else if ($vaga == 2) $vagaNome = "Original 2";
+	else $vagaNome = "Fantasma";
+	$texto = "Você foi retirado da vaga de $vagaNome do grupo aberto <b>'$nomeGrupo'</b> por <b>$criadorNome</b> em ".date('d-m-Y').".";
+	$texto = addslashes(utf8_encode($texto));
+	$a->insereAviso($idUsuario, $texto);
+
 	echo json_encode($ret);
 	exit;
 }
@@ -682,8 +698,8 @@ function mostraFechamentoGrupo(){
 			</div>
 		</div>
 	</div>
-	<div class='checkbox-inline'>
-		<label>Alterou a senha? <input type='checkbox' name='alterou_senha-fechamento' id='alterou_senha-fechamento' /></label>
+	<div>
+		<label class='control-label'>Alterou a senha? <input type='checkbox' name='alterou_senha-fechamento' id='alterou_senha-fechamento' /></label>
 		<p class='bg-danger' id='sp-erro-msg-modal2' style='display:none;'></p>
 	</div>
 	<div class='modal-footer'>
@@ -810,7 +826,7 @@ function montaResultadoBuscaClassificados($dados){
 					
 				$saida .= "
 				</td>
-				<td>".number_format($d->valor_venda, 2, ',', '.')."</td>
+				<td>R$ ".number_format($d->valor_venda, 2, ',', '.')."</td>
 				<td>".stripslashes(utf8_decode($d->loginCriador))."</td>
 				<td>".$d->dataCompra."</td>
 				<td>$stt</td>
