@@ -47,9 +47,7 @@
 				}	
 			});
 
-		});
-		
-		
+		});	
 	});	
 </script>
 </head>
@@ -65,7 +63,7 @@
 		$a = new avisos();
 		$avisos = $a->getAvisos($_SESSION['ID']);
 	?>
-		<div class="table-responsive">
+		<div class="table-responsive pre-scrollable">
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr><th colspan="4" class="text-center">Quadro de Avisos</th></tr>

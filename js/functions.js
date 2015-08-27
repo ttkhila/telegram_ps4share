@@ -471,8 +471,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 					.html($error)
 					.delay(2500)
 					.fadeOut('slow');
-			}
-		
+			}	
 		}
 	});
 });
