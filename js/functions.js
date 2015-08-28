@@ -246,6 +246,7 @@ $(".btn-danger").click(function(e){
 //********************************************************************************
 $("#btn-grupo-novo").click(function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
 	var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
 	var $dados = new Array();
 	if($("#fechado").is(':checked')){ $('#email').attr('required', 'required');  $fechado = 1;}//se marcar grupo como FECHADO, assinala EMAIL como requerido
@@ -323,10 +324,10 @@ $("#btn-grupo-novo").click(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { botao.attr('disabled', 'disabled'); },
+		complete: function(){  },
 		success: function(data){ 
-			console.log(data); 
+			console.log(data);
 			if(data == 1){ //sucesso
 				location.reload();
 			} else { //erro
@@ -339,7 +340,9 @@ $("#btn-grupo-novo").click(function(e){
 				$(document).scrollTop( $("#foco").offset().top );
 				$("#sp-erro-msg")
 					.fadeIn()
-					.html($error+"<span class='badge'>x</span>");
+					.html($error+"<span class='badge'>x</span>");	
+
+				botao.removeAttr('disabled');
 			}
 		}
 	});

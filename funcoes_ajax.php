@@ -793,7 +793,7 @@ function montaResultadoBuscaClassificados($dados){
 		if($jogos->num_rows > 1) { 
 			$title = "<b>Jogos nesta conta:</b><br />";
 			while($jogo = $jogos->fetch_object()){
-				$nome = stripslashes(utf8_decode($jogo->jogo));
+				$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
 				$nomeAbrev = $jogo->nome_abrev;
 				$title .= "- $nome ($nomeAbrev)<br />";
 			}
