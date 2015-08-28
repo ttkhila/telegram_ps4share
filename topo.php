@@ -11,8 +11,8 @@
 		<link href="css/font-awesome.min.css" rel="stylesheet" />
 		<link href="css/bootswatch.css" rel="stylesheet" />
 		<link href="css/simpleAutoComplete.css" rel="stylesheet" />
-        <!-- Custom styles for this template -->
-        <link href="css/dashboard.css" rel="stylesheet">
+		 <!-- Custom styles for this template -->
+		<link href="css/dashboard.css" rel="stylesheet">
 		
 		<!-- JavaScript -->
 		<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>

@@ -140,11 +140,27 @@ function novoGrupo(){
 			
 			if ($moeda != "BRL") $valor_convertido = $soma * $fator;
 			else $valor_convertido = $soma;
-
 			$valor_convertido = str_replace(",", "", number_format($valor_convertido, 2));
-	
 			$c->gravaDadosAdicionais($idGrupo, $soma, $valor_convertido, $fator, $data);
 		}
+		
+		//grava aviso
+		$a = carregaClasse("Aviso");
+		$u = carregaClasse("Usuario");
+		$c->carregaDados($idGrupo);
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$u->carregaDados($selfID);
+		$criadorNome = stripslashes(utf8_decode($u->getLogin()));
+		for($i=1; $i<=3; $i++){
+			if($orig[$i] > 0 && $orig[$i] != $selfID){
+				$u->carregaDados($orig[$i]);
+				if($i == 3) $vagaNome = "Fantasma"; else $vagaNome = "Original ".$i;
+				$texto = "O usuário <b>$criadorNome</b> criou um novo grupo <b>'$nomeGrupo'</b> e incluiu você na vaga de $vagaNome em ".date('d-m-Y').".";
+				$texto = addslashes(utf8_encode($texto));
+				$a->insereAviso($orig[$i], $texto);
+			}
+		}
+		
 		//echo json_encode(array($retorno2));	exit;
 		 echo json_encode(1);
 	}else{
@@ -289,7 +305,7 @@ function mostraGrupo(){
 				</div>";
 			}
 			$saida .= "
-				<div class='panel-body'>*Valores originais referentes a compra da conta sem levar em consideração os repasses da mesma.</div>
+				<div class='panel-body'>*Valores originais referentes a criação da conta sem levar em consideração os repasses da mesma.</div>
 			</div>
 		</div>"; //close panel-group col-md-8
 		

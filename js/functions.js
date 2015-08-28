@@ -21,7 +21,15 @@ $(function(){
 //********************** MODAIS ****************************************
 	function abreModal(id, data){ $(id).html(data); }	
 //***********************************************************************
-
+//Insere e retira spinner do elemento para efeitos "loading"...
+function doAnimated(botao){
+	botao.html("<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Loading...");
+}
+function resetaHtml(orig, clone){
+	orig.replaceWith(clone.clone());
+	orig.replaceWith(clone);
+}
+//***********************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
@@ -244,9 +252,11 @@ $(".btn-danger").click(function(e){
 	$("#valor"+id).val("");
 });
 //********************************************************************************
-$("#btn-grupo-novo").click(function(e){
+$("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
+	var divClone = botao.clone(); 
+
 	var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
 	var $dados = new Array();
 	if($("#fechado").is(':checked')){ $('#email').attr('required', 'required');  $fechado = 1;}//se marcar grupo como FECHADO, assinala EMAIL como requerido
@@ -324,7 +334,7 @@ $("#btn-grupo-novo").click(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { botao.attr('disabled', 'disabled'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
 		complete: function(){  },
 		success: function(data){ 
 			console.log(data);
@@ -341,7 +351,8 @@ $("#btn-grupo-novo").click(function(e){
 				$("#sp-erro-msg")
 					.fadeIn()
 					.html($error+"<span class='badge'>x</span>");	
-
+				
+				resetaHtml(botao, divClone);
 				botao.removeAttr('disabled');
 			}
 		}
@@ -380,8 +391,8 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 			$elem.prop("src", "img/minus.png");
 			$elem.prop("id", "_0");
 		},
-        error: function(e){
-            console.log(e.responseText);
+		error: function(e){
+			console.log(e.responseText);
         }
 	});
 });
@@ -423,6 +434,9 @@ $(".container-grupos").on("click", "[name='img-repasse']", function(){
 });
 //********************************************************************************
 $("#repasse").on("click", "#btn-confirma-repasse", function(){
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
 	var $erros = new Array();
 	var $vaga = VAGA_REPASSE;
 	var $grupo = GRUPO_REPASSE;
@@ -454,8 +468,8 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){  },
 		success: function(data){ 
 			console.log(data); 
 		
@@ -468,12 +482,14 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 					for(var z=0;z<qtd;z++)
 						$error += "- "+item[z]+"<br />";
 				});
-				//$(document).scrollTop( $("#foco").offset().top );
 				$("#sp-erro-msg-modal")
 					.fadeIn()
 					.html($error)
 					.delay(2500)
 					.fadeOut('slow');
+				
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			}	
 		}
 	});
@@ -493,6 +509,8 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 //********************************************************************************
 // Grava a disponibilização da vaga
 $(".container-grupos").on("click", "[name='input-valor'] button", function(){
+	var botao = $(this);
+	var divClone = botao.clone(); 
 	parte = $(this).attr('id').split("_");
 	grupo = parte[1];
 	$vaga = parte[2];
@@ -507,12 +525,16 @@ $(".container-grupos").on("click", "[name='input-valor'] button", function(){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
 			console.log(data);
 			if (data == 1){ alert("Vaga colocada a venda com sucesso!"); location.reload(); }
-			else alert(data["valor"][0]);
+			else{ 
+				alert(data["valor"][0]); 
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
+			}
 		}
 	});
 });
@@ -669,6 +691,9 @@ $("[name='div-casulo-conteudo-grupo']").on('click', "[name='btn-fechar-grupo']",
 //Grava fechamento de grupo
 $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
 	var $erros = new Array();
 	var $campos = new Array();
 	var $valores = new Array();
@@ -734,8 +759,8 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
 			console.log(data); 
 			if (data == 1) location.reload();
@@ -743,6 +768,8 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 				$("#sp-erro-msg-modal2")
 					.fadeIn()
 					.html(data);
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			}
 		}
 	});

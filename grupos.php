@@ -159,7 +159,7 @@
 			</div><!-- panel-heading -->
 			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
-					<div id="div-listagem-grupos" class="container-grupos">
+					<div id="div-listagem-grupos" class="panel panel-group container-grupos">
 						<h3>Meus Grupos</h3>
 						<?php
 							if ($dados1->num_rows == 0){
@@ -171,7 +171,7 @@
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
 										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
-											echo "<div><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
 											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";

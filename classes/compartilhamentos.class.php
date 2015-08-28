@@ -369,7 +369,7 @@ class compartilhamentos{
 				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
 				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
 				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
-				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id";
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";
 		//return $query;
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		//return $query;

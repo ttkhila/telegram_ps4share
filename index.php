@@ -28,6 +28,7 @@
 		});
 		
 		$(".readrow").on("click", function(){
+			if($(this).html() == "") return false;
 			var $readrow = $(this).parent('tr').find('td:first img');
 			var $this_tr = $(this).parent('tr');
 			var $aviso = parseInt($(this).parent('tr').attr('id').split("_")[1]); 
@@ -62,35 +63,37 @@
 		$a = new avisos();
 		$avisos = $a->getAvisos($_SESSION['ID']);
 	?>
-		<div class="table-responsive pre-scrollable">
-			<table class="table table-striped table-hover">
-				<thead>
-					<tr><th colspan="4" class="text-center">Quadro de Avisos</th></tr>
-				</thead>
-				<tbody>
-				<?php 
-					if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
-					else { 
-						while($dados = $avisos->fetch_object()){ 
-							if($dados->lido == 1){ 
-								$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
-								$lido_icon = "";
-							} else {
-								$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
-								$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
+		<div class="panel panel-primary">
+			<div class="panel-heading">Quadro de Avisos</div>
+			<div class="panel-body">
+				<div class="table-responsive pre-scrollable">
+					<table class="table table-striped table-hover">
+						<tbody>
+						<?php 
+							if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
+							else { 
+								while($dados = $avisos->fetch_object()){ 
+									if($dados->lido == 1){ 
+										$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
+										$lido_icon = "";
+									} else {
+										$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
+										$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
+									}
+									echo "
+									<tr id='aviso_".$dados->id."'>
+										<td>$lido</td>
+										<td>".stripslashes(utf8_decode($dados->texto))."</td>
+										<td class='readrow'>$lido_icon</td>
+										<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
+									</tr>";
+								}
 							}
-							echo "
-							<tr id='aviso_".$dados->id."'>
-								<td>$lido</td>
-								<td>".stripslashes(utf8_decode($dados->texto))."</td>
-								<td class='readrow'>$lido_icon</td>
-								<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
-							</tr>";
-						}
-					}
-				?>
-				</tbody>
-			</table>
+						?>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	<?php
 	}
