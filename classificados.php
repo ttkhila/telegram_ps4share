@@ -5,7 +5,6 @@
 	require_once 'classes/compartilhamentos.class.php';
 	require_once 'classes/jogos.class.php';
 	include 'funcoes.php';
-	
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
