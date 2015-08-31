@@ -33,6 +33,9 @@ function resetaHtml(orig, clone){
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button");
+	var divClone = botao.clone(); 
+
 	var $form = $(this).serialize();
 	$form = decodeURI(replaceAll($form, '+', ' ')); //retira alguns caracteres especiais   
 	$form = $form.split('&'); //transforma em array, separado pelo "&"
@@ -44,14 +47,16 @@ $("#frmLogin").submit(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); 
 			if(data[0] == 0){ //error
 				$("#sp-erro-msg")
 					.fadeIn()
 					.html(data[1]+"<span class='badge'>x</span>");
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			} else if (data[0] == 2) { //primeiro acesso
 				$(location).attr('href', 'primeiro_acesso.php?id='+data[1]);	
 			} else {
@@ -508,11 +513,12 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 });
 //********************************************************************************
 // Grava a disponibilização da vaga
-$(".container-grupos").on("click", "[name='input-valor'] button", function(){
+$(".container-grupos").on("click", "[name='input-valor'] button[name='btn-grupo']", function(){
 	var botao = $(this);
 	var divClone = botao.clone(); 
 	parte = $(this).attr('id').split("_");
 	grupo = parte[1];
+	//alert(grupo);
 	$vaga = parte[2];
 	$valor = $("#txt-valor-venda_"+grupo+"_"+$vaga).val();
 	$valor = $valor.replace(",", ".");

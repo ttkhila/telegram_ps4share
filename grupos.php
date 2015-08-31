@@ -42,7 +42,7 @@
 					<div class="form-group col-md-12">
 						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
 						<div class="col-md-8">
-							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" />
+							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" maxlength="60" />
 						</div>
 						<div class="col-md-2">
 							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
@@ -176,16 +176,21 @@
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
 										//echo "<hr />";
-									echo "</div><br />";
+									echo "</div><br /><br />";
 								}
 							}
 						?>
-						<span><strong>Legenda:</strong></span><br />
-						<span><div class='glyphicon glyphicon-transfer'>&nbsp;Informar vaga repassada</div><br />
-						<span><div class='glyphicon glyphicon-shopping-cart'>&nbsp;Colocar vaga a venda</div><br />
-						<span><div class='glyphicon glyphicon-trash'>&nbsp;Excluir usuário da vaga (somente grupos abertos)</div>
 					</div><!-- div-listagem-grupos -->
 				</div><!-- panel-body -->
+				<div class="panel-footer">
+					<ul class='list-group'>
+						<li class='list-group-item active'>Legenda:</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-transfer btn btn-xs btn-primary'></div>&nbsp;Informar vaga repassada</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-primary'></div>&nbsp;Colocar vaga a venda (item ainda não anunciado)</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-default'></div>&nbsp;Colocar vaga a venda (item já anunciado)</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-trash btn btn-xs btn-primary'></div>&nbsp;Excluir usuário da vaga (somente grupos abertos)</li>
+					</ul>
+				</div>
 				<input type="hidden" id="hidFlag" value="0" />
 			</div><!-- collapseTwo -->
 		</div><!-- panel panel-default -->

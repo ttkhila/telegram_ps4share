@@ -20,6 +20,8 @@ class compartilhamentos{
 	private $valor_pago;
 	private $data_venda;
 	private $senha_alterada;
+	private $valor_venda;
+	private $a_venda;
 	
 	private $con;
 	
@@ -68,6 +70,10 @@ class compartilhamentos{
 	public function getDataVenda(){ return $this->data_venda; }
 	public function setSenhaAlterada($valor){ $this->senha_alterada = $valor; }
 	public function getSenhaAlterada(){ return $this->senha_alterada; }
+	public function setValorVenda($valor){ $this->valor_venda = $valor; }
+	public function getValorVenda(){ return $this->valor_venda; }
+	public function setAVenda($valor){ $this->a_venda = $valor; }
+	public function getAVenda(){ return $this->a_venda; }
 //---------------------------------------------------------------------------------------------------------------
 	public function carregaDados($id){
 		$query = "SELECT * FROM compartilhamentos WHERE id = $id";
@@ -86,16 +92,30 @@ class compartilhamentos{
 		$this->setAtivo($d->ativo);
 		$this->setFechado($d->fechado);
 		$this->setCriadorId($d->criador_id);
-	}
+	}	
 //---------------------------------------------------------------------------------------------------------------
 	public function carregaDadosHistoricos($compartilhamento_id, $numVaga){
-		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga'";
+		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga' ORDER BY id";
 		try{ $d = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro no carregamento."); }
 		$this->setHistoricoId($d->id);
 		$this->setVaga($d->vaga);
 		$this->setValorPago($d->valor_pago);
 		$this->setDataVenda($d->data_venda);
 		$this->setSenhaAlterada($d->senha_alterada);
+		$this->setValorVenda($d->valor_venda);
+		$this->setAVenda($d->a_venda);
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function carregaUltimoHistorico($compartilhamento_id, $numVaga){
+		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga' ORDER BY id DESC";
+		try{ $d = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro no carregamento."); }
+		$this->setHistoricoId($d->id);
+		$this->setVaga($d->vaga);
+		$this->setValorPago($d->valor_pago);
+		$this->setDataVenda($d->data_venda);
+		$this->setSenhaAlterada($d->senha_alterada);
+		$this->setValorVenda($d->valor_venda);
+		$this->setAVenda($d->a_venda);
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getDados(){

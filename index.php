@@ -1,8 +1,49 @@
 <?php
 	session_start();
-	//if(!isset($_SESSION['login']))
-		//header('Location: aviso.php?a=2');
 	include 'funcoes.php';
+
+	$feed1 = file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml'); //Adrenaline UOL
+	$feed2 = file_get_contents('http://rss.baixakijogos.com.br/feed'); //Baixaki Jogos
+	$feed3 = file_get_contents('http://www.eurogamer.pt/?format=rss&type=news'); //Eurogamer
+	
+	$rss1 = new SimpleXmlElement($feed1);
+	$rss2 = new SimpleXmlElement($feed2);
+	$rss3 = new SimpleXmlElement($feed3);
+	$cont = 1;
+	$feed1 = array();
+	$feed2 = array();
+	$feed3 = array();
+	foreach($rss1->channel->item as $entrada) {
+		array_push($feed1, "
+		<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Adrenaline UOL</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+			<p class='list-group-item-text'>".$entrada->title."</p>
+		</a>");
+		if($cont > 3) break;
+		$cont++;
+	}
+
+	$cont = 1;
+	foreach($rss2->channel->item as $entrada) {
+		array_push($feed2, "
+		<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Baixaki Jogos</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+			<p class='list-group-item-text'>".$entrada->title."</p>
+		</a>");
+		if($cont > 3) break;
+		$cont++;
+	}
+	
+	$cont = 1;
+	foreach($rss3->channel->item as $entrada) {
+		array_push($feed3, "
+		<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Eurogamer</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+			<p class='list-group-item-text'>".$entrada->title."</p>
+		</a>");
+		if($cont > 3) break;
+		$cont++;
+	}
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
@@ -98,6 +139,19 @@
 	<?php
 	}
 	?>
+		<!-- Fedd - RSS -->
+		
+				<div class="list-group alert">
+					<div class='list-group-item list-group-item-success'>Últimas notícias</div>
+				<?php
+					for ($i=0; $i<4; $i++){
+						echo $feed1[$i];
+						echo $feed2[$i];
+						echo $feed3[$i];
+					}
+				?>
+				</div>
+		
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
