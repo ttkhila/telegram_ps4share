@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	include 'funcoes.php';
-
+/*
 	$feed1 = file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml'); //Adrenaline UOL
 	$feed2 = file_get_contents('http://rss.baixakijogos.com.br/feed'); //Baixaki Jogos
 	$feed3 = file_get_contents('http://www.eurogamer.pt/?format=rss&type=news'); //Eurogamer
@@ -44,6 +44,7 @@
 		if($cont > 3) break;
 		$cont++;
 	}
+	*/
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
@@ -101,56 +102,156 @@
 		echo "<div class='panel'>Faça <a href='login.php'>login</a> para visualizar sua área personalizada.</div>";
 	} else {
 		include 'classes/avisos.class.php';
+		include 'classes/compartilhamentos.class.php';
+		include 'classes/jogos.class.php';
 		$a = new avisos();
+		$c = new compartilhamentos();
+		$j = new jogos();
 		$avisos = $a->getAvisos($_SESSION['ID']);
+		$vendas = $c->getVendasAbertasPorUsuario($_SESSION['ID']);
 	?>
-		<div class="panel panel-primary">
-			<div class="panel-heading">Quadro de Avisos</div>
-			<div class="panel-body">
-				<div class="table-responsive pre-scrollable">
-					<table class="table table-striped table-hover">
-						<tbody>
-						<?php 
-							if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
-							else { 
-								while($dados = $avisos->fetch_object()){ 
-									if($dados->lido == 1){ 
-										$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
-										$lido_icon = "";
-									} else {
-										$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
-										$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
+		<div class="row">
+			
+			<div class="col-md-6">
+				<div class="panel panel-primary">
+					<div class="panel-heading">Quadro de Avisos</div>
+					<div class="panel-body">
+						<div class="table-responsive pre-scrollable">
+							<table class="table table-striped table-hover">
+								<tbody>
+								<?php 
+									if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
+									else { 
+										while($dados = $avisos->fetch_object()){ 
+											if($dados->lido == 1){ 
+												$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
+												$lido_icon = "";
+											} else {
+												$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
+												$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
+											}
+											echo "
+											<tr id='aviso_".$dados->id."'>
+												<td>$lido</td>
+												<td align='justify'>".stripslashes(utf8_decode($dados->texto))."</td>
+												<td class='readrow'>$lido_icon</td>
+												<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
+											</tr>";
+										}
 									}
-									echo "
-									<tr id='aviso_".$dados->id."'>
-										<td>$lido</td>
-										<td>".stripslashes(utf8_decode($dados->texto))."</td>
-										<td class='readrow'>$lido_icon</td>
-										<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
-									</tr>";
-								}
-							}
-						?>
-						</tbody>
-					</table>
+								?>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
+			
+			<div class="col-md-6" id="div-painel-minhas-vendas">
+				<div class="panel panel-warning">
+					<div class="panel-heading">Minhas Vendas</div>
+					<div class="panel-body">
+						<div class="table-responsive pre-scrollable">
+							<table class="table table-striped table-hover">
+								<thead>
+									<tr>
+										<th>Jogo(s)</th>
+										<th>Vaga</th>
+										<th>Preço</th>
+										<th><span class='glyphicon glyphicon-usd btn-default btn-xs' title='Alterar valor de venda'></span></th>
+										<th><span class='glyphicon glyphicon-trash btn-default btn-xs' title='Excluir Venda'></span></th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php
+									$linhas = "";
+									while($v = $vendas->fetch_object()){
+										$id = $v->compartilhamento_id;
+										$vaga = $v->vaga;
+										$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
+										if($jogos->num_rows > 1) { 
+											$games = "";
+											while($jogo = $jogos->fetch_object()){
+												$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+												$nomeAbrev = $jogo->nome_abrev;
+												$games  .= "- $nome ($nomeAbrev)<br />";
+											}
+										} else {
+											$jogo = $jogos->fetch_object();
+											$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+											$nomeAbrev = $jogo->nome_abrev;
+											$games  = "- $nome ($nomeAbrev)";
+										}
+										
+										$linhas .= "
+											<tr>
+												<td>$games</td>
+												<td>".$c->getNomeVaga($vaga, 1)."</td>
+												<td>
+													".number_format($v->valor_venda, 2, ',', '.')."
+													
+													<div class='modal' tabindex='-1' role='dialog' aria-labelledby='...' id='modal-altera-valor_".$v->id."'>
+														<div class='modal-dialog modal-sm' role='document'>
+															<div class='modal-content'>
+																<input class='input-xs' type='text' id='txt-altera-venda_".$v->id."' />
+																<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+																<button name='btn-confirma-altera-valor' class='btn btn-xs btn-primary' id='btn-confirma-altera-valor_".$v->id."'>Confirma</button>
+															</div>
+														</div>
+													</div>
+													
+												</td>
+												<td>
+													<button class='glyphicon glyphicon-usd btn btn-warning btn-xs' title='Alterar valor de venda' name='btn-altera-valor-venda' id='altera-venda_".$v->id."' data-toggle='modal' 
+			data-target='#modal-altera-valor_".$v->id."'></button>
+												</td>
+												<td>
+													<button class='glyphicon glyphicon-trash btn btn-warning btn-xs' title='Excluir Venda' name='btn-exclui-venda' id='exclui-venda_".$v->id."'></button>
+												</td>
+											</tr>";
+									}
+									echo $linhas;
+								?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
 		</div>
 	<?php
 	}
 	?>
-		<!-- Fedd - RSS -->
+	
+	<!-- Fedd - RSS -->
+	<div class="list-group alert">
+		<div class='list-group-item list-group-item-success'>Últimas notícias</div>
 		
-				<div class="list-group alert">
-					<div class='list-group-item list-group-item-success'>Últimas notícias</div>
-				<?php
-					for ($i=0; $i<4; $i++){
-						echo $feed1[$i];
-						echo $feed2[$i];
-						echo $feed3[$i];
-					}
-				?>
-				</div>
+		
+		<a class='list-group-item list-group-item alert-link' href='#' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Site</b> - Data</h4>
+			<p class='list-group-item-text'>Título da notícia</p>
+		</a>
+		<a class='list-group-item list-group-item alert-link' href='#' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Site</b> - Data</h4>
+			<p class='list-group-item-text'>Título da notícia</p>
+		</a>
+		<a class='list-group-item list-group-item alert-link' href='#' target='_blank'>
+			<h4 class='list-group-item-text small'><b>Site</b> - Data</h4>
+			<p class='list-group-item-text'>Título da notícia</p>
+		</a>
+		<?php
+			/*
+			for ($i=0; $i<4; $i++){
+				echo $feed1[$i];
+				echo $feed2[$i];
+				echo $feed3[$i];
+			}
+			* */
+		?>
+	</div>
 		
 
     <!-- Bootstrap core JavaScript

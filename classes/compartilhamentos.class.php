@@ -209,9 +209,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	//verifica se o Usuario eh dono da vaga informada. Seguranca contra fraude
 	public function is_thisGroup($idUsuario, $idGrupo, $vaga){
-		if($vaga == 1) $vaga = "original1_id";
-		else if ($vaga == 2)  $vaga = "original2_id";
-		else $vaga = "original3_id";
+		$vaga = $this->getNomeVaga($vaga);
 		
 		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
 		//Nesse caso não acusa problema
@@ -230,9 +228,7 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gravaRepasse($grupoID, $vendedorID, $compradorID, $vaga, $valor_pago, $data, $senha_alterada = 0){
-		if($vaga == 1) $vagaNome = "original1_id";
-		else if ($vaga == 2)  $vagaNome = "original2_id";
-		else $vagaNome = "original3_id";
+		$vagaNome = $this->getNomeVaga($vaga);
 
 		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
 		//NEsse caso não cria registro de HISTÓRICO, somente altera o existente
@@ -288,10 +284,7 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function excluiUsuarioVaga($idGrupo, $vaga, $usuarioID){
-		if($vaga == 1) $vagaNome = "original1_id";
-		else if ($vaga == 2)  $vagaNome = "original2_id";
-		else $vagaNome = "original3_id";
-		
+		$vagaNome = $this->getNomeVaga($vaga);
 		// Atualiza grupo
 		$query = "UPDATE compartilhamentos SET $vagaNome = 0 WHERE id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
@@ -404,7 +397,31 @@ class compartilhamentos{
 		return $where;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getVendasAbertasPorUsuario($idUsuario){
+		$query = "SELECT h.*, j.nome as nomeJogo
+			FROM historicos h, compartilhamentos c, jogos j, jogos_compartilhados jc
+			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND ((h.comprador_id = $idUsuario) OR ((h.comprador_id = 0) AND (c.criador_id = $idUsuario)))
+			GROUP BY h.id";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getNomeVaga($numVaga, $tipo = 0){
+		if($numVaga == 1) {
+			if ($tipo == 1) $vagaNome = "Original 1";
+			else $vagaNome = "original1_id";
+		}
+		else if ($numVaga == 2) { 
+			if ($tipo == 1) $vagaNome = "Original 2";
+			else $vagaNome = "original2_id"; 
+		}
+		else { 
+			if ($tipo == 1) $vagaNome = "Fantasma";
+			else $vagaNome = "original3_id"; 
+		}
+		
+		return $vagaNome;
+	}
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 }

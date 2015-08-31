@@ -174,7 +174,7 @@ div#dialog table th, td{padding:5px;}
 .label-personalizada{background-color: #DEB887; border:solid 1px #CD853F; padding:5px; border-radius:4px; text-align: center;}
 
 .div-input-valor {
-  width: 200px;
+	width: 200px;
 	position:absolute;
 	z-index:9000;  
 	background-color:#fff; 
@@ -184,7 +184,7 @@ div#dialog table th, td{padding:5px;}
 	top:0;
 }
 .tooltip-content{ padding:5px; }
-.deleterow, .readrow, .glyph_click{cursor:pointer}
+.deleterow, .readrow{cursor:pointer}
 
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;

@@ -512,6 +512,21 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
+/*
+//Abre DIV para mudar valor da venda no Painel do Usuário
+$("#div-painel-minhas-vendas").find("[name='btn-altera-valor-venda']").click(function(){
+	var parte = $(this).attr('id').split("_");
+	var id = parseInt(parte[1]);
+	//alert(id);return;
+	$("#input-altera-venda_"+id).show();
+});
+//Fecha a DIV acima
+$("#div-painel-minhas-vendas").find("[name='sp-close-input']").click(function(){
+	$(this).parent().hide();
+});
+*/
+//********************************************************************************
+
 // Grava a disponibilização da vaga
 $(".container-grupos").on("click", "[name='input-valor'] button[name='btn-grupo']", function(){
 	var botao = $(this);

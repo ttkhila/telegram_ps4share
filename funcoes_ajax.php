@@ -189,10 +189,9 @@ function mostraGrupo(){
 		$orig1 = "Vaga em aberto"; $orig1Nome = "Vaga em aberto"; $orig1ID = 0; $valor1 = "N/D"; 
 		$c2->carregaUltimoHistorico($idGrupo, 1);
 		$aVenda1 = $c2->getAVenda();
-		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
-	}
-	else { 
+	} else { 
 		$u->carregaDados($c->getOrig1()); 
 		$c->carregaDadosHistoricos($idGrupo, 1);
 		$c2->carregaUltimoHistorico($idGrupo, 1);
@@ -202,7 +201,7 @@ function mostraGrupo(){
 		$valorPago = $c->getValorPago();
 		$valor1 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.') : "N/D";
 		$aVenda1 = $c2->getAVenda();
-		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
 	}
 	
@@ -210,10 +209,9 @@ function mostraGrupo(){
 		$orig2 = "Vaga em aberto"; $orig2Nome = "Vaga em aberto"; $orig2ID = 0;  $valor2 = "N/D";
 		$c2->carregaUltimoHistorico($idGrupo, '2');
 		$aVenda2 = $c2->getAVenda();
-		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
-	} 
-	else { 
+	} else { 
 		$u->carregaDados($c->getOrig2()); 
 		$c->carregaDadosHistoricos($idGrupo, "2");
 		$c2->carregaUltimoHistorico($idGrupo, '2');
@@ -223,7 +221,7 @@ function mostraGrupo(){
 		$valorPago = $c->getValorPago();
 		$valor2 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.'): "N/D";
 		$aVenda2 = $c2->getAVenda();
-		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
 	}
 	
@@ -231,10 +229,9 @@ function mostraGrupo(){
 		$orig3 = "Vaga em aberto"; $orig3Nome = "Vaga em aberto"; $orig3ID = 0; $valor3 = "N/D"; 
 		$c2->carregaUltimoHistorico($idGrupo, '3');
 		$aVenda3 = $c2->getAVenda();
-		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
-	}
-	else { 
+	} else { 
 		$u->carregaDados($c->getOrig3()); 
 		$c->carregaDadosHistoricos($idGrupo, "3");
 		$c2->carregaUltimoHistorico($idGrupo, '3');
@@ -244,7 +241,7 @@ function mostraGrupo(){
 		$valorPago = $c->getValorPago(); 
 		$valor3 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.'): "N/D";
 		$aVenda3 = $c2->getAVenda();
-		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart glyph_click btn btn-primary btn-xs" : 
+		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
 	}
 
