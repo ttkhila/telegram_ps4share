@@ -115,6 +115,17 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+.input-edita-valor{ width:70px; height: 22px;}
+.div-painel-altera-venda{ 
+	padding:5px; 
+	background-color: #CDCFCD; 
+	border:dashed 1px #5F5D5D; 
+	display:none; 
+	filter: alpha(opacity=90);
+	opacity: .9;
+}
+
 #div-cadastro-jogos{
     width: 50%;
     float: right;

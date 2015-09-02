@@ -111,115 +111,108 @@
 		$vendas = $c->getVendasAbertasPorUsuario($_SESSION['ID']);
 	?>
 		<div class="row">
-			
-			<div class="col-md-6">
-				<div class="panel panel-primary">
-					<div class="panel-heading">Quadro de Avisos</div>
-					<div class="panel-body">
-						<div class="table-responsive pre-scrollable">
-							<table class="table table-striped table-hover">
-								<tbody>
-								<?php 
-									if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
-									else { 
-										while($dados = $avisos->fetch_object()){ 
-											if($dados->lido == 1){ 
-												$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
-												$lido_icon = "";
-											} else {
-												$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
-												$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
-											}
-											echo "
-											<tr id='aviso_".$dados->id."'>
-												<td>$lido</td>
-												<td align='justify'>".stripslashes(utf8_decode($dados->texto))."</td>
-												<td class='readrow'>$lido_icon</td>
-												<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
-											</tr>";
+			<div class="panel panel-primary">
+				<div class="panel-heading">Quadro de Avisos</div>
+				<div class="panel-body">
+					<div class="table pre-scrollable">
+						<table class="table table-striped table-hover">
+							<tbody>
+							<?php 
+								if ($avisos->num_rows == 0){ echo "<tr><th colspan='4'>Não há avisos no momento.</th></tr>"; }
+								else { 
+									while($dados = $avisos->fetch_object()){ 
+										if($dados->lido == 1){ 
+											$lido = "<img src='img/lida.png' title='Aviso lido' />"; 
+											$lido_icon = "";
+										} else {
+											$lido = "<img src='img/nao_lida.jpg' title='Aviso não lido' />"; 
+											$lido_icon = "<div title='Marcar como lido' class='glyphicon glyphicon-eye-open'></div>";
 										}
+										echo "
+										<tr id='aviso_".$dados->id."'>
+											<td>$lido</td>
+											<td align='justify'>".stripslashes(utf8_decode($dados->texto))."</td>
+											<td class='readrow'>$lido_icon</td>
+											<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
+										</tr>";
 									}
-								?>
-								</tbody>
-							</table>
-						</div>
+								}
+							?>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			
-			<div class="col-md-6" id="div-painel-minhas-vendas">
-				<div class="panel panel-warning">
-					<div class="panel-heading">Minhas Vendas</div>
-					<div class="panel-body">
-						<div class="table-responsive pre-scrollable">
-							<table class="table table-striped table-hover">
-								<thead>
-									<tr>
-										<th>Jogo(s)</th>
-										<th>Vaga</th>
-										<th>Preço</th>
-										<th><span class='glyphicon glyphicon-usd btn-default btn-xs' title='Alterar valor de venda'></span></th>
-										<th><span class='glyphicon glyphicon-trash btn-default btn-xs' title='Excluir Venda'></span></th>
-									</tr>
-								</thead>
-								<tbody>
-								<?php
-									$linhas = "";
-									while($v = $vendas->fetch_object()){
-										$id = $v->compartilhamento_id;
-										$vaga = $v->vaga;
-										$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
-										if($jogos->num_rows > 1) { 
-											$games = "";
-											while($jogo = $jogos->fetch_object()){
-												$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
-												$nomeAbrev = $jogo->nome_abrev;
-												$games  .= "- $nome ($nomeAbrev)<br />";
-											}
-										} else {
-											$jogo = $jogos->fetch_object();
+
+		
+			<div class="panel panel-warning" id="div-painel-minhas-vendas">
+				<div class="panel-heading">Minhas Vendas</div>
+				<div class="panel-body">
+					<div class="table pre-scrollable">
+						<table class="table table-striped">
+							<?php
+								if ($vendas->num_rows == 0){ $linhas = "<tr><th colspan='4'>Não há vendas ativas no momento.</th></tr>"; }
+								else {
+							?>
+							<thead>
+								<tr>
+									<th>Jogo(s)</th>
+									<th>Vaga</th>
+									<th>Preço</th>
+									<th><span class='glyphicon glyphicon-usd btn-default btn-xs' title='Altera Valor Venda'></span></th>
+									<th><span class='glyphicon glyphicon-trash btn-default btn-xs' title='Exclui Venda'></span></th>
+								</tr>
+							</thead>
+							<tbody>
+							<?php
+								$linhas = "";
+								while($v = $vendas->fetch_object()){
+									$id = $v->compartilhamento_id;
+									$vaga = $v->vaga;
+									$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
+									if($jogos->num_rows > 1) { 
+										$games = "";
+										while($jogo = $jogos->fetch_object()){
 											$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
 											$nomeAbrev = $jogo->nome_abrev;
-											$games  = "- $nome ($nomeAbrev)";
+											$games  .= "- $nome ($nomeAbrev)<br />";
 										}
-										
-										$linhas .= "
-											<tr>
-												<td>$games</td>
-												<td>".$c->getNomeVaga($vaga, 1)."</td>
-												<td>
-													".number_format($v->valor_venda, 2, ',', '.')."
-													
-													<div class='modal' tabindex='-1' role='dialog' aria-labelledby='...' id='modal-altera-valor_".$v->id."'>
-														<div class='modal-dialog modal-sm' role='document'>
-															<div class='modal-content'>
-																<input class='input-xs' type='text' id='txt-altera-venda_".$v->id."' />
-																<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-																<button name='btn-confirma-altera-valor' class='btn btn-xs btn-primary' id='btn-confirma-altera-valor_".$v->id."'>Confirma</button>
-															</div>
-														</div>
-													</div>
-													
-												</td>
-												<td>
-													<button class='glyphicon glyphicon-usd btn btn-warning btn-xs' title='Alterar valor de venda' name='btn-altera-valor-venda' id='altera-venda_".$v->id."' data-toggle='modal' 
-			data-target='#modal-altera-valor_".$v->id."'></button>
-												</td>
-												<td>
-													<button class='glyphicon glyphicon-trash btn btn-warning btn-xs' title='Excluir Venda' name='btn-exclui-venda' id='exclui-venda_".$v->id."'></button>
-												</td>
-											</tr>";
+									} else {
+										$jogo = $jogos->fetch_object();
+										$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+										$nomeAbrev = $jogo->nome_abrev;
+										$games  = "- $nome ($nomeAbrev)";
 									}
-									echo $linhas;
-								?>
-								</tbody>
-							</table>
-						</div>
+									
+									$linhas .= "
+										<tr>
+											<td>$games</td>
+											<td>".$c->getNomeVaga($vaga, 1)."</td>
+											<td style='width:150px;'><label id='lblValor'>".number_format($v->valor_venda, 2, ',', '.')."</label>
+											
+												<div class='div-painel-altera-venda' id='div-painel-altera-venda_".$v->id."'>
+													<label>novo valor - R$</label><br />
+													<input class='input-edita-valor' type='text' id='input-valor-venda_".$v->id."' maxlength='8' />
+													<button class='glyphicon glyphicon-ok btn btn-xs btn-primary' title='confirma'></button>
+												</div>
+											
+											</td>
+											<td>
+												<button class='glyphicon glyphicon-usd btn btn-warning btn-xs' title='Alterar valor de venda' name='btn-altera-valor-venda' id='altera-venda_".$v->id."'></button>
+											</td>
+											<td>
+												<button class='glyphicon glyphicon-trash btn btn-warning btn-xs' title='Excluir Venda' name='btn-exclui-venda' id='exclui-venda_".$v->id."'></button>
+											</td>
+										</tr>";
+									}
+								}
+								echo $linhas;
+							?>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			
-			
 		</div>
 	<?php
 	}

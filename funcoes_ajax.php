@@ -548,6 +548,45 @@ function gravaDisponibilidadeVaga(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function alteraValorVendaVaga(){
+	session_start();
+	$idHist = $_POST['id'];	
+	$valor = $_POST['valor'];
+	$logado = $_SESSION['ID'];
+	$c = carregaClasse('Compartilhamento');
+	$v = carregaClasse('Validacao');
+	
+	//autenticação anti-fraude
+	$fraude = $c->is_thisHistory($idHist, $logado);
+	if(!$fraude){ echo json_encode(array("valor" => array("Erro na autenticação do usuário."))); exit; }
+	
+	if(trim($valor) != "") $v->set("valor", str_replace(",", ".", $valor))->is_float(); //VALOR
+
+	if($v->validate()){
+		$c->gravaAlteracaoValorVenda($idHist, $valor);
+		echo json_encode(1);
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	exit; 
+}
+//----------------------------------------------------------------------------------------------------------------------------
+	function excluiVenda(){
+		session_start();
+		$idHist = $_POST['id'];	
+		$logado = $_SESSION['ID'];
+		$c = carregaClasse('Compartilhamento');	
+		
+		//autenticação anti-fraude
+		$fraude = $c->is_thisHistory($idHist, $logado);
+		if(!$fraude){ echo json_encode("Erro na autenticação do usuário."); exit; }
+		
+		$c->excluiVenda($idHist);
+		echo json_encode(1);
+		exit;
+	}
+//----------------------------------------------------------------------------------------------------------------------------
 function excluiUsuarioVaga(){
 	$idGrupo = $_POST['grupo'];	
 	$idUsuario = $_POST['user'];

@@ -512,21 +512,77 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
-/*
-//Abre DIV para mudar valor da venda no Painel do Usuário
+//Mostra caixa de diálogo para alteração do preço de venda no painel (HOME)
 $("#div-painel-minhas-vendas").find("[name='btn-altera-valor-venda']").click(function(){
-	var parte = $(this).attr('id').split("_");
-	var id = parseInt(parte[1]);
-	//alert(id);return;
-	$("#input-altera-venda_"+id).show();
-});
-//Fecha a DIV acima
-$("#div-painel-minhas-vendas").find("[name='sp-close-input']").click(function(){
-	$(this).parent().hide();
-});
-*/
-//********************************************************************************
+	$id = $(this).attr('id').split('_')[1];
 
+	if($("#div-painel-altera-venda_"+$id).is(":visible")){
+		$("#div-painel-altera-venda_"+$id).hide();
+		return false;
+	}
+	
+	$("#div-painel-altera-venda_"+$id).show();
+	$("#div-painel-altera-venda_"+$id+" input").focus();
+});
+//********************************************************************************
+//Altera valor da vaga no painel (HOME)
+$(".div-painel-altera-venda").on("click", "button", function(){
+	if(!confirm("Deseja realmente alterar o valor dessa venda?")) return false;
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	var $histID = $(this).siblings("input").attr("id").split("_")[1];
+	var $valor = $(this).siblings("input").val();
+	$valor = $valor.replace(",", ".");
+	if(!$.isNumeric($valor) && $.trim($valor) != ""){ alert("Valor precisa ser numérico!"); return false; }
+	
+	var pars = { valor: $valor, id: $histID, funcao: 'alteraValorVendaVaga'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1){ 
+				if($valor == "") botao.parent().parent().find("#lblValor").text("0,00");
+				else { $valor = $valor.replace(".", ","); botao.parent().parent().find("#lblValor").text($valor); }
+				botao.parent().hide();
+				//alert("Valor alterado com sucesso!"); 
+			}else{ 
+				alert(data["valor"][0]); 
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
+//******************************************************************************** 
+//Exclui a venda da vaga no painel (HOME)
+$("#div-painel-minhas-vendas").find("[name='btn-exclui-venda']").click(function(){
+	if(!confirm("Deseja realmente cancelar essa venda?")) return false;
+	var $histID = $(this).attr("id").split("_")[1];
+	var pars = { id: $histID, funcao: 'excluiVenda'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {},
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1) location.reload();
+			else{
+				alert(data); 
+			}
+		}
+	});
+});
+//********************************************************************************
 // Grava a disponibilização da vaga
 $(".container-grupos").on("click", "[name='input-valor'] button[name='btn-grupo']", function(){
 	var botao = $(this);

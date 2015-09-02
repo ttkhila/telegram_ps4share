@@ -283,6 +283,28 @@ class compartilhamentos{
 			
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function is_thisHistory($idHist, $idUsuario){
+		$query = "SELECT h.id FROM historicos h, compartilhamentos c 
+			WHERE (h.id = $idHist) AND (h.compartilhamento_id = c.id) AND ((h.comprador_id = $idUsuario) OR ((h.comprador_id = 0) AND (c.criador_id = $idUsuario)))";
+		//echo json_encode($query);exit; 
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if($res->num_rows == 0) //não há registro. Indício de fraude
+			return false;
+		
+		return true;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaAlteracaoValorVenda($idHist, $valor){
+		if (trim($valor) == "") $valor = "NULL";
+		$query = "UPDATE historicos SET valor_venda = $valor WHERE id = $idHist";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function excluiVenda($idHist){
+		$query = "UPDATE historicos SET a_venda = 0, valor_venda = NULL WHERE id = $idHist";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function excluiUsuarioVaga($idGrupo, $vaga, $usuarioID){
 		$vagaNome = $this->getNomeVaga($vaga);
 		// Atualiza grupo
