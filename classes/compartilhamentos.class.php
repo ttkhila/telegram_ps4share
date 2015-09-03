@@ -16,6 +16,9 @@ class compartilhamentos{
 	private $criador_id;
 	//HISTÓRICOS
 	private $historico_id;
+	private $compartilhamento_id;
+	private $comprador_id;
+	private $vendedor_id;
 	private $vaga; //O1, O2, O3
 	private $valor_pago;
 	private $data_venda;
@@ -62,8 +65,14 @@ class compartilhamentos{
 	//HIstóricos
 	public function setHistoricoId($valor){ $this->historico_id = $valor; }
 	public function getHistoricoId(){ return $this->historico_id; }
+	public function setCompartilhamentoId($valor){ $this->compartilhamento_id = $valor; }
+	public function getCompartilhamentoId(){ return $this->compartilhamento_id; }
 	public function setVaga($valor){ $this->vaga = $valor; }
 	public function getVaga(){ return $this->vaga; }
+	public function setCompradorId($valor){ $this->comprador_id = $valor; }
+	public function getCompradorId(){ return $this->comprador_id; }
+	public function setVendedorId($valor){ $this->vendedor_id = $valor; }
+	public function getVendedorId(){ return $this->vendedor_id; }
 	public function setValorPago($valor){ $this->valor_pago = $valor; }
 	public function getValorPago(){ return $this->valor_pago; }
 	public function setDataVenda($valor){ $this->data_venda = $valor; }
@@ -94,11 +103,15 @@ class compartilhamentos{
 		$this->setCriadorId($d->criador_id);
 	}	
 //---------------------------------------------------------------------------------------------------------------
-	public function carregaDadosHistoricos($compartilhamento_id, $numVaga){
-		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga' ORDER BY id";
+	public function carregaDadosHistoricos($id, $numVaga=0){
+		if($numVaga == 0 ) $query = "SELECT * FROM historicos WHERE id = $id";
+		else $query = "SELECT * FROM historicos WHERE compartilhamento_id = $id AND vaga = '$numVaga' ORDER BY id";
 		try{ $d = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro no carregamento."); }
 		$this->setHistoricoId($d->id);
+		$this->setCompartilhamentoId($d->compartilhamento_id);
 		$this->setVaga($d->vaga);
+		$this->setCompradorId($d->comprador_id);
+		$this->setVendedorId($d->vendedor_id);
 		$this->setValorPago($d->valor_pago);
 		$this->setDataVenda($d->data_venda);
 		$this->setSenhaAlterada($d->senha_alterada);
@@ -188,9 +201,22 @@ class compartilhamentos{
 	public function getDadosPorUsuario($usuarioID){
 		$query = "SELECT c.* , u.nome as criador, u.login FROM compartilhamentos c, usuarios u
 			WHERE (c.criador_id = u.id) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";
-		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
+//---------------------------------------------------------------------------------------------------------------
+
+	public function getGruposAntigos($usuarioID){
+		$query = "SELECT h.id, c.nome FROM compartilhamentos c, historicos h 
+			WHERE (c.id = h.compartilhamento_id) AND (h.vendedor_id = $usuarioID) 
+			ORDER BY h.id DESC";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res;
+	}
+
+
+
+
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosHistoricoInicial($idGrupo){
 		//Dados históricos da criação do grupo

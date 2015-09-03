@@ -14,6 +14,7 @@
 
 	//recupera dados dos compartilhamentos existentes
 	$dados1 = $c->getDadosPorUsuario($selfID);
+	$dados2 = $c->getGruposAntigos($selfID);
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
@@ -153,6 +154,7 @@
                         	</div><!-- panel-body -->
 			</div><!-- panel-collapse collapse -->
                </div><!-- panel panel-default -->
+               
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="headingTwo">
 				<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
@@ -160,7 +162,6 @@
 			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
 					<div id="div-listagem-grupos" class="panel panel-group container-grupos">
-						<h3>Meus Grupos</h3>
 						<?php
 							if ($dados1->num_rows == 0){
 								echo "<span>Não há nenhum grupo ativo para este usuário!<br />
@@ -194,6 +195,49 @@
 				<input type="hidden" id="hidFlag" value="0" />
 			</div><!-- collapseTwo -->
 		</div><!-- panel panel-default -->
+		
+		
+		
+		
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="headingThree">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Grupos Antigos (vagas já repassadas)</a>
+				</h4>
+			</div>
+			<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+				<div class="panel-body">
+					<div id="div-listagem-grupos-antigos" class="panel panel-group">
+						<?php
+							if ($dados2->num_rows == 0){
+								$saida = "<span>Não há grupo com vagas repassadas para ser mostrado!<br />
+								Clique NOVO GRUPO acima para criar um novo grupo.
+								</span>";
+							} else {
+								$saida = "";
+								while($d = $dados2->fetch_object()){
+									$saida .= "
+										<div class='panel'>
+											<div name='div-titulo-grupos-antigos' id='div-titulo-grupos-antigos_".$d->id."' class='panel-title'>
+												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome))."</div>
+											</div>
+											<div name='div-conteudo-grupos-antigos' id ='div-conteudo-grupos-antigos_".$d->id."' class='list-group col-md-12' style='display:none;'></div>
+										</div>";
+								}
+							}
+							echo $saida;
+						?>
+					</div>
+				</div>
+			</div><!-- collapseThree -->
+		</div><!-- panel panel-default -->
+		
+		
+		
+		
+		
+		
+		
 	</div><!-- panel-group -->
 </div><!-- ROW - menu.php -->
 </div><!-- CONTAINER - menu.php -->

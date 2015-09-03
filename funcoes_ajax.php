@@ -191,6 +191,8 @@ function mostraGrupo(){
 		$aVenda1 = $c2->getAVenda();
 		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda1 = ($aVenda1 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	} else { 
 		$u->carregaDados($c->getOrig1()); 
 		$c->carregaDadosHistoricos($idGrupo, 1);
@@ -203,6 +205,8 @@ function mostraGrupo(){
 		$aVenda1 = $c2->getAVenda();
 		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda1 = ($aVenda1 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	}
 	
 	if($c->getOrig2() == 0){ 
@@ -211,6 +215,8 @@ function mostraGrupo(){
 		$aVenda2 = $c2->getAVenda();
 		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda2 = ($aVenda2 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	} else { 
 		$u->carregaDados($c->getOrig2()); 
 		$c->carregaDadosHistoricos($idGrupo, "2");
@@ -223,6 +229,8 @@ function mostraGrupo(){
 		$aVenda2 = $c2->getAVenda();
 		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda2 = ($aVenda2 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	}
 	
 	if($c->getOrig3() == 0){ 
@@ -231,6 +239,8 @@ function mostraGrupo(){
 		$aVenda3 = $c2->getAVenda();
 		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda3 = ($aVenda3 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	} else { 
 		$u->carregaDados($c->getOrig3()); 
 		$c->carregaDadosHistoricos($idGrupo, "3");
@@ -243,6 +253,8 @@ function mostraGrupo(){
 		$aVenda3 = $c2->getAVenda();
 		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
 			"glyphicon glyphicon-shopping-cart glyph_click btn btn-default btn-xs";
+		$titleVenda3 = ($aVenda3 == 0) ? "Colocar vaga a venda" : 
+			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	}
 
 	//identado por HTML
@@ -365,17 +377,17 @@ function mostraGrupo(){
 		$opcoes1 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda1' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  
-			title='Colocar vaga a venda'></button>"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
+			title='$titleVenda1'></button>"; // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
 	else if($selfID == $c->getCriadorId() && $c->getOrig1() == 0) 
 		$opcoes1 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda1' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  
-			title='Colocar vaga a venda'></button>"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
+			title='$titleVenda1'></button>"; //grupo aberto. O criador tem o direito de colocar uma vaga que estiver sem dono, a venda
 	else if($orig1ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) 
 		$opcoes1 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='1' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda1' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_1'  
-			title='Colocar vaga a venda'></button>";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso	
+			title='$titleVenda1'></button>";//grupo aberto. O usuário pode desistir da sua vaga e a passar pra outro. O criador não pode fazer isso	
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig1() != 0 && $c->getOrig1() != $selfID) 
 		$opcoes1 = "&nbsp;<button class='glyphicon glyphicon-trash glyph_click btn btn-primary btn-xs' name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig1()."_1' rel='1' 
 			title='Excluir usuário desta vaga'></button>"; //grupo aberto. O criador tem o direito de excluir um usuário e retornar a vaga para aberta
@@ -386,17 +398,17 @@ function mostraGrupo(){
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda2'></button>"; 
 	else if($selfID == $c->getCriadorId() && $c->getOrig2() == 0) 
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda2'></button>"; 
 	else if($orig2ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) 
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda2'></button>"; 
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig2() != 0 && $c->getOrig2() != $selfID) 
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-trash glyph_click btn btn-primary btn-xs' name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig2()."_2' rel='2' 
 			title='Excluir usuário desta vaga'></button>";
@@ -407,17 +419,17 @@ function mostraGrupo(){
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda3'></button>"; 
 	else if($selfID == $c->getCriadorId() && $c->getOrig3() == 0) 
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda3'></button>"; 
 	else if($orig3ID == $selfID  && $c->getFechado() == 0 && $selfID != $c->getCriadorId()) 
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
-			title='Colocar vaga a venda'></button>"; 
+			title='$titleVenda3'></button>"; 
 	else if($selfID == $c->getCriadorId() && $c->getFechado() == 0 && $c->getOrig3() != 0 && $c->getOrig3() != $selfID) 
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-trash glyph_click btn btn-primary btn-xs' name='img-excluir' id='exclui-vaga_".$idGrupo."_".$c->getOrig3()."_3' rel='3' 
 			title='Excluir usuário desta vaga'></button>"; 
@@ -547,6 +559,95 @@ function gravaDisponibilidadeVaga(){
 	}
 	exit;
 }
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+function mostraGrupoAntigo(){
+	$idHist = $_POST['id'];
+	$selfID = $_POST['selfid'];
+	$c = carregaClasse('Compartilhamento');
+	$j = carregaClasse('Jogo');
+	$u = carregaClasse('Usuario'); 
+	$c->carregaDadosHistoricos($idHist);
+	//VAGA
+	$numVaga = $c->getVaga();
+	$nomeVaga = $c->getNomeVaga($numVaga, 1);
+	//DATA VENDA
+	$data_venda = $c->getDataVenda();
+	$phpdate = strtotime($data_venda);
+	$data_venda = date( 'd/m/Y', $phpdate );
+	//VALOR PAGO
+	$valor_pago = $c->getValorPago();
+	$valor_pago = number_format($valor_pago, 2, ',', '.');
+	//Comprador
+	$comprador_id = $c->getCompradorId();
+	$u->carregaDados($comprador_id);
+	$compradorLogin = stripslashes(utf8_decode($u->getLogin($comprador_id)));
+	
+	//Dados do Grupo
+	$idGrupo = $c->getCompartilhamentoId();
+	$c->carregaDados($idGrupo);
+	$orig1 = $c->getOrig1();
+	$orig2 = $c->getOrig2();
+	$orig3 = $c->getOrig3();
+	
+	/*
+	 * 
+	 * 
+	 * PEGAR O LOGIN DESSAS VAGAS ACIMA
+	 * 
+	 * 
+	 */
+	
+	$saida = "";
+
+	$saida .= "
+		<div class='panel-group'>
+			<div class='panel panel-primary'>
+				<div class='panel-heading'>Você foi proprietário da vaga de <b>$nomeVaga</b> e repassou para <b>$compradorLogin</b> em $data_venda por R$ $valor_pago</div>
+			</div>
+			<div class='panel panel-success'>
+				<div class='panel-heading'>Proprietários atuais das vagas deste grupo</div>
+				<div class='panel-body'>
+					Original 1: $orig1
+					Original 2: $orig2
+					Fantasma: $orig3
+				</div>
+			</div>
+		</div>
+	";
+
+	
+
+	echo json_encode($saida);
+	exit;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------
 function alteraValorVendaVaga(){
 	session_start();

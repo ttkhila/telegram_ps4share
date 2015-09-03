@@ -479,6 +479,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 			console.log(data); 
 		
 			if(data == 1){ //sucesso
+				alert("Vaga repassada!");
 				location.reload();
 			} else { //erro
 				$error = "";
@@ -499,6 +500,59 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		}
 	});
 });
+
+
+
+
+
+
+//********************************************************************************
+//LISTAGEM DE GRUPOS ANTIGOS
+$("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[name='imgMais']").click(function(){
+	var $selfId = $("#selfID").val();
+	var $id = $(this).parent().parent().attr('id').split("_")[1]; //ID do histórico
+	//alert($(this).attr("id")); return;
+	if($(this).attr("id") == "_0"){
+		$("#div-conteudo-grupos-antigos_"+$id)
+			.slideUp();
+		$(this).prop("id", "_1");
+		$(this).prop("src", "img/plus.png");
+		return false;
+	}
+	var $elem = $(this);
+		
+	var pars = { id: $id, selfid: $selfId, funcao: 'mostraGrupoAntigo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {  },
+		complete: function(){  },
+		success: function(data){ 
+			console.log(data);
+			$("#div-conteudo-grupos-antigos_"+$id)
+				.html(data)
+				.slideDown();
+			
+			$elem.prop("src", "img/minus.png");
+			$elem.prop("id", "_0");
+		},
+		error: function(e){
+			console.log(e.responseText);
+        }
+	});
+});
+
+
+
+
+
+
+
+
+
 //********************************************************************************
 //Abre DIV para confrmar disponibilização de vaga
 $(".container-grupos").on("click", "[name='img-disponibiliza']", function(){
