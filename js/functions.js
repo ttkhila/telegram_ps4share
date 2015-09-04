@@ -262,7 +262,8 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 	var botao = $(this);
 	var divClone = botao.clone(); 
 
-	var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
+	//var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
+	var $campos = ["email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
 	var $dados = new Array();
 	if($("#fechado").is(':checked')){ $('#email').attr('required', 'required');  $fechado = 1;}//se marcar grupo como FECHADO, assinala EMAIL como requerido
 	else {$('#email').attr('required', false);  $fechado = 0; }
@@ -342,7 +343,7 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
 		complete: function(){  },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); return;
 			if(data == 1){ //sucesso
 				location.reload();
 			} else { //erro
@@ -500,12 +501,6 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		}
 	});
 });
-
-
-
-
-
-
 //********************************************************************************
 //LISTAGEM DE GRUPOS ANTIGOS
 $("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[name='imgMais']").click(function(){
@@ -544,15 +539,6 @@ $("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[n
         }
 	});
 });
-
-
-
-
-
-
-
-
-
 //********************************************************************************
 //Abre DIV para confrmar disponibilização de vaga
 $(".container-grupos").on("click", "[name='img-disponibiliza']", function(){

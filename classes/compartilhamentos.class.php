@@ -311,7 +311,11 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function is_thisHistory($idHist, $idUsuario){
 		$query = "SELECT h.id FROM historicos h, compartilhamentos c 
-			WHERE (h.id = $idHist) AND (h.compartilhamento_id = c.id) AND ((h.comprador_id = $idUsuario) OR ((h.comprador_id = 0) AND (c.criador_id = $idUsuario)))";
+			WHERE (h.id = $idHist) AND (h.compartilhamento_id = c.id) AND 
+			((h.comprador_id = $idUsuario) OR 
+			((h.comprador_id = 0) AND (c.criador_id = $idUsuario) AND (c.criador_id = c.original1_id)) OR 
+			((h.comprador_id = 0) AND (c.original1_id = $idUsuario) AND (c.criador_id <> c.original1_id)) OR 
+			((h.comprador_id = 0) AND (c.original2_id = $idUsuario) AND (c.original1_id = 0)))";
 		//echo json_encode($query);exit; 
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		if($res->num_rows == 0) //não há registro. Indício de fraude
@@ -448,7 +452,11 @@ class compartilhamentos{
 	public function getVendasAbertasPorUsuario($idUsuario){
 		$query = "SELECT h.*, j.nome as nomeJogo
 			FROM historicos h, compartilhamentos c, jogos j, jogos_compartilhados jc
-			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND ((h.comprador_id = $idUsuario) OR ((h.comprador_id = 0) AND (c.criador_id = $idUsuario)))
+			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND 
+				((h.comprador_id = $idUsuario) OR 
+				((h.comprador_id = 0) AND (c.criador_id = $idUsuario) AND (c.criador_id = c.original1_id)) OR 
+				((h.comprador_id = 0) AND (c.original1_id = $idUsuario) AND (c.criador_id <> c.original1_id)) OR 
+				((h.comprador_id = 0) AND (c.original2_id = $idUsuario) AND (c.original1_id = 0)))
 			GROUP BY h.id";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;

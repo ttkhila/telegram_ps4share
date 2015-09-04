@@ -43,11 +43,12 @@
 					<div class="form-group col-md-12">
 						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
 						<div class="col-md-8">
-							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" maxlength="60" />
+							<label for="exampleInputnome" class="control-label text-primary">O nome da conta será gerado automaticamente com base nos jogos da mesma.</label>
+							<!--<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" maxlength="60" />-->
 						</div>
-						<div class="col-md-2">
+						<!--<div class="col-md-2">
 							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
-						</div>
+						</div>-->
 					</div>
 					
 					<div class="form-group col-md-12">
@@ -155,6 +156,7 @@
 			</div><!-- panel-collapse collapse -->
                </div><!-- panel panel-default -->
                
+               <!-- GRUPO ATUAIS -->
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="headingTwo">
 				<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
@@ -196,9 +198,7 @@
 			</div><!-- collapseTwo -->
 		</div><!-- panel panel-default -->
 		
-		
-		
-		
+		  <!-- GRUPO ANTIGOS -->
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="headingThree">
 				<h4 class="panel-title">
@@ -231,13 +231,6 @@
 				</div>
 			</div><!-- collapseThree -->
 		</div><!-- panel panel-default -->
-		
-		
-		
-		
-		
-		
-		
 	</div><!-- panel-group -->
 </div><!-- ROW - menu.php -->
 </div><!-- CONTAINER - menu.php -->
