@@ -10,6 +10,7 @@ class usuarios{
     private $primeiro_acesso;
     private $ativo;	
     private $pontos;
+    private $id_email;
 	private $con;
 
 	public function __construct(){
@@ -24,9 +25,9 @@ class usuarios{
 	public function getNome(){return $this->nome;}
 	public function setLogin($login){$this->login = $login;}
 	public function getLogin(){return $this->login;}
-	public function setEmail($email){$this->email = $email;}
+	public function setEmail($valor){$this->email = $valor;}
 	public function getEmail(){return $this->email;}
-    public function setTelefone($email){$this->telefone = $email;}
+    public function setTelefone($valor){$this->telefone = $valor;}
 	public function getTelefone(){return $this->telefone;}
     public function setSenha($valor){$this->senha = $valor;}
     public function getSenha(){return $this->senha;}
@@ -34,8 +35,10 @@ class usuarios{
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
     public function setAtivo($valor){$this->ativo = $valor;}
     public function getAtivo(){return $this->ativo;}
-    public function setPontos($email){$this->pontos = $email;}
+    public function setPontos($valor){$this->pontos = $valor;}
 	public function getPontos(){return $this->pontos;}
+	public function setIdEmail($valor) { $this->id_email = $valor; }
+	public function getIdEmail() { return $this->id_email; }
 //---------------------------------------------------------------------------------------------------------------   
     // Descarrega os dados QUE ESTÃO PREVIAMENTE CARREGADOS NAS VARIÁVEIS DA CLASSE
     // para um array
@@ -50,6 +53,7 @@ class usuarios{
 		array_push($dados, $this->getPrimeiroAcesso());
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
+		array_push($dados, $this->getIdEmail());
         return $dados;
     }
 //---------------------------------------------------------------------------------------------------------------
@@ -63,7 +67,8 @@ class usuarios{
         $this->setSenha($res->senha); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
         $this->setAtivo($res->ativo);
-        $this->setPontos($res->pontos); 
+        $this->setPontos($res->pontos);
+        $this->setIdEmail($res->id_email);  
     }	
  //---------------------------------------------------------------------------------------------------------------
 	public function getAutocomplete($q){

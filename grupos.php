@@ -6,6 +6,12 @@
 	require_once 'classes/jogos.class.php';
 	include 'funcoes.php';
 
+
+	//$nomeGrupo = "teg380: Uncharted: The Nathan Drake Collection + Resident Evil: Revelations 2 - + Everybody's Gone to the Rapture + Fairy Fencer F Advent Dark Force";
+	//$tam = strlen($nomeGrupo);
+	//$nomeGrupo = substr_replace($nomeGrupo, "", (97-$tam))."...";
+	//echo "antes: ".$tam." / Depois: ".strlen($nomeGrupo)."<br /> Result: ".$nomeGrupo; exit;
+
 	$c = new compartilhamentos();
 	$j = new jogos();
 	$selfID = $_SESSION['ID'];

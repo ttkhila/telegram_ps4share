@@ -127,19 +127,20 @@ function novoGrupo(){
 		$soma = $c->gravaVagas($idGrupo, $orig[1], $orig[2], $orig[3], $outrosDados); //retorna a soma dos valores lançados
 		
 		$jogos = $j->gravaJogosCompartilhados($idGrupo, $outrosDados); //retorna um array com os NOMES dos jogos
-		//echo json_encode($jogos); exit;
-		/*
-		 * 
-		 * 
-		 * 
-		 * 
-		 * CONTINUAR DAQUI
-		 *  CRIAR NOME DO GRUPO BASEADO NOS JOGOS ($jogos)
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		$u = carregaClasse("Usuario");
+		$u->carregaDados($selfID);
+		$nomeGrupo = $u->getIdEmail().": ";
+
+		//monta Nome do Grupo
+		foreach($jogos as $jogo){
+			$nomeGrupo .= str_replace("'", " ", $jogo)." + ";
+		}
+		$nomeGrupo = substr_replace($nomeGrupo, "", -3);
+		$tam = strlen($nomeGrupo);
+		//echo json_encode($nomeGrupo);exit;
+		if($tam > 96) $nomeGrupo = substr_replace($nomeGrupo, "", (96-$tam))."...";
+
+		$c->gravaNomeGrupo($idGrupo, $nomeGrupo); //grava nome grupo
 		
 		if($fechado == 1){
 			require_once 'funcoes.php';
@@ -412,7 +413,7 @@ function mostraGrupo(){
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
 			title='$titleVenda2'></button>";  // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
-	else if($selfID == $c->getCriadorId() && $c->getOrig2() == 0) 
+	else if(($selfID == $c->getCriadorId()|| $c->getOrig1() == $selfID) && $c->getOrig2() == 0) 
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
@@ -429,9 +430,9 @@ function mostraGrupo(){
 	
 	// FANTASMA
 	if($orig3ID == $selfID && $c->getFechado() == 1) 
-		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
-			data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
-		<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
+		//$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
+			//data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
+		$opcoes3 = "<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
 			title='$titleVenda3'></button>"; //grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
 	else if(($selfID == $c->getCriadorId() || $c->getOrig1() == $selfID) && $c->getOrig3() == 0 && $c->getFechado() == 0) 
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 

@@ -198,6 +198,11 @@ class compartilhamentos{
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gravaNomeGrupo($idGrupo, $nome){
+		$query = "UPDATE compartilhamentos SET nome = '$nome' WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function getDadosPorUsuario($usuarioID){
 		$query = "SELECT c.* , u.nome as criador, u.login FROM compartilhamentos c, usuarios u
 			WHERE (c.criador_id = u.id) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";

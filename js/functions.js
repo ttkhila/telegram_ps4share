@@ -323,8 +323,18 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 				.fadeIn()
 				.html("E-mail Inválido.<span class='badge'>x</span>");
 			$("#email").focus();
+			$(document).scrollTop( $("#foco").offset().top );
 			return false;
 		}
+	}
+	
+	if($("#original1_id").val() == "" && $("#original2_id").val() == ""){
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("Não é possível criar uma conta somente com fantasma.<span class='badge'>x</span>");
+		$("#original1_autocomplete").focus();
+		$(document).scrollTop( $("#foco").offset().top );
+		return false;
 	}
 	
 	$dados.push("moeda_id%=%"+$("#moedas option:selected").val());
@@ -343,7 +353,7 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
 		complete: function(){  },
 		success: function(data){ 
-			console.log(data); return;
+			console.log(data); //return;
 			if(data == 1){ //sucesso
 				location.reload();
 			} else { //erro
