@@ -48,7 +48,7 @@
 					
 					<div class="form-group col-md-12">
 						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
-						<div class="col-md-8">
+						<div class="col-md-10">
 							<label for="exampleInputnome" class="control-label text-primary">O nome da conta será gerado automaticamente com base nos jogos da mesma.</label>
 							<!--<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" maxlength="60" />-->
 						</div>
@@ -63,8 +63,16 @@
 							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail da conta" />
 						</div>  	
 						<div class="col-md-2">
-							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-								title="E-mail da conta de jogo. N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo, a n&atilde;o ser que seja um grupo j&aacute; fechado." />
+							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" data-html="true" 
+								title="E-mail da conta de jogo.<br /> 
+									N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo, a n&atilde;o ser que seja um grupo j&aacute; fechado.<br />
+									Respeitar padrão de e-mails conforme item 3.8 das regras de partilha do grupo." />
+						</div>
+					</div>
+					
+					<div class="form-group col-md-12">
+						<div class="col-md-offset-2 col-md-3">
+							<button class="glyphicon glyphicon-hand-up btn btn-xs btn-warning" id="btn-email-padrao" title="Preenche parte do e-mail padrão para criação do grupo"> Colocar E-mail no padrão</button>
 						</div>
 					</div>
 				
@@ -122,7 +130,6 @@
 								<label class="exampleInputEmail1">Valor:</label>
 								<input type="text" class="form-control" name="valor" id="valor1" maxlength="10" />
 								<button class="btn btn-danger" id="1">Limpar</button>
-
 							</form>
 						</form>
 					</div>

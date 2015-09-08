@@ -1,16 +1,16 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
 class usuarios{
-    private $id;
+	private $id;
 	private $nome;
 	private $login;
 	private $email;
-    private $telefone;
-    private $senha;
-    private $primeiro_acesso;
-    private $ativo;	
-    private $pontos;
-    private $id_email;
+	private $telefone;
+	private $senha;
+	private $primeiro_acesso;
+	private $ativo;	
+	private $pontos;
+	private $id_email;
 	private $con;
 
 	public function __construct(){
@@ -19,23 +19,23 @@ class usuarios{
 		$this->con->abreConexao();
 	}
     
-    public function setId($valor){$this->id = $valor;}
-    public function getId(){return $this->id;}
+	public function setId($valor){$this->id = $valor;}
+	public function getId(){return $this->id;}
 	public function setNome($nome){$this->nome = $nome;}	
 	public function getNome(){return $this->nome;}
 	public function setLogin($login){$this->login = $login;}
 	public function getLogin(){return $this->login;}
 	public function setEmail($valor){$this->email = $valor;}
 	public function getEmail(){return $this->email;}
-    public function setTelefone($valor){$this->telefone = $valor;}
+	public function setTelefone($valor){$this->telefone = $valor;}
 	public function getTelefone(){return $this->telefone;}
-    public function setSenha($valor){$this->senha = $valor;}
-    public function getSenha(){return $this->senha;}
-    public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
+	public function setSenha($valor){$this->senha = $valor;}
+	public function getSenha(){return $this->senha;}
+	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
-    public function setAtivo($valor){$this->ativo = $valor;}
-    public function getAtivo(){return $this->ativo;}
-    public function setPontos($valor){$this->pontos = $valor;}
+	public function setAtivo($valor){$this->ativo = $valor;}
+	public function getAtivo(){return $this->ativo;}
+	public function setPontos($valor){$this->pontos = $valor;}
 	public function getPontos(){return $this->pontos;}
 	public function setIdEmail($valor) { $this->id_email = $valor; }
 	public function getIdEmail() { return $this->id_email; }
@@ -92,7 +92,7 @@ class usuarios{
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
  //---------------------------------------------------------------------------------------------------------------
-	
+ //---------------------------------------------------------------------------------------------------------------
 	
 	
 	

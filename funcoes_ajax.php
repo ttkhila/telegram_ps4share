@@ -186,6 +186,20 @@ function novoGrupo(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function montaPadraoEmail(){
+	$idUsuario = $_POST['id'];
+	$u = carregaClasse("Usuario");
+	$u->carregaDados($idUsuario);
+	$idEmail = $u->getIdEmail();
+	if ($idEmail == "" || empty($idEmail)){
+		echo json_encode(array(1, "O usuário não possui uma ID de email cadastrada. Informar a administração"));
+		exit;
+	}
+	$emailPadrao = "tlcw.".$idEmail."_";
+	echo json_encode(array(0, $emailPadrao));
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
 function mostraGrupo(){
 	$idGrupo = $_POST['id'];
 	$selfID = $_POST['selfid'];
@@ -537,17 +551,44 @@ function gravaRepasse(){
 	if($v->validate()){
 		$ret = $c->gravaRepasse($idGrupo, $vendedor, $compradorID, $vaga, $valor, $data_venda, $alterou_senha);
 
-		//grava aviso
+		// *** GRAVA AVISO - INÍCIO *** //
 		$a = carregaClasse("Aviso");
+		$u = carregaClasse("Usuario");
 		$c->carregaDados($idGrupo);
 		$vendedorLogin = stripslashes(utf8_decode($_SESSION["login"]));
 		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
-		if ($vaga == 1) $vagaNome = "Original 1";
-		else if ($vaga == 2) $vagaNome = "Original 2";
-		else $vagaNome = "Fantasma";
+		//echo json_encode("dwd42343242ewf"); exit;
+		$u->carregaDados($compradorID);
+		$compradorLogin = $u->getLogin();
+		//echo json_encode("dwdfewfewf"); exit;
+		if ($vaga == 1){ 
+			$vagaNome = "Original 1";
+			$orig2 = $c->getOrig2();
+			if($orig2 == $vendedor) $outroOriginal = 0; //se vendedor e dono do Original 2 forem a mesma pessoa, não percisa avisar
+			else $outroOriginal = $orig2; //avisa o Original 2 sobre o repasse
+		}
+		else if ($vaga == 2){ 
+			$vagaNome = "Original 2"; 
+			$orig1 = $c->getOrig1();
+			if($orig1 == $vendedor) $outroOriginal = 0; //se vendedor e dono do Original 1 forem a mesma pessoa, não percisa avisar
+			else $outroOriginal = $orig1; //avisa o Original 1 sobre o repasse
+		}
+		else {
+			$vagaNome = "Fantasma";
+			$orig1 = $c->getOrig1();
+			$orig2 = $c->getOrig2();
+			if($orig1 == $vendedor) $orig1 = 0;
+			if($orig2 == $vendedor) $orig2 = 0;
+			$outroOriginal = array($orig1, $orig2);
+		}
+		//echo json_encode($outroOriginal); exit;
 		$texto = "O usuário <b>$vendedorLogin</b> repassou a vaga de $vagaNome da conta <b>'$nomeGrupo'</b> para você em ".date('d-m-Y', strtotime($data_venda)).".";
+		$textoOutroOriginal = "O usuário <b>$vendedorLogin</b> repassou a vaga de $vagaNome da conta <b>'$nomeGrupo'</b>, da qual você faz parte, para <b>$compradorLogin</b> em ".date('d-m-Y', strtotime($data_venda)).".";
 		$texto = addslashes(utf8_encode($texto));
-		$a->insereAviso($compradorID, $texto);
+		$textoOutroOriginal = addslashes(utf8_encode($textoOutroOriginal));
+		$a->insereAviso($compradorID, $texto); //envia aviso ao destinatário da vaga
+		$a->insereAviso($outroOriginal, $textoOutroOriginal); //envia aviso ao(s) outro(s) original(is)
+		// *** GRAVA AVISO - FIM *** //
 
 		if($ret) echo json_encode(1);
 		else echo json_encode($ret);
@@ -1109,7 +1150,7 @@ function carregaClasse($secao){
 			$inst = new campeonatos();
 			break;
 		case 'Usuario':
-			require_once './classes/usuarios.class.php';
+			require_once 'classes/usuarios.class.php';
 			$inst = new usuarios();
 			break;
 		case 'Log':

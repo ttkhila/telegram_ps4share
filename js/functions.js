@@ -374,7 +374,35 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 		}
 	});
 });
-
+//********************************************************************************
+//Botão para preencher parte do e-mail padrão - Novo Grupo
+$("#collapseOne").on("click", "#btn-email-padrao", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
+	$selfID = $("#selfID").val();
+	var pars = { id: $selfID, funcao: 'montaPadraoEmail'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data); //return;
+			if(data[0] == 1){
+				alert(data[1]);
+			} else {
+				$("#collapseOne").find("#email").val(data[1]);
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************
 //LISTAGEM DE GRUPOS
 $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").click(function(){
@@ -487,7 +515,7 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
 		complete: function(){  },
 		success: function(data){ 
-			console.log(data); 
+			console.log(data); //return;
 		
 			if(data == 1){ //sucesso
 				alert("Vaga repassada!");

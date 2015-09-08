@@ -37,8 +37,19 @@ class avisos{
 	}	
  //---------------------------------------------------------------------------------------------------------------
 	public function insereAviso($para, $texto){
-		$query = "INSERT INTO avisos (para, texto) VALUES ($para, '$texto')";
-		try{ $res = $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+		if (is_array($para)){ //array - original 1 e 2
+			foreach ($para as $valor){
+				if ($valor != 0) { //vaga diferente de "Vaga em aberto"
+					$query = "INSERT INTO avisos (para, texto) VALUES ($valor, '$texto')";
+					try{ $res = $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+				}
+			}
+		} else {
+			if($para != 0) { //vaga diferente de "Vaga em aberto"
+				$query = "INSERT INTO avisos (para, texto) VALUES ($para, '$texto')";
+				try{ $res = $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+			}
+		}
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getAvisos($para){
