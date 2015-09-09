@@ -210,7 +210,6 @@ class compartilhamentos{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
-
 	public function getGruposAntigos($usuarioID){
 		$query = "SELECT h.id, c.nome FROM compartilhamentos c, historicos h 
 			WHERE (c.id = h.compartilhamento_id) AND (h.vendedor_id = $usuarioID) 
@@ -218,10 +217,6 @@ class compartilhamentos{
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
-
-
-
-
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosHistoricoInicial($idGrupo){
 		//Dados históricos da criação do grupo

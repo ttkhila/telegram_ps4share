@@ -427,7 +427,7 @@ function mostraGrupo(){
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
 			title='$titleVenda2'></button>";  // grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
-	else if(($selfID == $c->getCriadorId()|| $c->getOrig1() == $selfID) && $c->getOrig2() == 0) 
+	else if(($selfID == $c->getCriadorId() || $c->getOrig1() == $selfID) && $c->getOrig2() == 0) 
 		$opcoes2 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
 			data-target='#repasse' id='img-repasse_$idGrupo' rel='2' title='Informar vaga repassada'></button>&nbsp;&nbsp;
 		<button class='$classeVenda2' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_2'  
@@ -550,6 +550,12 @@ function gravaRepasse(){
 	
 	if($v->validate()){
 		$ret = $c->gravaRepasse($idGrupo, $vendedor, $compradorID, $vaga, $valor, $data_venda, $alterou_senha);
+		
+		// Faz abertura de registro de recomendação
+		$r = carregaClasse("Recomendacao");
+		$c->carregaUltimoHistorico($idGrupo, $vaga);
+		$historicoID = $c->getHistoricoId();
+		$r->abreRecomendacao($historicoID, $compradorID, $vendedor);
 
 		// *** GRAVA AVISO - INÍCIO *** //
 		$a = carregaClasse("Aviso");
@@ -557,10 +563,8 @@ function gravaRepasse(){
 		$c->carregaDados($idGrupo);
 		$vendedorLogin = stripslashes(utf8_decode($_SESSION["login"]));
 		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
-		//echo json_encode("dwd42343242ewf"); exit;
 		$u->carregaDados($compradorID);
 		$compradorLogin = $u->getLogin();
-		//echo json_encode("dwdfewfewf"); exit;
 		if ($vaga == 1){ 
 			$vagaNome = "Original 1";
 			$orig2 = $c->getOrig2();
@@ -1145,9 +1149,9 @@ function carregaClasse($secao){
 			require_once 'classes/avisos.class.php';
 			$inst = new avisos();
 			break;
-		case 'Campeonato':
-			require_once 'classes/campeonatos.class.php';
-			$inst = new campeonatos();
+		case 'Recomendacao':
+			require_once 'classes/recomendacoes.class.php';
+			$inst = new recomendacoes();
 			break;
 		case 'Usuario':
 			require_once 'classes/usuarios.class.php';
