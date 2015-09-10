@@ -95,6 +95,15 @@
 				}	
 			});
 		});	
+		
+		$('#div-painel-minhas-compras').on('click', '[name="btn-avalia-compra"]', function(){
+			$login = $(this).data('login-vendedor');
+			$(".modal-body #login-vendedor").text( $login );
+			
+			$recomendacaoID = $(this).attr("id").split("_")[1];
+			$(".modal-body #recomendacao_id").val( $recomendacaoID );
+		});
+		
 	});	
 </script>
 </head>
@@ -109,11 +118,14 @@
 		include 'classes/avisos.class.php';
 		include 'classes/compartilhamentos.class.php';
 		include 'classes/jogos.class.php';
+		include 'classes/recomendacoes.class.php';
 		$a = new avisos();
 		$c = new compartilhamentos();
 		$j = new jogos();
+		$r = new recomendacoes();
 		$avisos = $a->getAvisos($_SESSION['ID']);
 		$vendas = $c->getVendasAbertasPorUsuario($_SESSION['ID']);
+		$compras = $r->getRecomendacoes($_SESSION['ID']);
 	?>
 		<div class="row">
 			<div class="panel panel-primary">
@@ -150,7 +162,7 @@
 			</div>
 
 		
-			<div class="panel panel-warning" id="div-painel-minhas-vendas">
+			<div class="panel panel-info" id="div-painel-minhas-vendas">
 				<div class="panel-heading">Minhas Vendas</div>
 				<div class="panel-body">
 					<div class="table pre-scrollable">
@@ -161,7 +173,7 @@
 							?>
 							<thead>
 								<tr>
-									<th>Jogo(s)</th>
+									<th>Jogo(s) da conta</th>
 									<th>Vaga</th>
 									<th>Preço</th>
 									<th><span class='glyphicon glyphicon-usd btn-default btn-xs' title='Altera Valor Venda'></span></th>
@@ -217,7 +229,75 @@
 						</table>
 					</div>
 				</div>
-			</div>
+			</div> <!-- Fim - Minhas Vendas -->
+			
+			
+			
+			<div class="panel panel-warning" id="div-painel-minhas-compras">
+				<div class="panel-heading">Minhas Compras</div>
+				<div class="panel-body">
+					<div class="table pre-scrollable">
+						<table class="table table-striped">
+							<?php
+								if ($compras->num_rows == 0){ $linhas = "<tr><th colspan='4'>Não há compras a serem avaliadas no momento.</th></tr>"; }
+								else {
+							?>
+							<thead>
+								<tr>
+									<th>Jogo(s) da conta</th>
+									<th>Vendedor</th>
+									<th>Vaga</th>
+									<th><span class='glyphicon glyphicon-thumbs-up btn-default btn-xs' title='Avaliar compra'></span></th>
+									<th><span class='glyphicon glyphicon-remove-circle btn-default btn-xs' title='Finaliza sem avaliar'></span></th>
+								</tr>
+							</thead>
+							<tbody>
+							<?php
+								$linhas = "";
+								while($co = $compras->fetch_object()){
+									$id = $co->compartilhamento_id;
+									$vaga = $co->vaga;
+									$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
+									if($jogos->num_rows > 1) { 
+										$games = "";
+										while($jogo = $jogos->fetch_object()){
+											$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+											$nomeAbrev = $jogo->nome_abrev;
+											$games  .= "- $nome ($nomeAbrev)<br />";
+										}
+									} else {
+										$jogo = $jogos->fetch_object();
+										$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+										$nomeAbrev = $jogo->nome_abrev;
+										$games  = "- $nome ($nomeAbrev)";
+									}
+									
+									$linhas .= "
+										<tr>
+											<td>$games</td>
+											<td title='Nome: ".stripslashes(utf8_decode($co->vendedorNome))."'>".stripslashes(utf8_decode($co->vendedorLogin))."</td>
+											<td>".$c->getNomeVaga($vaga, 1)."</td>
+											<td>
+												<button class='glyphicon glyphicon-thumbs-up btn btn-warning btn-xs' title='Avaliar compra' name='btn-avalia-compra' id='avalia-compra_".$co->recomendacaoID."' data-toggle='modal' 
+													data-target='#avaliacao' data-login-vendedor='".stripslashes(utf8_decode($co->vendedorLogin))."'></button>
+											</td>
+											<td>
+												<button class='glyphicon glyphicon-remove-circle btn btn-warning btn-xs' title='Finaliza sem avaliar' name='btn-finaliza-compra' id='finaliza-compra_".$co->recomendacaoID."'></button>
+											</td>
+										</tr>";
+									}
+								}
+								echo $linhas;
+							?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div> <!-- Fim - Minhas Compras -->
+			
+			
+			
+			
 		</div>
 	<?php
 	}
@@ -250,7 +330,39 @@
 		*/	
 		?>
 	</div>
-		
+	
+
+	<!-- formulário de avaliação da compra -->
+	<div class="modal fade" id="avaliacao" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Avalie sua compra</h4>
+				</div><!-- modal-header -->
+				<div class="modal-body">
+					<input type="hidden" name="recomendacao_id" id="recomendacao_id" />
+					<div class="form-group">
+						<label class="control-label">Vendedor:</label>
+						<label class="control-label" name="login-vendedor" id="login-vendedor" /></label>
+					</div>
+					
+					<div class="form-group">
+						<label>Comentário (relate sua experiência nessa transação):</label>
+						<textarea class="form-control" maxlength="250" id="txtTexto" autofocus></textarea>
+						<small>Máximo de 250 caracteres</small>
+						<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" id="btn-confirma-avaliacao" class="btn btn-primary">Avaliar</button>
+					</div>
+				</div><!-- modal-body -->
+			</div><!-- modal-content -->
+		</div><!-- modal-dialog -->
+	</div><!-- modal fade -->
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

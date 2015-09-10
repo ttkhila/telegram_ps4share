@@ -2,9 +2,9 @@
 //---------------------------------------------------------------------------------------
 function login($mn){
 	if(!isset($_SESSION['login']))
-		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, Visitante!<br /><a href='login.php' style='padding:0'>[login]</a></p>";
+		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, Visitante! <a href='login.php' style='padding:0'>[login]</a></p>";
 	else  
-		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, ".$_SESSION['login']."!<br /><a href='#' id='deslogar'>[sair]</a></p>";
+		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, ".$_SESSION['login']."! <a href='#' id='deslogar'>[sair]</a></p>";
 		
 	$mn = str_replace("%%user%%", $msg, $mn);
 	

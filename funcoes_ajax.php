@@ -1100,7 +1100,44 @@ function removeAviso(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function gravaRecomendacao(){
+	session_start();
+	$comprador = $_SESSION['ID'];
+	$recomendacaoID = $_POST['recomendacaoID'];
+	$texto = $_POST['texto'];
+	$r = carregaClasse("Recomendacao");
+	$v = carregaClasse("Validacao");
 
+	$ret = $r->is_this($recomendacaoID, $comprador);
+	if(!$ret){
+		$v->set('Registro', '')->set_error("Falha na autenticação.");
+		 $erros = $v->get_errors();
+		 echo json_encode($erros); 
+		 exit;
+	}
+
+	$v->set("Comentário", trim($texto))->is_required(); 
+	
+	if($v->validate()){
+		$r->gravaRecomendacao($recomendacaoID, addslashes(utf8_encode($texto)));
+		
+		//Grava Aviso ao vendedor
+		$a = carregaClasse("Aviso");
+		$r->carregaDados($recomendacaoID);
+		$vendedorID = $r->getVendedorId();
+		$compradorLogin = $_SESSION['login'];
+		$texto = "O usuário $compradorLogin registrou uma recomendação a você em ".date('d-m-Y').".";
+		$texto = addslashes(utf8_encode($texto));
+		$a->insereAviso($vendedorID, $texto);
+
+		echo json_encode(1);
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	
+	exit;	
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

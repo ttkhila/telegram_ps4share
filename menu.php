@@ -7,7 +7,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-share"></span> Telegram - Partilhas</a>
+          <a class="navbar-brand" href="index.php"><span class="glyphicon glyphicon-send"></span> Telegram - Partilhas</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">

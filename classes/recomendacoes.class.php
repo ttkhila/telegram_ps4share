@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=UTF-8');
+//header('Content-Type: text/html; charset=UTF-8');
 class recomendacoes{
 	private $id;
 	private $historico_id;
@@ -56,8 +56,29 @@ class recomendacoes{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getRecomendacoes($usuarioID){
+		$query = "SELECT h.compartilhamento_id, r.id as recomendacaoID, r.historico_id, h.vaga, u.nome as vendedorNome, u.login as vendedorLogin 
+			FROM historicos h, recomendacoes r, usuarios u 
+			WHERE (h.id = r.historico_id) AND 
+			(u.id = r.vendedor_id) AND (r.efetuada = 0) AND (r.comprador_id = $usuarioID)
+			GROUP BY r.historico_id";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function is_this($recomendacaoID, $comprador){
+		$query = "SELECT * FROM recomendacoes WHERE id = $recomendacaoID AND comprador_id = $comprador";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		
+		if($res->num_rows == 0) return FALSE;
+		
+		return TRUE;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gravaRecomendacao($id, $texto){
+		$query = "UPDATE recomendacoes SET texto = '$texto', efetuada = 1 WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
 //---------------------------------------------------------------------------------------------------------------
 	
 	

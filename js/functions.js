@@ -929,7 +929,54 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 		}
 	});
 });
+//********************************************************************************
+$("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
+	$recomendacaoID = $("#recomendacao_id").val();
+	$texto = $("#txtTexto").val();
 
+	if($texto == ""){
+		$("#avaliacao #sp-erro-msg-modal")
+			.fadeIn()
+			.html("- O campo Comentário é obrigatório!")
+			.delay(2000)
+			.fadeOut('slow');
+		$("#txtTexto").focus();
+		return;
+	}
+	
+	var pars = { recomendacaoID: $recomendacaoID, texto: $texto, funcao: 'gravaRecomendacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"<br />";
+				});
+				$("#avaliacao #sp-erro-msg-modal")
+					.fadeIn()
+					.html($error)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+		}
+	});
+	//alert("Desenvolver essa funcionalidade!");
+});
 //********************************************************************************  
 
 //********************************************************************************  
