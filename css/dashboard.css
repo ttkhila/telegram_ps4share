@@ -126,6 +126,12 @@ body {
 	opacity: .9;
 }
 
+.fixed-panel {
+	min-height: 10px;
+	max-height: 200px;
+	overflow-y: scroll;
+ }
+
 #div-cadastro-jogos{
     width: 50%;
     float: right;

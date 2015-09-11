@@ -1119,7 +1119,8 @@ function gravaRecomendacao(){
 	$v->set("Comentário", trim($texto))->is_required(); 
 	
 	if($v->validate()){
-		$r->gravaRecomendacao($recomendacaoID, addslashes(utf8_encode($texto)));
+		$dt = date('Y-m-d');
+		$r->gravaRecomendacao($recomendacaoID, addslashes(utf8_encode($texto)), $dt);
 		
 		//Grava Aviso ao vendedor
 		$a = carregaClasse("Aviso");
@@ -1139,7 +1140,12 @@ function gravaRecomendacao(){
 	exit;	
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function cancelaRecomendacao(){
+	$recomendacaoID = $_POST['recomendacao'];
+	$r = carregaClasse("Recomendacao");
+	$r->cancelaRecomendacao($recomendacaoID);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

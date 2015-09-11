@@ -28,7 +28,7 @@
 		exit;
 	}
 	
-	$u->troca_senha($id, $passNew);
+	$u->troca_senha_inicial($id, $passNew);
 	echo "Senha Alterada com Sucesso!<br />"; 
 	echo "Clique <a href='login.php'>aqui</a> para fazer login com a nova senha.";
 ?>

@@ -60,7 +60,7 @@ class recomendacoes{
 		$query = "SELECT h.compartilhamento_id, r.id as recomendacaoID, r.historico_id, h.vaga, u.nome as vendedorNome, u.login as vendedorLogin 
 			FROM historicos h, recomendacoes r, usuarios u 
 			WHERE (h.id = r.historico_id) AND 
-			(u.id = r.vendedor_id) AND (r.efetuada = 0) AND (r.comprador_id = $usuarioID)
+			(u.id = r.vendedor_id) AND (r.efetuada = 0) AND (r.cancelada = 0) AND (r.comprador_id = $usuarioID)
 			GROUP BY r.historico_id";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;
@@ -75,12 +75,24 @@ class recomendacoes{
 		return TRUE;
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function gravaRecomendacao($id, $texto){
-		$query = "UPDATE recomendacoes SET texto = '$texto', efetuada = 1 WHERE id = $id";
+	public function gravaRecomendacao($id, $texto, $dt){
+		$query = "UPDATE recomendacoes SET texto = '$texto', efetuada = 1, data_recomendacao = '$dt' WHERE id = $id";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
-	
+	public function cancelaRecomendacao($id){
+		$query = "UPDATE recomendacoes SET cancelada = 1, efetuada = 0 WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getMinhasRecomendacoes($usuarioID){
+		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto 
+			FROM recomendacoes r, usuarios u 
+			WHERE (r.comprador_id = u.id) AND (r.efetuada = 1) AND (r.vendedor_id = $usuarioID) 
+			ORDER BY r.data_recomendacao";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res;
+	}
 	
 }
 ?>

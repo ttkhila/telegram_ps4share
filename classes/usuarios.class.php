@@ -7,6 +7,7 @@ class usuarios{
 	private $email;
 	private $telefone;
 	private $senha;
+	private $telegram_id;
 	private $primeiro_acesso;
 	private $ativo;	
 	private $pontos;
@@ -31,6 +32,8 @@ class usuarios{
 	public function getTelefone(){return $this->telefone;}
 	public function setSenha($valor){$this->senha = $valor;}
 	public function getSenha(){return $this->senha;}
+	public function setTelegramId($valor){$this->telegram_id = $valor;}
+	public function getTelegramId(){return $this->telegram_id;}
 	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
 	public function setAtivo($valor){$this->ativo = $valor;}
@@ -50,6 +53,7 @@ class usuarios{
 		array_push($dados, $this->getEmail());
 		array_push($dados, $this->getTelefone());
 		array_push($dados, $this->getSenha());
+		array_push($dados, $this->getTelegramId());
 		array_push($dados, $this->getPrimeiroAcesso());
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
@@ -65,12 +69,13 @@ class usuarios{
         $this->setEmail($res->email); 
         $this->setTelefone($res->telefone); 
         $this->setSenha($res->senha); 
+        $this->setTelegramId($res->telegram_id); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
         $this->setAtivo($res->ativo);
         $this->setPontos($res->pontos);
         $this->setIdEmail($res->id_email);  
     }	
- //---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
 	public function getAutocomplete($q){
 		$q = $this->con->escape($q);
 		$sql = "SELECT * FROM usuarios where locate('$q',login) > 0  AND ativo = 1 order by locate('$q',login) limit 10";
@@ -79,20 +84,19 @@ class usuarios{
 //---------------------------------------------------------------------------------------------------------------
     public function validaLogin($dados){
 	$query = "SELECT * FROM usuarios WHERE login='".addslashes(utf8_encode($dados['login']))."' AND senha='".md5(trim($dados['senha']))."'";
-
-        $res = $this->con->multiConsulta($query);
-        
+        $res = $this->con->multiConsulta($query); 
         if ($res->num_rows > 0) //login OK
             return $res->fetch_object();
     }
- //---------------------------------------------------------------------------------------------------------------
-    public function troca_senha($id, $senhaNova){
+//---------------------------------------------------------------------------------------------------------------
+    public function troca_senha_inicial($id, $senhaNova){
         //$senhaNova = md5($senhaNova);
-        $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0 WHERE id = $id";
+        $dt = date("Y/m/d");
+        $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0, primeiro_acesso_data = '$dt' WHERE id = $id";
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
- //---------------------------------------------------------------------------------------------------------------
- //---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
 	
 	
 	

@@ -64,8 +64,8 @@
 				type: 'POST',
 				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 				data: pars,
-				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				beforeSend: function() {  },
+				complete: function(){ },
 				success: function(data){ 
 					$killrow.fadeOut(1000, function(){
 						$(this).remove();
@@ -85,8 +85,8 @@
 				type: 'POST',
 				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 				data: pars,
-				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				beforeSend: function() {  },
+				complete: function(){ },
 				success: function(data){ 
 					$readrow.fadeOut(1000,function(){
 						$readrow.prop({'src': 'img/lida.png', 'title': 'Aviso lido'}).fadeIn(1000);
@@ -104,6 +104,26 @@
 			$(".modal-body #recomendacao_id").val( $recomendacaoID );
 		});
 		
+		//Cancelamento da avaliação
+		$('#div-painel-minhas-compras').on('click', '[name="btn-finaliza-compra"]', function(){
+			if(!confirm("A recomendação é opcional, porém ao confirmar essa opção, não haverá mais possibilidade de voltar atrás.\nConfirma essa opção?"))
+				return false;
+			$recomendacaoID = $(this).attr("id").split("_")[1];
+			
+			var pars = { recomendacao: $recomendacaoID, funcao: 'cancelaRecomendacao'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() {  },
+				complete: function(){  },
+				success: function(data){ 
+					location.reload();
+				}	
+			});
+		});
+			
 	});	
 </script>
 </head>
@@ -161,7 +181,7 @@
 				</div>
 			</div>
 
-		
+			<!-- MINHAS VENDAS -->
 			<div class="panel panel-info" id="div-painel-minhas-vendas">
 				<div class="panel-heading">Minhas Vendas</div>
 				<div class="panel-body">
@@ -230,9 +250,8 @@
 					</div>
 				</div>
 			</div> <!-- Fim - Minhas Vendas -->
-			
-			
-			
+
+			<!-- MINHAS COMPRAS -->
 			<div class="panel panel-warning" id="div-painel-minhas-compras">
 				<div class="panel-heading">Minhas Compras</div>
 				<div class="panel-body">
@@ -293,10 +312,7 @@
 						</table>
 					</div>
 				</div>
-			</div> <!-- Fim - Minhas Compras -->
-			
-			
-			
+			</div> <!-- Fim - Minhas Compras -->	
 			
 		</div>
 	<?php
