@@ -1147,7 +1147,53 @@ function cancelaRecomendacao(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function alteraPerfil(){
+	session_start();
+	$tipo = $_POST['tp'];
+	$valor = $_POST['vl'];
+	$usuarioID = $_SESSION['ID'];
+	$u = carregaClasse("Usuario");
+	switch($tipo){
+		case 'nome':
+			if(trim($valor) == "") $erro = "Nome Inválido";
+			else {
+				$valor = addslashes(utf8_encode($valor));
+				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
+			}
+			break;
+		case 'telegram':
+			$tipo = "telegram_id";
+			if(preg_match("/^[a-zA-Z0-9_]{5,30}$/", $valor) != 1) $erro = "Telegram ID inválido";
+			else{
+				$valor = addslashes(utf8_encode($valor));
+				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
+			}
+			break;
+		case 'email':
+			if(!preg_match("/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/", $valor)) $erro = "E-mail inválido";
+			else{
+				$valor = addslashes(utf8_encode($valor));
+				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
+			}
+			break;
+		case 'telefone':
+			$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
+			break;
+	}
+	if(isset($erro)) echo json_encode($erro);
+	else { 
+		/*
+		 * 
+		 *  ... OU GRAVAR REGISTRO AQUI
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		echo json_encode(1);
+	}
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

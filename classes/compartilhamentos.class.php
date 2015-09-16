@@ -479,6 +479,102 @@ class compartilhamentos{
 		return $vagaNome;
 	}
 //---------------------------------------------------------------------------------------------------------------
+/***************************************************
+ ***************  ESTATÍSTICAS *********************
+ ***************************************************/
+	 public function gruposTotaisUsuario($idUsuario){
+		$query = "SELECT count(*) as qtd, sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos WHERE comprador_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
+		
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gruposTotaisUsuarioPorVaga($idUsuario){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM historicos WHERE comprador_id = $idUsuario AND vaga = '$i'";
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposCriadosUsuario($idUsuario){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE criador_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	 public function gruposAtivos($idUsuario){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original1_id = $idUsuario OR original2_id = $idUsuario OR original3_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposAtivosPorVaga($idUsuario){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original".$i."_id = $idUsuario";
+			//die($query);
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function montanteArrecadado($idUsuario){
+		$query = "SELECT sum(valor_pago) as valorTotal FROM historicos WHERE vendedor_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da soma dos valores das contas vendidas pelo usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function montanteArrecadadoGlobal(){
+		$query = "SELECT sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do montante de vendas total global."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposTotaisGlobal(){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do total de contas criadas - Global."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function totalRepassesGlobal(){
+		$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses total global."); }
+
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function totalRepassesGlobalPorVaga(){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0 AND vaga = '$i'";
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses global por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function moedaPreferida(){
+		$query = "SELECT count(*) as qtd, m.* FROM compartilhamentos c, moedas m WHERE (c.moeda_id = m.id) GROUP BY (moeda_id) ORDER BY qtd desc";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de moeda preferida."); }
+
+		return $res;
+	}
+	
+	public function jogoPreferido(){
+		$query = "SELECT count(*) as qtd, j.nome as nomeJogo, p.nome_abrev as plataforma FROM jogos_compartilhados jc, jogos j, plataformas p
+			WHERE (jc.jogo_id = j.id) AND (j.plataforma_id = p.id) 
+			GROUP BY jc.jogo_id ORDER BY qtd desc";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de jogo mais compartilhado."); }
+
+		return $res;
+	}
+	
+	
 }
 ?>

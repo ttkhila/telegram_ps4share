@@ -978,6 +978,81 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 	//alert("Desenvolver essa funcionalidade!");
 });
 //********************************************************************************  
+/*
+ * 	ALTERAÇÕES NOS DADOS DE PERFIL DE USUÁRIO
+ */
+$("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone();
+	
+	var tipo = botao.attr("id").split("_")[1]; //nome, email, telegram, celular
+	var campo = $("#txt_"+tipo);
+	var valor = campo.val();
+	
+	switch(tipo){
+		case 'telegram':
+			var match = valor.match(/^[a-zA-Z0-9_]{5,30}$/); //Somente letras maiúsculas e minúsculas, numeros e sublinhado(_)
+			if(!match || match == "null") {
+				botao.parent().parent().children("p")
+					.fadeIn()
+					.html("Telegram ID inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'nome':
+			if($.trim(valor) == ""){
+				botao.siblings("p")
+					.fadeIn()
+					.html("Nome inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'email':
+			var match = valor.match(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/);
+			if(!match || match == "null") {
+				botao.siblings("p")
+					.fadeIn()
+					.html("E-mail inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+	}
+
+	var pars = { tp: tipo, vl: valor, funcao: 'alteraPerfil'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$("#edita_"+tipo+" p")
+					.fadeIn()
+					.html(data)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+		}
+	});
+});
+
+
+
 
 //********************************************************************************  
 

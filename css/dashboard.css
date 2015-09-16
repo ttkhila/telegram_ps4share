@@ -128,8 +128,8 @@ body {
 
 .fixed-panel {
 	min-height: 10px;
-	max-height: 200px;
-	overflow-y: scroll;
+	height: 373px;
+	overflow-y: auto;
  }
 
 #div-cadastro-jogos{

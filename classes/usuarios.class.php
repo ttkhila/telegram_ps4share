@@ -12,6 +12,7 @@ class usuarios{
 	private $ativo;	
 	private $pontos;
 	private $id_email;
+	private $grupo_acesso_id;
 	private $con;
 
 	public function __construct(){
@@ -42,6 +43,8 @@ class usuarios{
 	public function getPontos(){return $this->pontos;}
 	public function setIdEmail($valor) { $this->id_email = $valor; }
 	public function getIdEmail() { return $this->id_email; }
+	public function setGrupoAcessoId($valor) { $this->grupo_acesso_id = $valor; }
+	public function getGrupoAcessoId() { return $this->grupo_acesso_id; }
 //---------------------------------------------------------------------------------------------------------------   
     // Descarrega os dados QUE ESTÃO PREVIAMENTE CARREGADOS NAS VARIÁVEIS DA CLASSE
     // para um array
@@ -58,6 +61,7 @@ class usuarios{
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
 		array_push($dados, $this->getIdEmail());
+		array_push($dados, $this->getGrupoAcessoId());
         return $dados;
     }
 //---------------------------------------------------------------------------------------------------------------
@@ -74,6 +78,7 @@ class usuarios{
         $this->setAtivo($res->ativo);
         $this->setPontos($res->pontos);
         $this->setIdEmail($res->id_email);  
+        $this->setGrupoAcessoId($res->grupo_acesso_id);
     }	
 //---------------------------------------------------------------------------------------------------------------
 	public function getAutocomplete($q){
@@ -96,6 +101,11 @@ class usuarios{
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
 //---------------------------------------------------------------------------------------------------------------
+	public function alteraCampoPerfil($campo, $valor, $id){
+		//echo json_encode("dweqdqwed"); exit;
+		$query = "UPDATE usuarios SET $campo = '$valor' WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
 //---------------------------------------------------------------------------------------------------------------
 	
 	
