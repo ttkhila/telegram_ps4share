@@ -10,7 +10,7 @@
 <script>
 	$(function(){ 
 		$("#btn-envia-busca").click(function(){
-			var $dados = {}; //Object JASON
+			var $dados = {}; //Object JSON
 			$dados.jogo_id = $("#jogo1_id").val();
 			$dados.comprador_id = $("#original1_id").val();
 			$dados.vaga = "";
@@ -149,12 +149,13 @@
 					<div class="table-responsive"> 
 						<table class="table table-striped">
 							<thead>
+								<tr><th colspan="6"><label class='text-muted small'>Clique no botão azul com o nome do usuário para ver detalhes de como entrar em contato com o mesmo.</label></th></tr>
 								<tr>
 									<th colspan="3">&nbsp;</th>
 									<th colspan="3" class="text-center success">Dados do Grupo</th>
 								</tr>
 								<tr class="success">
-									<th >Jogo(s)</th>
+									<th >Jogo(s) na conta</th>
 									<th >Proprietários das vagas atuais</th>
 									<th>Preço da vaga</th>
 									<th>Criador</th>

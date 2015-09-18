@@ -131,6 +131,11 @@ body {
 	height: 373px;
 	overflow-y: auto;
  }
+ 
+.popover{
+	max-width: 350px;
+	width: 350px;
+}
 
 #div-cadastro-jogos{
     width: 50%;

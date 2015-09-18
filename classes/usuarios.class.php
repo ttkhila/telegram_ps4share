@@ -107,6 +107,39 @@ class usuarios{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function mostraPerfilResumido($id, $grupo, $vaga){
+		$query = "SELECT * from usuarios WHERE id = $id";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { die($e.message); }
+		//return htmlspecialchars("<div class='panel'>huihiuhuihuihiu</div>"); exit;
+		//$this->carregaDados($id);
+		if($res->telegram_id == "") $telegram = "Não Cadastrado"; else $telegram = "@".$res->telegram_id;
+		$saida = "
+		<div id='show-popover_".$grupo."_".$vaga."' style='display:none;'>
+			<ul class='list-group'>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>Nome:</label></div>
+						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->nome))."</label></div>
+					</div>
+				</li>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>ID:</label></div>
+						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->login))."</label></div>
+					</div>
+				</li>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>ID Telegram:</label></div>
+						<div class='col-sm-7'><label>".$telegram."</label></div>
+					</div>
+				</li>
+			</ul>
+			<label><a href='perfil_usuario.php?user=".$id."' target='_blank'>Ver recomendações</a></label>
+		</div>
+		";
+		return $saida;
+	}
 	
 	
 	

@@ -98,11 +98,11 @@
 						<li class="list-group-item list-group-item-info">
 							<div class="row">
 								<div class="col-sm-offset-1 col-sm-3">
-									ID Telegram:
-									<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="bottom" data-html="true" 
+									Telegram ID:
+									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom" data-html="true" 
 										title="Identificação única do usuário no Telegram.<br />
 											Precisa ser cadastrada no app.<br />
-											Aceita letras maiúsculas, minúsculas, números e sublinhado(_)." />
+											Aceita letras maiúsculas, minúsculas, números e sublinhado(_)."></span>
 								</div>	
 								<div class="col-sm-8">
 									<div id="fixo_telegram" style="display:block">
@@ -164,9 +164,9 @@
 							<div class="row">
 								<div class="col-sm-offset-1 col-sm-3">
 									E-mail ID:
-									<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="bottom" data-html="true" 
+									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom" data-html="true" 
 										title="Identificação única de usuário<br />para criação de e-mails de conta<br />de compartilhamento.<br />
-											Não pode ser alterada." />
+											Não pode ser alterada."></span>
 								</div>
 								<div class="col-sm-8"><label><?php echo $u->getIdEmail(); ?></label></div>
 							</div>
@@ -194,38 +194,14 @@
 						<div class="panel-heading">Usuário</div>
 						<div class="panel-body">
 							<ul class="list-group">
-								<li class="list-group-item list-group-item-warning">
-									<div class="row">
-										<span class="col-sm-offset-1 col-sm-7">Grupos totais em que está ou já esteve:</span>
-										<span class="col-sm-4"><label><?php echo $gt->qtd; ?></label></span>
-									</div>
-								</li>
-								<li class="list-group-item list-group-item-text">
-									<div class="row">
-										<span class="col-sm-offset-2 col-sm-6">Original 1:</span>
-										<span class="col-sm-4"><label><?php echo $gtVaga[1]; ?></label></span>
-									</div>
-								</li>
-								<li class="list-group-item list-group-item-text">
-									<div class="row">
-										<span class="col-sm-offset-2 col-sm-6">Original 2:</span>
-										<span class="col-sm-4"><label><?php echo $gtVaga[2]; ?></label></span>
-									</div>
-								</li>
-								<li class="list-group-item list-group-item-text">
-									<div class="row">
-										<span class="col-sm-offset-2 col-sm-6">Fantasma:</span>
-										<span class="col-sm-4"><label><?php echo $gtVaga[3]; ?></label></span>
-									</div>
-								</li>
 
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
-										<span class="col-sm-offset-1 col-sm-7">Grupos Ativos em que faz parte:</span>
+										<span class="col-sm-offset-1 col-sm-7">Grupos Ativos que você faz parte:</span>
 										<span class="col-sm-4">
 											<label><?php echo $gt2->qtd; ?></label>&nbsp;
-											<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" data-html="true" 
-												title="Aviso: Um usuário pode ser dono de<br /> mais de uma vaga dentro de um mesmo <br />grupo, por isso a soma dos valores abaixo<br /> pode ser maior que o valor mostrado aqui." />
+											<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" data-html="true" 
+												title="Aviso: Um usuário pode ser dono de<br /> mais de uma vaga dentro de um mesmo <br />grupo, por isso a soma dos valores abaixo<br /> pode ser maior que o valor mostrado aqui."></span>
 										</span>
 									</div>
 								</li>
@@ -245,6 +221,31 @@
 									<div class="row">
 										<span class="col-sm-offset-2 col-sm-6">Fantasma:</span>
 										<span class="col-sm-4"><label><?php echo $gt2Vaga[3]; ?></label></span>
+									</div>
+								</li>
+								
+								<li class="list-group-item list-group-item-warning">
+									<div class="row">
+										<span class="col-sm-offset-1 col-sm-7">Total de grupos em que você está ou já esteve:</span>
+										<span class="col-sm-4"><label><?php echo $gt->qtd; ?></label></span>
+									</div>
+								</li>
+								<li class="list-group-item list-group-item-text">
+									<div class="row">
+										<span class="col-sm-offset-2 col-sm-6">Original 1:</span>
+										<span class="col-sm-4"><label><?php echo $gtVaga[1]; ?></label></span>
+									</div>
+								</li>
+								<li class="list-group-item list-group-item-text">
+									<div class="row">
+										<span class="col-sm-offset-2 col-sm-6">Original 2:</span>
+										<span class="col-sm-4"><label><?php echo $gtVaga[2]; ?></label></span>
+									</div>
+								</li>
+								<li class="list-group-item list-group-item-text">
+									<div class="row">
+										<span class="col-sm-offset-2 col-sm-6">Fantasma:</span>
+										<span class="col-sm-4"><label><?php echo $gtVaga[3]; ?></label></span>
 									</div>
 								</li>
 								
@@ -272,7 +273,11 @@
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Vagas suas a venda no momento:</span>
-										<span class="col-sm-4"><label><?php echo $gt->qtdVenda; ?></label></span>
+										<span class="col-sm-4">
+											<label><?php echo $gt->qtdVenda; ?>&nbsp;
+											<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" data-html="true" 
+												title='Aviso: Esse número não compreende<br />as vagas "Em Aberto" colocadas a <br />venda pelo usuário.<br />'></span>
+										</label></span>
 									</div>
 								</li>
 							</ul>
@@ -349,9 +354,7 @@
 							
 						</div>
 					</div><!-- Panel-info - Global -->
-					
-					
-					
+		
 				</div>
 			</div>
 		</div>
@@ -360,7 +363,7 @@
 		
 	<div class="row">
 		<div class="col-md-12">
-		<div class="panel panel-primary">
+		<div class="panel panel-success">
 			<div class="panel-heading"><span class="glyphicon glyphicon-thumbs-up"></span> Recomendações</div>
 			<div class="panel-body">
 			<?php

@@ -214,7 +214,7 @@ function mostraGrupo(){
 	if($c->getFechado() == 1) $fechado = "Sim"; else $fechado = "Não";
 
 	if($c->getOrig1() == 0){ 
-		$orig1 = "Vaga em aberto"; $orig1Nome = "Vaga em aberto"; $orig1ID = 0; $valor1 = "N/D"; 
+		$orig1 = "Vaga em aberto"; $orig1Nome = "Vaga em aberto"; $orig1ID = 0; $valor1 = "N/D"; $link1 = "<a name='link_vazio' href='#'>";
 		$c2->carregaUltimoHistorico($idGrupo, 1);
 		$aVenda1 = $c2->getAVenda();
 		$classeVenda1 = ($aVenda1 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
@@ -228,6 +228,7 @@ function mostraGrupo(){
 		$orig1 = stripslashes(utf8_decode($u->getLogin())); 
 		$orig1Nome = stripslashes(utf8_decode($u->getNome()));
 		$orig1ID = $u->getId();
+		$link1 = "<a href='perfil_usuario.php?user=$orig1ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
 		$valor1 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.') : "N/D";
 		$aVenda1 = $c2->getAVenda();
@@ -238,7 +239,7 @@ function mostraGrupo(){
 	}
 	
 	if($c->getOrig2() == 0){ 
-		$orig2 = "Vaga em aberto"; $orig2Nome = "Vaga em aberto"; $orig2ID = 0;  $valor2 = "N/D";
+		$orig2 = "Vaga em aberto"; $orig2Nome = "Vaga em aberto"; $orig2ID = 0;  $valor2 = "N/D"; $link2 = "<a name='link_vazio' href='#'>";
 		$c2->carregaUltimoHistorico($idGrupo, '2');
 		$aVenda2 = $c2->getAVenda();
 		$classeVenda2 = ($aVenda2 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
@@ -252,6 +253,7 @@ function mostraGrupo(){
 		$orig2 = stripslashes(utf8_decode($u->getLogin()));
 		$orig2Nome = stripslashes(utf8_decode($u->getNome()));
 		$orig2ID = $u->getId();
+		$link2 = "<a href='perfil_usuario.php?user=$orig2ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
 		$valor2 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.'): "N/D";
 		$aVenda2 = $c2->getAVenda();
@@ -262,7 +264,7 @@ function mostraGrupo(){
 	}
 	
 	if($c->getOrig3() == 0){ 
-		$orig3 = "Vaga em aberto"; $orig3Nome = "Vaga em aberto"; $orig3ID = 0; $valor3 = "N/D"; 
+		$orig3 = "Vaga em aberto"; $orig3Nome = "Vaga em aberto"; $orig3ID = 0; $valor3 = "N/D";  $link3 = "<a name='link_vazio' href='#'>";
 		$c2->carregaUltimoHistorico($idGrupo, '3');
 		$aVenda3 = $c2->getAVenda();
 		$classeVenda3 = ($aVenda3 == 0) ? "glyphicon glyphicon-shopping-cart btn btn-primary btn-xs" : 
@@ -276,6 +278,7 @@ function mostraGrupo(){
 		$orig3 = stripslashes(utf8_decode($u->getLogin()));
 		$orig3Nome = stripslashes(utf8_decode($u->getNome())); 
 		$orig3ID = $u->getId();
+		$link3 = "<a href='perfil_usuario.php?user=$orig3ID' target='_blank'>";
 		$valorPago = $c->getValorPago(); 
 		$valor3 = (!empty($valorPago)) ? $simboloMoeda." ".number_format($valorPago, 2, ',', '.'): "N/D";
 		$aVenda3 = $c2->getAVenda();
@@ -294,8 +297,8 @@ function mostraGrupo(){
 						$saida .= "
 							<div class='badge'>
 								<a role='button' id='grupo_$idGrupo' name='btn-fechar-grupo' data-toggle='modal' data-target='#fecha-grupo'>Fechar Grupo</a>
-								<img src='img/help.png' width='16' height='16' data-toggle='tooltip' data-placement='right' 
-									title='Informa que o grupo já possui suas vagas preenchidas, com os respectivos valores dessas vagas e a conta se encontra devidamente criada na PSN/Live.' />
+								<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='right' data-html='true' 
+									title='Informa que o grupo já possui suas vagas preenchidas, com os respectivos valores dessas vagas e a conta se encontra devidamente criada na PSN/Live.'></span>
 							</div>";
 					}
 					$saida .= "
@@ -306,7 +309,7 @@ function mostraGrupo(){
 					<div class='panel-heading'>
 						<div class='row'>
 							<label class='col-sm-2'>Original 1: </label>
-							<label class='col-sm-4' title='$orig1Nome' style='font-weight:normal;'>$orig1 %%opcoes1%% 
+							<label class='col-sm-4' title='Clique para ver o perfil de $orig1Nome' style='font-weight:normal;'>$link1$orig1</a> %%opcoes1%% 
 								<div name='input-valor' id='input-valor_".$idGrupo."_1' class='form-group div-input-valor'>Valor em reais (opcional):
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
@@ -321,7 +324,7 @@ function mostraGrupo(){
 						</div>
 						<div class='row'>
 							<label class='col-sm-2'>Original 2: </label>
-							<label class='col-sm-4' style='font-weight:normal;' title='$orig2Nome'>$orig2 %%opcoes2%%
+							<label class='col-sm-4' style='font-weight:normal;' title='Clique para ver o perfil de $orig2Nome'>$link2$orig2</a> %%opcoes2%%
 								<div name='input-valor' id='input-valor_".$idGrupo."_2' class='form-group div-input-valor'>Valor em reais (opcional):
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
@@ -335,7 +338,7 @@ function mostraGrupo(){
 						</div>
 						<div class='row'>
 							<label class='col-sm-2'>Fantasma: </label>
-							<label class='col-sm-4' style='font-weight:normal;' title='$orig3Nome'>$orig3 %%opcoes3%%
+							<label class='col-sm-4' style='font-weight:normal;' title='Clique para ver o perfil de $orig3Nome'>$link3$orig3</a> %%opcoes3%%
 								<div name='input-valor' id='input-valor_".$idGrupo."_3' class='form-group div-input-valor'>Valor em reais (opcional):
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
@@ -353,6 +356,14 @@ function mostraGrupo(){
 	
 		if($c->getFechado() == 1){
 			$saida .= "
+			<div class='panel panel-primary'>
+				<div class='panel-heading'>
+					<div class='row'>
+						<label class='col-sm-offset-1 col-sm-3'>E-mail da conta:</label>
+						<label class='col-sm-8'>".stripslashes(utf8_decode($c->getEmail()))."</label>
+					</div>
+				</div>
+			</div>
 			<div class='panel panel-default'>
 				<div class='panel-heading'>
 					<div class='row'>
@@ -516,7 +527,7 @@ function mostraHistorico(){
 	}
 	$saida .= "</tbody>";
 	$saida .= "</table>";
-	$saida .= "<div><img src='img/senha_alterada.jpg' /> = Senha foi alterada.</div>";
+	$saida .= "<div><img src='img/senha_alterada.jpg' /> = Informa que a senha foi alterada.</div>";
 	
 	echo json_encode($saida);
 	exit;
@@ -654,22 +665,25 @@ function mostraGrupoAntigo(){
 	$orig3 = $c->getOrig3();
 	
 	//Original 1
-	if ($orig1 == 0) $orig1Login = "Vaga em aberto";
+	if ($orig1 == 0){ $orig1Login = "Vaga em aberto"; $link1 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig1);
 		$orig1Login = stripslashes(utf8_decode($u->getLogin()));
+		$link1= "<a href='perfil_usuario.php?user=$orig1' target='_blank'>";
 	}
 	//Original 2
-	if ($orig2 == 0) $orig2Login = "Vaga em aberto";
+	if ($orig2 == 0){ $orig2Login = "Vaga em aberto"; $link2 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig2);
 		$orig2Login = stripslashes(utf8_decode($u->getLogin()));
+		$link2= "<a href='perfil_usuario.php?user=$orig2' target='_blank'>";
 	}
 	//Fantasma
-	if ($orig3 == 0) $orig3Login = "Vaga em aberto";
+	if ($orig3 == 0){ $orig3Login = "Vaga em aberto"; $link3 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig3);
 		$orig3Login = stripslashes(utf8_decode($u->getLogin()));
+		$link3= "<a href='perfil_usuario.php?user=$orig3' target='_blank'>";
 	}
 	
 	//JOGOS
@@ -683,13 +697,17 @@ function mostraGrupoAntigo(){
 				<div class='panel panel-primary'>
 					<div class='panel-heading'>Proprietários atuais das vagas deste grupo</div>
 					<div class='panel-body'>
-						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 1:</label><label class='col-sm-3'>$orig1Login</label></div>
-						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 2:</label><label class='col-sm-3'>$orig2Login</label></div>
-						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Fantasma:</label><label class='col-sm-3'>$orig3Login</label></div>
+						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 1:</label><label title='Clique para ver o perfil de $orig1Login' class='col-sm-3'>$link1$orig1Login</a></label></div>
+						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 2:</label><label title='Clique para ver o perfil de $orig2Login' class='col-sm-3'>$link2$orig2Login</a></label></div>
+						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Fantasma:</label><label title='Clique para ver o perfil de $orig3Login' class='col-sm-3'>$link3$orig3Login</a></label></div>
 					</div>
 				</div>
 				<div class='panel panel-danger'>
-					<div class='panel-heading'>Você foi proprietário da vaga de <b>$nomeVaga</b> e repassou para <b>$compradorLogin</b> em $data_venda por R$ $valor_pago</div>
+					<div class='panel-heading'>
+						Você foi proprietário da vaga de <b>$nomeVaga</b> e repassou para<b>
+						<a href='perfil_usuario.php?user=$comprador_id' target='_blank' title='Clique para ver o perfil de $compradorLogin'>$compradorLogin</a>
+						</b> em $data_venda por R$ $valor_pago
+					</div>
 				</div>
 			</div>
 			
@@ -881,19 +899,20 @@ function mostraFechamentoGrupo(){
 
 	$jogos = $j->getJogosGrupo($idGrupo);
 	$moedas = $c->recupera_moedas();
-
+//<input type='text' class='form-control' name='nome-fechamento' id='nome-fechamento' maxlength='50' required='' placeholder='Nome da conta' value='$nomeConta' />
 	$saida = "
 	<input type='hidden' id='id-grupo-fechamento' value='$idGrupo' />
 	<h5 class='label-personalizada'>Para incluir ou alterar usuários nas vagas, feche essa tela e use a anterior.</h5>
 	<div class='form-group'>
 		<label class='control-label'>Nome da conta:</label>
-		<input type='text' class='form-control' name='nome-fechamento' id='nome-fechamento' maxlength='50' required='' placeholder='Nome da conta' value='$nomeConta' />
+		<label class='label-info'>$nomeConta</label>
 	</div>
 	<div class='form-group'>
 		<label class='control-label'>E-mail da conta:</label>";
-		if(!isset($email))	$saida .= "<input type='email' class='form-control' name='email-fechamento' id='email-fechamento' 
-				placeholder='E-mail da conta' required='' />";
-		else $saida .= "<label cl	ass='label-info'>$email</label>";
+		if(!isset($email)){	$saida .= "<input type='email' class='form-control' name='email-fechamento' id='email-fechamento' 
+				placeholder='E-mail da conta' required='' />
+				<button class='glyphicon glyphicon-hand-up btn btn-xs btn-warning' id='btn-email-padrao' title='Preenche parte do e-mail padrão para criação do grupo'> Colocar E-mail no padrão</button>";
+		} else $saida .= "<label class='label-info'>$email</label>";
 		
 	$saida .= "
 	</div>
@@ -968,7 +987,7 @@ function gravaFechamentoGrupo(){
 	$moeda_id = $_POST['moeda'];
 	//echo json_encode($moeda_id);exit;
 
-	$campos_conta = array("nome", "email", "moeda_id");
+	$campos_conta = array("email", "moeda_id");
 	$campos_historico = array("valor1", "valor2", "valor3", "senha_alterada");
 	$campos_conta_result = array();
 	$campos_historico_result = array();
@@ -1039,39 +1058,43 @@ function montaResultadoBuscaClassificados($dados){
 	$saida = "";
 	if($dados->num_rows == 0) return "<tr><td colspan='6'><label class='text-warning'>Nenhum registro encontrado para os filtros informados!</label></td></tr>";
 	$j = carregaClasse("Jogo");
+	$u = carregaClasse("Usuario");
 	while($d = $dados->fetch_object()){
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
-		if($jogos->num_rows > 1) { 
-			$title = "<b>Jogos nesta conta:</b><br />";
-			while($jogo = $jogos->fetch_object()){
-				$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
-				$nomeAbrev = $jogo->nome_abrev;
-				$title .= "- $nome ($nomeAbrev)<br />";
-			}
-			$plus = "<a id='mais-jogos_".$d->idGrupo."' data-toggle='tooltip' data-placement='right' data-html='true' title='$title'>[ + ]</a>";
+		$title = "";
+		while($jogo = $jogos->fetch_object()){
+			$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+			$nomeAbrev = $jogo->nome_abrev;
+			$title .= "- $nome ($nomeAbrev)<br />";
 		}
-		else $plus = "";
 		
+		$grupo = $d->idGrupo;
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
-		if($d->original1_id == 0) $login1 = "Vaga aberta"; else $login1 = stripslashes(utf8_decode($d->login1));
-		if($d->original2_id == 0) $login2 = "Vaga aberta"; else $login2 = stripslashes(utf8_decode($d->login2));
-		if($d->original3_id == 0) $login3 = "Vaga aberta"; else $login3 = stripslashes(utf8_decode($d->login3));
+		if($d->original1_id == 0) { $login1 = "Vaga aberta"; $orig1 = $d->original2_id; } else { $login1 = stripslashes(utf8_decode($d->login1)); $orig1 = $d->original1_id; }
+		if($d->original2_id == 0){ $login2 = "Vaga aberta"; $orig2 = $d->original1_id; } else { $login2 = stripslashes(utf8_decode($d->login2)); $orig2 = $d->original2_id; }
+		if($d->original3_id == 0){ $login3 = "Vaga aberta"; $orig3 = (!empty($d->original1_id)) ? $d->original1_id : $d->original2_id; } else { $login3 = stripslashes(utf8_decode($d->login3)); $orig3 = $d->original3_id; }
+
 		$saida .= "
 			<tr>
-				<td>".stripslashes(utf8_decode($d->nomeJogo))."<br /> $plus</td>
+				<td>$title</td>
 				<td>";
-					if($d->vaga == "1")
-						$saida .= "<label class='text-info'>Original 1: $login1</label><br />";
+					if($d->vaga == "1"){
+						$popover = $u->mostraPerfilResumido($orig1, $grupo, 1); //retorna uma div oculta com o perfil do usuário no conteúdo
+						$saida .= $popover."<label><a tabindex='0' data-id='".$grupo."_1' class='btn btn-xs btn-info' data-toggle='popover' title='Perfil resumido do dono da vaga'>Original 1: $login1</a></label><br />";
+					}
 					else
 						$saida .= "<label class='text-muted small'>Original 1: $login1</label><br />";
 					
-					if($d->vaga == "2")
-						$saida .= "<label class='text-info'>Original 2: $login2</label><br />";
-					else	
+					if($d->vaga == "2"){
+						$popover = $u->mostraPerfilResumido($orig2, $grupo, 2); //retorna uma div oculta com o perfil do usuário no conteúdo
+						$saida .= $popover."<label><a tabindex='0' data-id='".$grupo."_2' class='btn btn-xs btn-info' data-toggle='popover' title='Perfil resumido do dono da vaga'>Original 2: $login2</a></label><br />";
+					}else	
 						$saida .= "<label class='text-muted small'>Original 2: $login2</label><br />";
 						
-					if($d->vaga == "3")
-						$saida .= "<label class='text-info'>Fantasma: $login3</label>";
+					if($d->vaga == "3"){
+						$popover = $u->mostraPerfilResumido($orig3, $grupo, 3); //retorna uma div oculta com o perfil do usuário no conteúdo
+						$saida .= $popover."<label><a tabindex='0' data-id='".$grupo."_3' class='btn btn-xs btn-info' data-toggle='popover' title='Perfil resumido do dono da vaga'>Fantasma: $login3</a></label><br />";
+					}
 					else
 						$saida .= "<label class='text-muted small'>Fantasma: $login3</label>";
 					

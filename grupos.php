@@ -50,11 +50,7 @@
 						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
 						<div class="col-md-10">
 							<label for="exampleInputnome" class="control-label text-primary">O nome da conta será gerado automaticamente com base nos jogos da mesma.</label>
-							<!--<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" maxlength="60" />-->
 						</div>
-						<!--<div class="col-md-2">
-							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
-						</div>-->
 					</div>
 					
 					<div class="form-group col-md-12">
@@ -63,10 +59,10 @@
 							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail da conta" />
 						</div>  	
 						<div class="col-md-2">
-							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" data-html="true" 
+							<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" data-html="true" 
 								title="E-mail da conta de jogo.<br /> 
-									N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo, a n&atilde;o ser que seja um grupo j&aacute; fechado.<br />
-									Respeitar padrão de e-mails conforme item 3.8 das regras de partilha do grupo." />
+									N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo,<br />a n&atilde;o ser que seja um grupo j&aacute; fechado.<br />
+									Respeitar padrão de e-mails conforme item 3.8<br />das regras de partilha do grupo."></span>
 						</div>
 					</div>
 					
@@ -93,8 +89,8 @@
 					<!-- JOGOS-->
 					<div class="form-group col-md-12">
 						<h3>
-							Jogos <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo." />
+							Jogos <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo."></span>
 						</h3>
 					</div>
 					<div class="form-group col-md-12">
@@ -117,8 +113,8 @@
                 			<!-- VAGAS-->
                 			<div class="form-group col-md-12">
 						<h3>
-							Vagas <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento do seu pr&oacute;prio ID numa das vagas." />
+							Vagas <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento<br />do seu pr&oacute;prio ID numa das vagas."></span>
 						</h3>
 					</div>
 					<div class="form-group col-md-12">
@@ -187,7 +183,7 @@
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
 										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
-											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome));
 											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
@@ -232,7 +228,7 @@
 									$saida .= "
 										<div class='panel'>
 											<div name='div-titulo-grupos-antigos' id='div-titulo-grupos-antigos_".$d->id."' class='panel-title'>
-												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome))."</div>
+												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome))."</div>
 											</div>
 											<div name='div-conteudo-grupos-antigos' id ='div-conteudo-grupos-antigos_".$d->id."' class='list-group col-md-12' style='display:none;'></div>
 										</div>";

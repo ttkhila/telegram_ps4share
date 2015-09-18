@@ -66,6 +66,11 @@ $("#frmLogin").submit(function(e){
 	});
 });
 //********************************************************************************
+//LINK VAZIO
+$("#collapseTwo").on("click", "[name='link_vazio']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+});
+//********************************************************************************
 $("#deslogar").click(function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	
@@ -89,6 +94,17 @@ $("#deslogar").click(function(e){
 $('body').tooltip({
 	selector: '[data-toggle="tooltip"]',
 	container: 'body'
+}); 
+//********************************************************************************	
+//POPOVER
+$('body').popover({
+	selector: '[data-toggle="popover"]',
+	html: true,
+	container: 'body',
+	content: function() {
+		//alert($(this).attr("data-id"));
+		return $('#show-popover_'+$(this).attr("data-id")).html();
+	}
 }); 
 //********************************************************************************
 //AUTOCOMPLETE 
@@ -376,7 +392,7 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 });
 //********************************************************************************
 //Botão para preencher parte do e-mail padrão - Novo Grupo
-$("#collapseOne").on("click", "#btn-email-padrao", function(e){
+$("div").on("click", "#btn-email-padrao", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
 	var divClone = botao.clone(); 
@@ -396,7 +412,8 @@ $("#collapseOne").on("click", "#btn-email-padrao", function(e){
 			if(data[0] == 1){
 				alert(data[1]);
 			} else {
-				$("#collapseOne").find("#email").val(data[1]);
+				//$("#collapseOne").find("#email").val(data[1]);
+				$("input[type=email]").val(data[1]);
 			}
 			resetaHtml(botao, divClone);
 			botao.removeAttr('disabled');
@@ -854,7 +871,6 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	var $valores = new Array();
 
 	var idGrupo = parseInt($("#id-grupo-fechamento").val());
-	var nomeGrupo = $.trim($("#nome-fechamento").val());
 	var moeda_id = parseInt($("#moedas-fechamento option:selected").val());
 
 	if($("#email-fechamento").length) var email = $.trim($("#email-fechamento").val());
@@ -864,9 +880,6 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	var valor1 = $.trim($("#valor-fechamento-1").val()).replace(",", ".");
 	var valor2 = $.trim($("#valor-fechamento-2").val()).replace(",", ".");
 	var valor3 = $.trim($("#valor-fechamento-3").val()).replace(",", ".");
-
-	if(nomeGrupo == "") $erros.push("- Informe o nome do Grupo.<br />"); 
-	else { $campos.push("nome"); $valores.push(nomeGrupo); }
 	
 	if(typeof email !== 'undefined'){ //se a var email existe
 		if(email != ""){
@@ -1050,12 +1063,7 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 		}
 	});
 });
-
-
-
-
 //********************************************************************************  
-
 //********************************************************************************  
 
 //********************************************************************************  
