@@ -83,17 +83,21 @@ class jogos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gravaJogosCompartilhados($idGrupo, $dados){
+		$arrJogos = array();
 		foreach($dados as $key => $value){
 			//return $value;
 			if(strstr($key, "jogo")){ // é ID de jogo
 				if(!empty($value) && isset($value)){
+					$this->carregaDados($value);
+					$nome = $this->getNome();
+					array_push($arrJogos, $nome);
 					$query = "INSERT INTO jogos_compartilhados (compartilhamento_id, jogo_id) VALUES ($idGrupo, $value)";
 					//return $query; 
 					try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 				}
 			}
 		}
-		return 1;
+		return $arrJogos;
 	}
 //---------------------------------------------------------------------------------------------------------------  
 	public function ativo_inativo_alterna($f){

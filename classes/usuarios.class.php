@@ -1,15 +1,18 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
 class usuarios{
-    private $id;
+	private $id;
 	private $nome;
 	private $login;
 	private $email;
-    private $telefone;
-    private $senha;
-    private $primeiro_acesso;
-    private $ativo;	
-    private $pontos;
+	private $telefone;
+	private $senha;
+	private $telegram_id;
+	private $primeiro_acesso;
+	private $ativo;	
+	private $pontos;
+	private $id_email;
+	private $grupo_acesso_id;
 	private $con;
 
 	public function __construct(){
@@ -18,24 +21,30 @@ class usuarios{
 		$this->con->abreConexao();
 	}
     
-    public function setId($valor){$this->id = $valor;}
-    public function getId(){return $this->id;}
+	public function setId($valor){$this->id = $valor;}
+	public function getId(){return $this->id;}
 	public function setNome($nome){$this->nome = $nome;}	
 	public function getNome(){return $this->nome;}
 	public function setLogin($login){$this->login = $login;}
 	public function getLogin(){return $this->login;}
-	public function setEmail($email){$this->email = $email;}
+	public function setEmail($valor){$this->email = $valor;}
 	public function getEmail(){return $this->email;}
-    public function setTelefone($email){$this->telefone = $email;}
+	public function setTelefone($valor){$this->telefone = $valor;}
 	public function getTelefone(){return $this->telefone;}
-    public function setSenha($valor){$this->senha = $valor;}
-    public function getSenha(){return $this->senha;}
-    public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
+	public function setSenha($valor){$this->senha = $valor;}
+	public function getSenha(){return $this->senha;}
+	public function setTelegramId($valor){$this->telegram_id = $valor;}
+	public function getTelegramId(){return $this->telegram_id;}
+	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
-    public function setAtivo($valor){$this->ativo = $valor;}
-    public function getAtivo(){return $this->ativo;}
-    public function setPontos($email){$this->pontos = $email;}
+	public function setAtivo($valor){$this->ativo = $valor;}
+	public function getAtivo(){return $this->ativo;}
+	public function setPontos($valor){$this->pontos = $valor;}
 	public function getPontos(){return $this->pontos;}
+	public function setIdEmail($valor) { $this->id_email = $valor; }
+	public function getIdEmail() { return $this->id_email; }
+	public function setGrupoAcessoId($valor) { $this->grupo_acesso_id = $valor; }
+	public function getGrupoAcessoId() { return $this->grupo_acesso_id; }
 //---------------------------------------------------------------------------------------------------------------   
     // Descarrega os dados QUE ESTÃO PREVIAMENTE CARREGADOS NAS VARIÁVEIS DA CLASSE
     // para um array
@@ -47,9 +56,12 @@ class usuarios{
 		array_push($dados, $this->getEmail());
 		array_push($dados, $this->getTelefone());
 		array_push($dados, $this->getSenha());
+		array_push($dados, $this->getTelegramId());
 		array_push($dados, $this->getPrimeiroAcesso());
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
+		array_push($dados, $this->getIdEmail());
+		array_push($dados, $this->getGrupoAcessoId());
         return $dados;
     }
 //---------------------------------------------------------------------------------------------------------------
@@ -61,11 +73,14 @@ class usuarios{
         $this->setEmail($res->email); 
         $this->setTelefone($res->telefone); 
         $this->setSenha($res->senha); 
+        $this->setTelegramId($res->telegram_id); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
         $this->setAtivo($res->ativo);
-        $this->setPontos($res->pontos); 
+        $this->setPontos($res->pontos);
+        $this->setIdEmail($res->id_email);  
+        $this->setGrupoAcessoId($res->grupo_acesso_id);
     }	
- //---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
 	public function getAutocomplete($q){
 		$q = $this->con->escape($q);
 		$sql = "SELECT * FROM usuarios where locate('$q',login) > 0  AND ativo = 1 order by locate('$q',login) limit 10";
@@ -74,20 +89,57 @@ class usuarios{
 //---------------------------------------------------------------------------------------------------------------
     public function validaLogin($dados){
 	$query = "SELECT * FROM usuarios WHERE login='".addslashes(utf8_encode($dados['login']))."' AND senha='".md5(trim($dados['senha']))."'";
-
-        $res = $this->con->multiConsulta($query);
-        
+        $res = $this->con->multiConsulta($query); 
         if ($res->num_rows > 0) //login OK
             return $res->fetch_object();
     }
- //---------------------------------------------------------------------------------------------------------------
-    public function troca_senha($id, $senhaNova){
+//---------------------------------------------------------------------------------------------------------------
+    public function troca_senha_inicial($id, $senhaNova){
         //$senhaNova = md5($senhaNova);
-        $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0 WHERE id = $id";
+        $dt = date("Y/m/d");
+        $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0, primeiro_acesso_data = '$dt' WHERE id = $id";
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
- //---------------------------------------------------------------------------------------------------------------
-	
+//---------------------------------------------------------------------------------------------------------------
+	public function alteraCampoPerfil($campo, $valor, $id){
+		//echo json_encode("dweqdqwed"); exit;
+		$query = "UPDATE usuarios SET $campo = '$valor' WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function mostraPerfilResumido($id, $grupo, $vaga){
+		$query = "SELECT * from usuarios WHERE id = $id";
+		try { $res = $this->con->uniConsulta($query); } catch(Exception $e) { die($e.message); }
+		//return htmlspecialchars("<div class='panel'>huihiuhuihuihiu</div>"); exit;
+		//$this->carregaDados($id);
+		if($res->telegram_id == "") $telegram = "Não Cadastrado"; else $telegram = "@".$res->telegram_id;
+		$saida = "
+		<div id='show-popover_".$grupo."_".$vaga."' style='display:none;'>
+			<ul class='list-group'>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>Nome:</label></div>
+						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->nome))."</label></div>
+					</div>
+				</li>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>ID:</label></div>
+						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->login))."</label></div>
+					</div>
+				</li>
+				<li class='list-group-item list-group-item-warning'>
+					<div class='row'>
+						<div class='col-sm-5'><label>ID Telegram:</label></div>
+						<div class='col-sm-7'><label>".$telegram."</label></div>
+					</div>
+				</li>
+			</ul>
+			<label><a href='perfil_usuario.php?user=".$id."' target='_blank'>Ver recomendações</a></label>
+		</div>
+		";
+		return $saida;
+	}
 	
 	
 	

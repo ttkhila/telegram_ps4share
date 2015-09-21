@@ -16,10 +16,15 @@ class compartilhamentos{
 	private $criador_id;
 	//HISTÓRICOS
 	private $historico_id;
+	private $compartilhamento_id;
+	private $comprador_id;
+	private $vendedor_id;
 	private $vaga; //O1, O2, O3
 	private $valor_pago;
 	private $data_venda;
 	private $senha_alterada;
+	private $valor_venda;
+	private $a_venda;
 	
 	private $con;
 	
@@ -60,14 +65,24 @@ class compartilhamentos{
 	//HIstóricos
 	public function setHistoricoId($valor){ $this->historico_id = $valor; }
 	public function getHistoricoId(){ return $this->historico_id; }
+	public function setCompartilhamentoId($valor){ $this->compartilhamento_id = $valor; }
+	public function getCompartilhamentoId(){ return $this->compartilhamento_id; }
 	public function setVaga($valor){ $this->vaga = $valor; }
 	public function getVaga(){ return $this->vaga; }
+	public function setCompradorId($valor){ $this->comprador_id = $valor; }
+	public function getCompradorId(){ return $this->comprador_id; }
+	public function setVendedorId($valor){ $this->vendedor_id = $valor; }
+	public function getVendedorId(){ return $this->vendedor_id; }
 	public function setValorPago($valor){ $this->valor_pago = $valor; }
 	public function getValorPago(){ return $this->valor_pago; }
 	public function setDataVenda($valor){ $this->data_venda = $valor; }
 	public function getDataVenda(){ return $this->data_venda; }
 	public function setSenhaAlterada($valor){ $this->senha_alterada = $valor; }
 	public function getSenhaAlterada(){ return $this->senha_alterada; }
+	public function setValorVenda($valor){ $this->valor_venda = $valor; }
+	public function getValorVenda(){ return $this->valor_venda; }
+	public function setAVenda($valor){ $this->a_venda = $valor; }
+	public function getAVenda(){ return $this->a_venda; }
 //---------------------------------------------------------------------------------------------------------------
 	public function carregaDados($id){
 		$query = "SELECT * FROM compartilhamentos WHERE id = $id";
@@ -86,16 +101,34 @@ class compartilhamentos{
 		$this->setAtivo($d->ativo);
 		$this->setFechado($d->fechado);
 		$this->setCriadorId($d->criador_id);
+	}	
+//---------------------------------------------------------------------------------------------------------------
+	public function carregaDadosHistoricos($id, $numVaga=0){
+		if($numVaga == 0 ) $query = "SELECT * FROM historicos WHERE id = $id";
+		else $query = "SELECT * FROM historicos WHERE compartilhamento_id = $id AND vaga = '$numVaga' ORDER BY id";
+		try{ $d = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro no carregamento."); }
+		$this->setHistoricoId($d->id);
+		$this->setCompartilhamentoId($d->compartilhamento_id);
+		$this->setVaga($d->vaga);
+		$this->setCompradorId($d->comprador_id);
+		$this->setVendedorId($d->vendedor_id);
+		$this->setValorPago($d->valor_pago);
+		$this->setDataVenda($d->data_venda);
+		$this->setSenhaAlterada($d->senha_alterada);
+		$this->setValorVenda($d->valor_venda);
+		$this->setAVenda($d->a_venda);
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function carregaDadosHistoricos($compartilhamento_id, $numVaga){
-		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga'";
+	public function carregaUltimoHistorico($compartilhamento_id, $numVaga){
+		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $compartilhamento_id AND vaga = '$numVaga' ORDER BY id DESC";
 		try{ $d = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro no carregamento."); }
 		$this->setHistoricoId($d->id);
 		$this->setVaga($d->vaga);
 		$this->setValorPago($d->valor_pago);
 		$this->setDataVenda($d->data_venda);
 		$this->setSenhaAlterada($d->senha_alterada);
+		$this->setValorVenda($d->valor_venda);
+		$this->setAVenda($d->a_venda);
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getDados(){
@@ -165,10 +198,23 @@ class compartilhamentos{
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gravaNomeGrupo($idGrupo, $nome){
+		$query = "UPDATE compartilhamentos SET nome = '$nome' WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function getDadosPorUsuario($usuarioID){
 		$query = "SELECT c.* , u.nome as criador, u.login FROM compartilhamentos c, usuarios u
 			WHERE (c.criador_id = u.id) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";
-		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getGruposAntigos($usuarioID){
+		$query = "SELECT h.id, c.nome FROM compartilhamentos c, historicos h 
+			WHERE (c.id = h.compartilhamento_id) AND (h.vendedor_id = $usuarioID) 
+			ORDER BY h.id DESC";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -189,9 +235,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	//verifica se o Usuario eh dono da vaga informada. Seguranca contra fraude
 	public function is_thisGroup($idUsuario, $idGrupo, $vaga){
-		if($vaga == 1) $vaga = "original1_id";
-		else if ($vaga == 2)  $vaga = "original2_id";
-		else $vaga = "original3_id";
+		$vaga = $this->getNomeVaga($vaga);
 		
 		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
 		//Nesse caso não acusa problema
@@ -210,9 +254,7 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gravaRepasse($grupoID, $vendedorID, $compradorID, $vaga, $valor_pago, $data, $senha_alterada = 0){
-		if($vaga == 1) $vagaNome = "original1_id";
-		else if ($vaga == 2)  $vagaNome = "original2_id";
-		else $vagaNome = "original3_id";
+		$vagaNome = $this->getNomeVaga($vaga);
 
 		//verifica se o jogo está sendo repassado a partir de uma conta ABERTA (usuario = 0).
 		//NEsse caso não cria registro de HISTÓRICO, somente altera o existente
@@ -267,11 +309,34 @@ class compartilhamentos{
 			
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function excluiUsuarioVaga($idGrupo, $vaga, $usuarioID){
-		if($vaga == 1) $vagaNome = "original1_id";
-		else if ($vaga == 2)  $vagaNome = "original2_id";
-		else $vagaNome = "original3_id";
+	public function is_thisHistory($idHist, $idUsuario){
+		$query = "SELECT h.id FROM historicos h, compartilhamentos c 
+			WHERE (h.id = $idHist) AND (h.compartilhamento_id = c.id) AND 
+			((h.comprador_id = $idUsuario) OR 
+			((h.comprador_id = 0) AND (c.criador_id = $idUsuario) AND (c.criador_id = c.original1_id)) OR 
+			((h.comprador_id = 0) AND (c.original1_id = $idUsuario) AND (c.criador_id <> c.original1_id)) OR 
+			((h.comprador_id = 0) AND (c.original2_id = $idUsuario) AND (c.original1_id = 0)))";
+		//echo json_encode($query);exit; 
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if($res->num_rows == 0) //não há registro. Indício de fraude
+			return false;
 		
+		return true;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaAlteracaoValorVenda($idHist, $valor){
+		if (trim($valor) == "") $valor = "NULL";
+		$query = "UPDATE historicos SET valor_venda = $valor WHERE id = $idHist";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function excluiVenda($idHist){
+		$query = "UPDATE historicos SET a_venda = 0, valor_venda = NULL WHERE id = $idHist";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function excluiUsuarioVaga($idGrupo, $vaga, $usuarioID){
+		$vagaNome = $this->getNomeVaga($vaga);
 		// Atualiza grupo
 		$query = "UPDATE compartilhamentos SET $vagaNome = 0 WHERE id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
@@ -369,7 +434,7 @@ class compartilhamentos{
 				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
 				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
 				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
-				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id";
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";
 		//return $query;
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		//return $query;
@@ -384,8 +449,132 @@ class compartilhamentos{
 		return $where;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getVendasAbertasPorUsuario($idUsuario){
+		$query = "SELECT h.*, j.nome as nomeJogo
+			FROM historicos h, compartilhamentos c, jogos j, jogos_compartilhados jc
+			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND 
+				((h.comprador_id = $idUsuario) OR 
+				((h.comprador_id = 0) AND (c.criador_id = $idUsuario) AND (c.criador_id = c.original1_id)) OR 
+				((h.comprador_id = 0) AND (c.original1_id = $idUsuario) AND (c.criador_id <> c.original1_id)) OR 
+				((h.comprador_id = 0) AND (c.original2_id = $idUsuario) AND (c.original1_id = 0)))
+			GROUP BY h.id";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getNomeVaga($numVaga, $tipo = 0){
+		if($numVaga == 1) {
+			if ($tipo == 1) $vagaNome = "Original 1";
+			else $vagaNome = "original1_id";
+		}
+		else if ($numVaga == 2) { 
+			if ($tipo == 1) $vagaNome = "Original 2";
+			else $vagaNome = "original2_id"; 
+		}
+		else { 
+			if ($tipo == 1) $vagaNome = "Fantasma";
+			else $vagaNome = "original3_id"; 
+		}
+		
+		return $vagaNome;
+	}
 //---------------------------------------------------------------------------------------------------------------
+/***************************************************
+ ***************  ESTATÍSTICAS *********************
+ ***************************************************/
+	 public function gruposTotaisUsuario($idUsuario){
+		$query = "SELECT count(*) as qtd, sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos WHERE comprador_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
+		
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
+	public function gruposTotaisUsuarioPorVaga($idUsuario){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM historicos WHERE comprador_id = $idUsuario AND vaga = '$i'";
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposCriadosUsuario($idUsuario){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE criador_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	 public function gruposAtivos($idUsuario){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original1_id = $idUsuario OR original2_id = $idUsuario OR original3_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposAtivosPorVaga($idUsuario){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original".$i."_id = $idUsuario";
+			//die($query);
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function montanteArrecadado($idUsuario){
+		$query = "SELECT sum(valor_pago) as valorTotal FROM historicos WHERE vendedor_id = $idUsuario";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da soma dos valores das contas vendidas pelo usuário."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function montanteArrecadadoGlobal(){
+		$query = "SELECT sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do montante de vendas total global."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gruposTotaisGlobal(){
+		$query = "SELECT count(*) as qtd FROM compartilhamentos";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do total de contas criadas - Global."); }
+		
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function totalRepassesGlobal(){
+		$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses total global."); }
+
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function totalRepassesGlobalPorVaga(){
+		for($i=1; $i<=3; $i++){
+			$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0 AND vaga = '$i'";
+			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses global por vaga."); }
+			$vaga[$i] = $res->qtd;
+		}
+		return $vaga;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function moedaPreferida(){
+		$query = "SELECT count(*) as qtd, m.* FROM compartilhamentos c, moedas m WHERE (c.moeda_id = m.id) GROUP BY (moeda_id) ORDER BY qtd desc";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de moeda preferida."); }
+
+		return $res;
+	}
+	
+	public function jogoPreferido(){
+		$query = "SELECT count(*) as qtd, j.nome as nomeJogo, p.nome_abrev as plataforma FROM jogos_compartilhados jc, jogos j, plataformas p
+			WHERE (jc.jogo_id = j.id) AND (j.plataforma_id = p.id) 
+			GROUP BY jc.jogo_id ORDER BY qtd desc";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de jogo mais compartilhado."); }
+
+		return $res;
+	}
+	
+	
 }
 ?>

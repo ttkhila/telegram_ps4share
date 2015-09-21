@@ -6,6 +6,12 @@
 	require_once 'classes/jogos.class.php';
 	include 'funcoes.php';
 
+
+	//$nomeGrupo = "teg380: Uncharted: The Nathan Drake Collection + Resident Evil: Revelations 2 - + Everybody's Gone to the Rapture + Fairy Fencer F Advent Dark Force";
+	//$tam = strlen($nomeGrupo);
+	//$nomeGrupo = substr_replace($nomeGrupo, "", (97-$tam))."...";
+	//echo "antes: ".$tam." / Depois: ".strlen($nomeGrupo)."<br /> Result: ".$nomeGrupo; exit;
+
 	$c = new compartilhamentos();
 	$j = new jogos();
 	$selfID = $_SESSION['ID'];
@@ -14,6 +20,7 @@
 
 	//recupera dados dos compartilhamentos existentes
 	$dados1 = $c->getDadosPorUsuario($selfID);
+	$dados2 = $c->getGruposAntigos($selfID);
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
@@ -41,11 +48,8 @@
 					
 					<div class="form-group col-md-12">
 						<label for="exampleInputnome" class="control-label col-md-2">Nome da conta</label>
-						<div class="col-md-8">
-							<input type="text" class="form-control" name="nome" id="nome" required="true" placeholder="Nome da conta" />
-						</div>
-						<div class="col-md-2">
-							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" title="Digite um nome para o grupo que identifique o(s) jogo(s) contido(s) nele ou seus integrantes." />
+						<div class="col-md-10">
+							<label for="exampleInputnome" class="control-label text-primary">O nome da conta será gerado automaticamente com base nos jogos da mesma.</label>
 						</div>
 					</div>
 					
@@ -55,8 +59,16 @@
 							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail da conta" />
 						</div>  	
 						<div class="col-md-2">
-							<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-								title="E-mail da conta de jogo. N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo, a n&atilde;o ser que seja um grupo j&aacute; fechado." />
+							<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" data-html="true" 
+								title="E-mail da conta de jogo.<br /> 
+									N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo,<br />a n&atilde;o ser que seja um grupo j&aacute; fechado.<br />
+									Respeitar padrão de e-mails conforme item 3.8<br />das regras de partilha do grupo."></span>
+						</div>
+					</div>
+					
+					<div class="form-group col-md-12">
+						<div class="col-md-offset-2 col-md-3">
+							<button class="glyphicon glyphicon-hand-up btn btn-xs btn-warning" id="btn-email-padrao" title="Preenche parte do e-mail padrão para criação do grupo"> Colocar E-mail no padrão</button>
 						</div>
 					</div>
 				
@@ -77,8 +89,8 @@
 					<!-- JOGOS-->
 					<div class="form-group col-md-12">
 						<h3>
-							Jogos <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo." />
+							Jogos <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo."></span>
 						</h3>
 					</div>
 					<div class="form-group col-md-12">
@@ -101,8 +113,8 @@
                 			<!-- VAGAS-->
                 			<div class="form-group col-md-12">
 						<h3>
-							Vagas <img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento do seu pr&oacute;prio ID numa das vagas." />
+							Vagas <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento<br />do seu pr&oacute;prio ID numa das vagas."></span>
 						</h3>
 					</div>
 					<div class="form-group col-md-12">
@@ -114,7 +126,6 @@
 								<label class="exampleInputEmail1">Valor:</label>
 								<input type="text" class="form-control" name="valor" id="valor1" maxlength="10" />
 								<button class="btn btn-danger" id="1">Limpar</button>
-
 							</form>
 						</form>
 					</div>
@@ -153,14 +164,15 @@
                         	</div><!-- panel-body -->
 			</div><!-- panel-collapse collapse -->
                </div><!-- panel panel-default -->
+               
+               <!-- GRUPO ATUAIS -->
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="headingTwo">
 				<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
 			</div><!-- panel-heading -->
 			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
-					<div id="div-listagem-grupos" class="container-grupos">
-						<h3>Meus Grupos</h3>
+					<div id="div-listagem-grupos" class="panel panel-group container-grupos">
 						<?php
 							if ($dados1->num_rows == 0){
 								echo "<span>Não há nenhum grupo ativo para este usuário!<br />
@@ -171,23 +183,62 @@
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
 										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
-											echo "<div><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' /> ".stripslashes(utf8_decode($d->nome));
+											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome));
 											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
 										//echo "<hr />";
-									echo "</div><br />";
+									echo "</div><br /><br />";
 								}
 							}
 						?>
-						<span><strong>Legenda:</strong></span><br />
-						<span><div class='glyphicon glyphicon-transfer'>&nbsp;Informar vaga repassada</div><br />
-						<span><div class='glyphicon glyphicon-shopping-cart'>&nbsp;Colocar vaga a venda</div><br />
-						<span><div class='glyphicon glyphicon-trash'>&nbsp;Excluir usuário da vaga (somente grupos abertos)</div>
 					</div><!-- div-listagem-grupos -->
 				</div><!-- panel-body -->
+				<div class="panel-footer">
+					<ul class='list-group'>
+						<li class='list-group-item active'>Legenda:</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-transfer btn btn-xs btn-primary'></div>&nbsp;Informar vaga repassada</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-primary'></div>&nbsp;Colocar vaga a venda (item ainda não anunciado)</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-default'></div>&nbsp;Colocar vaga a venda (item já anunciado)</li>
+						<li class='list-group-item'><div class='glyphicon glyphicon-trash btn btn-xs btn-primary'></div>&nbsp;Excluir usuário da vaga (somente grupos abertos)</li>
+					</ul>
+				</div>
 				<input type="hidden" id="hidFlag" value="0" />
 			</div><!-- collapseTwo -->
+		</div><!-- panel panel-default -->
+		
+		  <!-- GRUPO ANTIGOS -->
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="headingThree">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Grupos Antigos (vagas já repassadas)</a>
+				</h4>
+			</div>
+			<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+				<div class="panel-body">
+					<div id="div-listagem-grupos-antigos" class="panel panel-group">
+						<?php
+							if ($dados2->num_rows == 0){
+								$saida = "<span>Não há grupo com vagas repassadas para ser mostrado!<br />
+								Clique NOVO GRUPO acima para criar um novo grupo.
+								</span>";
+							} else {
+								$saida = "";
+								while($d = $dados2->fetch_object()){
+									$saida .= "
+										<div class='panel'>
+											<div name='div-titulo-grupos-antigos' id='div-titulo-grupos-antigos_".$d->id."' class='panel-title'>
+												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome))."</div>
+											</div>
+											<div name='div-conteudo-grupos-antigos' id ='div-conteudo-grupos-antigos_".$d->id."' class='list-group col-md-12' style='display:none;'></div>
+										</div>";
+								}
+							}
+							echo $saida;
+						?>
+					</div>
+				</div>
+			</div><!-- collapseThree -->
 		</div><!-- panel panel-default -->
 	</div><!-- panel-group -->
 </div><!-- ROW - menu.php -->

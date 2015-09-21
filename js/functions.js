@@ -21,10 +21,21 @@ $(function(){
 //********************** MODAIS ****************************************
 	function abreModal(id, data){ $(id).html(data); }	
 //***********************************************************************
-
+//Insere e retira spinner do elemento para efeitos "loading"...
+function doAnimated(botao){
+	botao.html("<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Loading...");
+}
+function resetaHtml(orig, clone){
+	orig.replaceWith(clone.clone());
+	orig.replaceWith(clone);
+}
+//***********************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button");
+	var divClone = botao.clone(); 
+
 	var $form = $(this).serialize();
 	$form = decodeURI(replaceAll($form, '+', ' ')); //retira alguns caracteres especiais   
 	$form = $form.split('&'); //transforma em array, separado pelo "&"
@@ -36,14 +47,16 @@ $("#frmLogin").submit(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
-			console.log(data);
+			console.log(data); 
 			if(data[0] == 0){ //error
 				$("#sp-erro-msg")
 					.fadeIn()
 					.html(data[1]+"<span class='badge'>x</span>");
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			} else if (data[0] == 2) { //primeiro acesso
 				$(location).attr('href', 'primeiro_acesso.php?id='+data[1]);	
 			} else {
@@ -51,6 +64,11 @@ $("#frmLogin").submit(function(e){
 			} 			
 		}
 	});
+});
+//********************************************************************************
+//LINK VAZIO
+$("#collapseTwo").on("click", "[name='link_vazio']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
 });
 //********************************************************************************
 $("#deslogar").click(function(e){
@@ -76,6 +94,17 @@ $("#deslogar").click(function(e){
 $('body').tooltip({
 	selector: '[data-toggle="tooltip"]',
 	container: 'body'
+}); 
+//********************************************************************************	
+//POPOVER
+$('body').popover({
+	selector: '[data-toggle="popover"]',
+	html: true,
+	container: 'body',
+	content: function() {
+		//alert($(this).attr("data-id"));
+		return $('#show-popover_'+$(this).attr("data-id")).html();
+	}
 }); 
 //********************************************************************************
 //AUTOCOMPLETE 
@@ -244,9 +273,13 @@ $(".btn-danger").click(function(e){
 	$("#valor"+id).val("");
 });
 //********************************************************************************
-$("#btn-grupo-novo").click(function(e){
+$("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 	e.preventDefault(); //previne o evento 'normal'
-	var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
+	var botao = $(this);
+	var divClone = botao.clone(); 
+
+	//var $campos = ["nome", "email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
+	var $campos = ["email", "original1_id", "valor1", "original2_id", "valor2", "original3_id", "valor3" ];
 	var $dados = new Array();
 	if($("#fechado").is(':checked')){ $('#email').attr('required', 'required');  $fechado = 1;}//se marcar grupo como FECHADO, assinala EMAIL como requerido
 	else {$('#email').attr('required', false);  $fechado = 0; }
@@ -306,8 +339,18 @@ $("#btn-grupo-novo").click(function(e){
 				.fadeIn()
 				.html("E-mail Inválido.<span class='badge'>x</span>");
 			$("#email").focus();
+			$(document).scrollTop( $("#foco").offset().top );
 			return false;
 		}
+	}
+	
+	if($("#original1_id").val() == "" && $("#original2_id").val() == ""){
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("Não é possível criar uma conta somente com fantasma.<span class='badge'>x</span>");
+		$("#original1_autocomplete").focus();
+		$(document).scrollTop( $("#foco").offset().top );
+		return false;
 	}
 	
 	$dados.push("moeda_id%=%"+$("#moedas option:selected").val());
@@ -323,10 +366,10 @@ $("#btn-grupo-novo").click(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){  },
 		success: function(data){ 
-			console.log(data); 
+			console.log(data); //return;
 			if(data == 1){ //sucesso
 				location.reload();
 			} else { //erro
@@ -339,12 +382,44 @@ $("#btn-grupo-novo").click(function(e){
 				$(document).scrollTop( $("#foco").offset().top );
 				$("#sp-erro-msg")
 					.fadeIn()
-					.html($error+"<span class='badge'>x</span>");
+					.html($error+"<span class='badge'>x</span>");	
+				
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			}
 		}
 	});
 });
-
+//********************************************************************************
+//Botão para preencher parte do e-mail padrão - Novo Grupo
+$("div").on("click", "#btn-email-padrao", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
+	$selfID = $("#selfID").val();
+	var pars = { id: $selfID, funcao: 'montaPadraoEmail'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data); //return;
+			if(data[0] == 1){
+				alert(data[1]);
+			} else {
+				//$("#collapseOne").find("#email").val(data[1]);
+				$("input[type=email]").val(data[1]);
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************
 //LISTAGEM DE GRUPOS
 $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").click(function(){
@@ -377,8 +452,8 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 			$elem.prop("src", "img/minus.png");
 			$elem.prop("id", "_0");
 		},
-        error: function(e){
-            console.log(e.responseText);
+		error: function(e){
+			console.log(e.responseText);
         }
 	});
 });
@@ -420,6 +495,9 @@ $(".container-grupos").on("click", "[name='img-repasse']", function(){
 });
 //********************************************************************************
 $("#repasse").on("click", "#btn-confirma-repasse", function(){
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
 	var $erros = new Array();
 	var $vaga = VAGA_REPASSE;
 	var $grupo = GRUPO_REPASSE;
@@ -451,12 +529,13 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){  },
 		success: function(data){ 
-			console.log(data); 
+			console.log(data); //return;
 		
 			if(data == 1){ //sucesso
+				alert("Vaga repassada!");
 				location.reload();
 			} else { //erro
 				$error = "";
@@ -465,14 +544,54 @@ $("#repasse").on("click", "#btn-confirma-repasse", function(){
 					for(var z=0;z<qtd;z++)
 						$error += "- "+item[z]+"<br />";
 				});
-				//$(document).scrollTop( $("#foco").offset().top );
 				$("#sp-erro-msg-modal")
 					.fadeIn()
 					.html($error)
 					.delay(2500)
 					.fadeOut('slow');
+				
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			}	
 		}
+	});
+});
+//********************************************************************************
+//LISTAGEM DE GRUPOS ANTIGOS
+$("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[name='imgMais']").click(function(){
+	var $selfId = $("#selfID").val();
+	var $id = $(this).parent().parent().attr('id').split("_")[1]; //ID do histórico
+	//alert($(this).attr("id")); return;
+	if($(this).attr("id") == "_0"){
+		$("#div-conteudo-grupos-antigos_"+$id)
+			.slideUp();
+		$(this).prop("id", "_1");
+		$(this).prop("src", "img/plus.png");
+		return false;
+	}
+	var $elem = $(this);
+		
+	var pars = { id: $id, selfid: $selfId, funcao: 'mostraGrupoAntigo'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {  },
+		complete: function(){  },
+		success: function(data){ 
+			console.log(data);
+			$("#div-conteudo-grupos-antigos_"+$id)
+				.html(data)
+				.slideDown();
+			
+			$elem.prop("src", "img/minus.png");
+			$elem.prop("id", "_0");
+		},
+		error: function(e){
+			console.log(e.responseText);
+        }
 	});
 });
 //********************************************************************************
@@ -488,10 +607,84 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
+//Mostra caixa de diálogo para alteração do preço de venda no painel (HOME)
+$("#div-painel-minhas-vendas").find("[name='btn-altera-valor-venda']").click(function(){
+	$id = $(this).attr('id').split('_')[1];
+
+	if($("#div-painel-altera-venda_"+$id).is(":visible")){
+		$("#div-painel-altera-venda_"+$id).hide();
+		return false;
+	}
+	
+	$("#div-painel-altera-venda_"+$id).show();
+	$("#div-painel-altera-venda_"+$id+" input").focus();
+});
+//********************************************************************************
+//Altera valor da vaga no painel (HOME)
+$(".div-painel-altera-venda").on("click", "button", function(){
+	if(!confirm("Deseja realmente alterar o valor dessa venda?")) return false;
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	var $histID = $(this).siblings("input").attr("id").split("_")[1];
+	var $valor = $(this).siblings("input").val();
+	$valor = $valor.replace(",", ".");
+	if(!$.isNumeric($valor) && $.trim($valor) != ""){ alert("Valor precisa ser numérico!"); return false; }
+	
+	var pars = { valor: $valor, id: $histID, funcao: 'alteraValorVendaVaga'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1){ 
+				if($valor == "") botao.parent().parent().find("#lblValor").text("0,00");
+				else { $valor = $valor.replace(".", ","); botao.parent().parent().find("#lblValor").text($valor); }
+				botao.parent().hide();
+				//alert("Valor alterado com sucesso!"); 
+			}else{ 
+				alert(data["valor"][0]); 
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
+//******************************************************************************** 
+//Exclui a venda da vaga no painel (HOME)
+$("#div-painel-minhas-vendas").find("[name='btn-exclui-venda']").click(function(){
+	if(!confirm("Deseja realmente cancelar essa venda?")) return false;
+	var $histID = $(this).attr("id").split("_")[1];
+	var pars = { id: $histID, funcao: 'excluiVenda'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {},
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data);
+			if (data == 1) location.reload();
+			else{
+				alert(data); 
+			}
+		}
+	});
+});
+//********************************************************************************
 // Grava a disponibilização da vaga
-$(".container-grupos").on("click", "[name='input-valor'] button", function(){
+$(".container-grupos").on("click", "[name='input-valor'] button[name='btn-grupo']", function(){
+	var botao = $(this);
+	var divClone = botao.clone(); 
 	parte = $(this).attr('id').split("_");
 	grupo = parte[1];
+	//alert(grupo);
 	$vaga = parte[2];
 	$valor = $("#txt-valor-venda_"+grupo+"_"+$vaga).val();
 	$valor = $valor.replace(",", ".");
@@ -504,12 +697,16 @@ $(".container-grupos").on("click", "[name='input-valor'] button", function(){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
 			console.log(data);
 			if (data == 1){ alert("Vaga colocada a venda com sucesso!"); location.reload(); }
-			else alert(data["valor"][0]);
+			else{ 
+				alert(data["valor"][0]); 
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
+			}
 		}
 	});
 });
@@ -666,12 +863,14 @@ $("[name='div-casulo-conteudo-grupo']").on('click', "[name='btn-fechar-grupo']",
 //Grava fechamento de grupo
 $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
 	var $erros = new Array();
 	var $campos = new Array();
 	var $valores = new Array();
 
 	var idGrupo = parseInt($("#id-grupo-fechamento").val());
-	var nomeGrupo = $.trim($("#nome-fechamento").val());
 	var moeda_id = parseInt($("#moedas-fechamento option:selected").val());
 
 	if($("#email-fechamento").length) var email = $.trim($("#email-fechamento").val());
@@ -681,9 +880,6 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	var valor1 = $.trim($("#valor-fechamento-1").val()).replace(",", ".");
 	var valor2 = $.trim($("#valor-fechamento-2").val()).replace(",", ".");
 	var valor3 = $.trim($("#valor-fechamento-3").val()).replace(",", ".");
-
-	if(nomeGrupo == "") $erros.push("- Informe o nome do Grupo.<br />"); 
-	else { $campos.push("nome"); $valores.push(nomeGrupo); }
 	
 	if(typeof email !== 'undefined'){ //se a var email existe
 		if(email != ""){
@@ -731,8 +927,8 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
 		success: function(data){ 
 			console.log(data); 
 			if (data == 1) location.reload();
@@ -740,15 +936,134 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 				$("#sp-erro-msg-modal2")
 					.fadeIn()
 					.html(data);
+				resetaHtml(botao, divClone);
+				botao.removeAttr('disabled');
 			}
 		}
 	});
 });
+//********************************************************************************
+$("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	
+	$recomendacaoID = $("#recomendacao_id").val();
+	$texto = $("#txtTexto").val();
 
+	if($texto == ""){
+		$("#avaliacao #sp-erro-msg-modal")
+			.fadeIn()
+			.html("- O campo Comentário é obrigatório!")
+			.delay(2000)
+			.fadeOut('slow');
+		$("#txtTexto").focus();
+		return;
+	}
+	
+	var pars = { recomendacaoID: $recomendacaoID, texto: $texto, funcao: 'gravaRecomendacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"<br />";
+				});
+				$("#avaliacao #sp-erro-msg-modal")
+					.fadeIn()
+					.html($error)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+		}
+	});
+	//alert("Desenvolver essa funcionalidade!");
+});
 //********************************************************************************  
+/*
+ * 	ALTERAÇÕES NOS DADOS DE PERFIL DE USUÁRIO
+ */
+$("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone();
+	
+	var tipo = botao.attr("id").split("_")[1]; //nome, email, telegram, celular
+	var campo = $("#txt_"+tipo);
+	var valor = campo.val();
+	
+	switch(tipo){
+		case 'telegram':
+			var match = valor.match(/^[a-zA-Z0-9_]{5,30}$/); //Somente letras maiúsculas e minúsculas, numeros e sublinhado(_)
+			if(!match || match == "null") {
+				botao.parent().parent().children("p")
+					.fadeIn()
+					.html("Telegram ID inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'nome':
+			if($.trim(valor) == ""){
+				botao.siblings("p")
+					.fadeIn()
+					.html("Nome inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'email':
+			var match = valor.match(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/);
+			if(!match || match == "null") {
+				botao.siblings("p")
+					.fadeIn()
+					.html("E-mail inválido")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			}
+			break;
+	}
 
+	var pars = { tp: tipo, vl: valor, funcao: 'alteraPerfil'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1) location.reload();
+			else {
+				$("#edita_"+tipo+" p")
+					.fadeIn()
+					.html(data)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+		}
+	});
+});
 //********************************************************************************  
-
 //********************************************************************************  
 
 //********************************************************************************  
