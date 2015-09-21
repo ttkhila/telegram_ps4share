@@ -16,6 +16,13 @@
 	//dados cadastrais
 	$u->carregaDados($_SESSION['ID']);
 	$ga->carregaDados($u->getGrupoAcessoId());
+	$nome = stripslashes(utf8_decode($u->getNome()));
+	$telegramID = $u->getTelegramId();
+	$login = stripslashes(utf8_decode($u->getLogin()));
+	$emailID = $u->getIdEmail();
+	$email = $u->getEmail();
+	$tel = $u->getTelefone();
+	$nomeGrupoAcesso = stripslashes(utf8_decode($ga->getNome()));
 	
 	//Recomendações
 	$recomendacoes = $r->getMinhasRecomendacoes($_SESSION['ID']);
@@ -27,6 +34,8 @@
 	$gt3 = $c->gruposCriadosUsuario($_SESSION['ID']);
 	$gt2Vaga = $c->gruposAtivosPorVaga($_SESSION['ID']);
 	$ma = $c->montanteArrecadado($_SESSION['ID']);
+	$gtValorTotal = $gt->valorTotal;
+	$maValorTotal = $ma->valorTotal;
 	
 	//estatisticas - global
 	$gtg = $c->montanteArrecadadoGlobal();
@@ -35,6 +44,15 @@
 	$gtgVaga = $c->totalRepassesGlobalPorVaga();
 	$moeda = $c->moedaPreferida();
 	$jogo = $c->jogoPreferido();
+	
+	$gtgValorTotal = $gtg->valorTotal;
+	$moedaNome = stripslashes(utf8_decode($moeda->nome));
+	$moedaPais = $moeda->pais;
+	$moedaQtd = $moeda->qtd;
+	
+	$jogoNome = stripslashes(utf8_decode($jogo->nomeJogo));
+	$jogoPlataforma = $jogo->plataforma;
+	$jogoQtd = $jogo->qtd;
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script type="text/javascript" src="js/lib/jquery.mask.min.js"/></script>
@@ -75,11 +93,11 @@
 								<div class="col-sm-offset-1 col-sm-3">Nome:</div>
 								<div class="col-sm-8">
 									<div id="fixo_nome" style="display:block">
-										<label><?php echo stripslashes(utf8_decode($u->getNome())); ?></label>
+										<label><?php echo $nome; ?></label>
 										<a href="#" name="edita-perfil" id="link_nome">[editar]</a>
 									</div>
 									<div id="edita_nome" style="display:none">
-										<input class="input-sm" type="text" name="txt_nome" id="txt_nome" value="<?php echo stripslashes(utf8_decode($u->getNome())); ?>" />
+										<input class="input-sm" type="text" name="txt_nome" id="txt_nome" value="<?php echo $nome; ?>" />
 										<button class="btn btn-xs btn-success glyphicon glyphicon-saved" name="btn-edita-perfil" id="btn-edita_nome"> Salvar</button>
 										<button class="btn btn-xs btn-danger glyphicon glyphicon-eye-close" name="btn-esconde-edita" id="btn-esconde_nome" title="Cancela Edição"></button>
 										<p class="bg-danger" style="display:none;"></p>
@@ -91,7 +109,7 @@
 						<li class="list-group-item list-group-item-info">
 							<div class="row">
 								<div class="col-sm-offset-1 col-sm-3">ID:</div>
-								<div class="col-sm-8"><label><?php echo stripslashes(utf8_decode($u->getLogin())); ?></label></div>
+								<div class="col-sm-8"><label><?php echo $login; ?></label></div>
 							</div>
 						</li>
 						
@@ -102,17 +120,18 @@
 									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom" data-html="true" 
 										title="Identificação única do usuário no Telegram.<br />
 											Precisa ser cadastrada no app.<br />
-											Aceita letras maiúsculas, minúsculas, números e sublinhado(_)."></span>
+											Aceita letras maiúsculas, minúsculas,<br />
+											números e sublinhado(_)."></span>
 								</div>	
 								<div class="col-sm-8">
 									<div id="fixo_telegram" style="display:block">
-										<label><?php if(!empty($u->getTelegramId())) echo "@".stripslashes(utf8_decode($u->getTelegramId())); else echo "Não Cadastrado"; ?></label>
+										<label><?php if(!empty($telegramID)) echo "@".$telegramID; else echo "Não Cadastrado"; ?></label>
 										<a href="#" name="edita-perfil" id="link_telegram">[editar]</a>
 									</div>
 									<div id="edita_telegram" style="display:none">
 										<div class="input-group">
 											<span class="input-group-addon input-sm" id="addon1">@</span>
-											<input class="input-sm" type="text" name="txt_telegram" id="txt_telegram" value="<?php echo stripslashes(utf8_decode($u->getTelegramId())); ?>" maxlength="30" aria-describedby="addon1"  />
+											<input class="input-sm" type="text" name="txt_telegram" id="txt_telegram" value="<?php echo $telegramID; ?>" maxlength="30" aria-describedby="addon1"  />
 											&nbsp;<button class="btn btn-xs btn-success glyphicon glyphicon-saved" name="btn-edita-perfil" id="btn-edita_telegram"> Salvar</button>
 											&nbsp;<button class="btn btn-xs btn-danger glyphicon glyphicon-eye-close" name="btn-esconde-edita" id="btn-esconde_telegram" title="Cancela Edição"></button>
 										</div>
@@ -127,11 +146,11 @@
 								<div class="col-sm-offset-1 col-sm-3">E-mail pessoal:</div>	
 								<div class="col-sm-8">
 									<div id="fixo_email" style="display:block">
-										<label><?php echo stripslashes(utf8_decode($u->getEmail())); ?></label>
+										<label><?php echo $email; ?></label>
 										<a href="#" name="edita-perfil" id="link_email">[editar]</a>
 									</div>
 									<div id="edita_email" style="display:none">
-										<input class="input-sm" type="text" name="txt_email" id="txt_email" value="<?php echo stripslashes(utf8_decode($u->getEmail())); ?>" />
+										<input class="input-sm" type="text" name="txt_email" id="txt_email" value="<?php echo $email; ?>" />
 										<button class="btn btn-xs btn-success glyphicon glyphicon-saved" name="btn-edita-perfil" id="btn-edita_email"> Salvar</button>
 										<button class="btn btn-xs btn-danger glyphicon glyphicon-eye-close" name="btn-esconde-edita" id="btn-esconde_email" title="Cancela Edição"></button>
 										<p class="bg-danger" style="display:none;"></p>
@@ -145,12 +164,12 @@
 								<div class="col-sm-offset-1 col-sm-3">Celular:</div>	
 								<div class="col-sm-8">
 									<div id="fixo_telefone" style="display:block">
-										<label id="lbl_tel"><?php echo $u->getTelefone(); ?></label>
+										<label id="lbl_tel"><?php echo $tel; ?></label>
 										<a href="#" name="edita-perfil" id="link_telefone">[editar]</a>
 										<script type="text/javascript">$("#lbl_tel").mask("(00) 0000-00009");</script>
 									</div>
 									<div id="edita_telefone" style="display:none">
-										<input class="input-sm" type="tel" name="txt_telefone" id="txt_telefone" value="<?php echo $u->getTelefone(); ?>" pattern="\([0-9]{2}\)[\s][0-9]{4}-[0-9]{4,5}" />
+										<input class="input-sm" type="tel" name="txt_telefone" id="txt_telefone" value="<?php echo $tel; ?>" pattern="\([0-9]{2}\)[\s][0-9]{4}-[0-9]{4,5}" />
 										<button class="btn btn-xs btn-success glyphicon glyphicon-saved" name="btn-edita-perfil" id="btn-edita_telefone"> Salvar</button>
 										<button class="btn btn-xs btn-danger glyphicon glyphicon-eye-close" name="btn-esconde-edita" id="btn-esconde_telefone" title="Cancela Edição"></button>
 										<p class="bg-danger" style="display:none;"></p>
@@ -168,14 +187,14 @@
 										title="Identificação única de usuário<br />para criação de e-mails de conta<br />de compartilhamento.<br />
 											Não pode ser alterada."></span>
 								</div>
-								<div class="col-sm-8"><label><?php echo $u->getIdEmail(); ?></label></div>
+								<div class="col-sm-8"><label><?php echo $emailID; ?></label></div>
 							</div>
 						</li>
 						
 						<li class="list-group-item list-group-item-info">
 							<div class="row">
 								<div class="col-sm-offset-1 col-sm-3">Grupo (sistema):</div>
-								<div class="col-sm-8"><label><?php echo stripslashes(utf8_decode($ga->getNome())); ?></label></div>
+								<div class="col-sm-8"><label><?php echo $nomeGrupoAcesso; ?></label></div>
 							</div>
 						</li>
 
@@ -259,14 +278,14 @@
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Montante gasto em jogos:</span>
-										<span class="col-sm-4"><label>R$ <?php echo number_format($gt->valorTotal, 2, ",", "."); ?></label></span>
+										<span class="col-sm-4"><label>R$ <?php echo number_format($gtValorTotal, 2, ",", "."); ?></label></span>
 									</div>
 								</li>
 							
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Montante arrecadado em jogos:</span>
-										<span class="col-sm-4"><label>R$ <?php echo number_format($ma->valorTotal, 2, ",", "."); ?></label></span>
+										<span class="col-sm-4"><label>R$ <?php echo number_format($maValorTotal, 2, ",", "."); ?></label></span>
 									</div>
 								</li>
 								
@@ -299,7 +318,7 @@
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Montante negociado:</span>
-										<span class="col-sm-4"><label>R$ <?php echo number_format($gtg->valorTotal, 2, ",", "."); ?></label></span>
+										<span class="col-sm-4"><label>R$ <?php echo number_format($gtgValorTotal, 2, ",", "."); ?></label></span>
 									</div>
 								</li>
 								
@@ -338,7 +357,7 @@
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Moeda mais usada em criações de grupo:</span>
 										<span class="col-sm-4">
-											<label><?php echo stripslashes(utf8_decode($moeda->nome))." (".$moeda->pais.") - ".$moeda->qtd." grupos"; ?></label>
+											<label><?php echo $moedaNome." (".$moedaPais.") - ".$moedaQtd." grupos"; ?></label>
 										</span>
 									</div>
 								</li>
@@ -346,7 +365,7 @@
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-11">Jogo mais compartilhado:</span>
 										<span class="col-sm-offset-1 col-sm-11">
-											<label><?php echo stripslashes(utf8_decode($jogo->nomeJogo))." (".$jogo->plataforma.") - ".$jogo->qtd." grupos"; ?></label>
+											<label><?php echo $jogoNome." (".$jogoPlataforma.") - ".$jogoQtd." grupos"; ?></label>
 										</span>
 									</div>
 								</li>
@@ -387,9 +406,6 @@
 		</div>	
 	</div>
 
-		
-
-	
 	<!-- Conteúdo Principal: Fim -->
 	<?php $rodape = file_get_contents('rodape.html'); echo $rodape; //insere rodapé ?>
 </html>
