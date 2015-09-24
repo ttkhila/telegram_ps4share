@@ -18,7 +18,7 @@
             <li><a href="grupos.php">Gerenciar Grupos</a></li>
             <li><a href="jogos.php">Gerenciar Jogos</a></li>
             <li><a href="classificados.php">Classificados</a></li>
-            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="perfil.php">Meu Perfil</a></li>
             <li style='margin-right:70px;'>%%user%%</li>
           </ul>
           <!--

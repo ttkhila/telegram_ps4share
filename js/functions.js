@@ -1002,6 +1002,8 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 	var tipo = botao.attr("id").split("_")[1]; //nome, email, telegram, celular
 	var campo = $("#txt_"+tipo);
 	var valor = campo.val();
+		
+	//alert(tipo);return;
 	
 	switch(tipo){
 		case 'telegram':
@@ -1036,6 +1038,27 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 					.delay(2500)
 					.fadeOut('slow');	
 				campo.focus();
+				return false;
+			}
+			break;
+		case 'senha':
+			var match = valor.match(/^[\w-!#@+]{6,10}$/);
+			var senha2 = $("#txt_senha2").val();
+			if(!match || match == "null") {
+				botao.siblings("p")
+					.fadeIn()
+					.html("Senha inválida")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			} else if (valor != senha2){
+				botao.siblings("p")
+					.fadeIn()
+					.html("A redigitação da senha nova não confere com a primeira!")
+					.delay(2500)
+					.fadeOut('slow');	
+				$("#txt_senha2").focus();
 				return false;
 			}
 			break;

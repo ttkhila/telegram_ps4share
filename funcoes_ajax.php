@@ -38,13 +38,13 @@ function realizaLogin(){
         $_SESSION['ID'] = $resp->id; //Usuário ID
         $result = array(1);//sucesso
 
-        // --- LOG -> Início ---
-		$log = carregaClasse('Log');
-		$dt = $log->dateTimeOnline(); //date e hora no momento atual
-		$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
-		$acao = stripslashes(utf8_decode($usuLogin))." se logou!";
-		$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
-		// --- LOG -> Fim ---
+       // --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
+	$acao = stripslashes(utf8_decode($usuLogin))." se logou!";
+	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
     }
     echo json_encode($result); 
     exit;
@@ -172,6 +172,13 @@ function novoGrupo(){
 				$a->insereAviso($orig[$i], $texto);
 			}
 		}
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$acao = $criadorNome." criou um novo grupo (ID: $idGrupo / NOME: $nomeGrupo)";
+		$log->insereLog(array($selfID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
 
 		 echo json_encode(1);
 	}else{
@@ -604,6 +611,13 @@ function gravaRepasse(){
 		$a->insereAviso($compradorID, $texto); //envia aviso ao destinatário da vaga
 		$a->insereAviso($outroOriginal, $textoOutroOriginal); //envia aviso ao(s) outro(s) original(is)
 		// *** GRAVA AVISO - FIM *** //
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$acao = $vendedorLogin." repassou (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / PARA: $compradorLogin)";
+		$log->insereLog(array($vendedor, $vendedorLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
 
 		if($ret) echo json_encode(1);
 		else echo json_encode($ret);
@@ -627,6 +641,18 @@ function gravaDisponibilidadeVaga(){
 	
 	if($v->validate()){
 		$c->gravaDisponibilidadeVaga($idGrupo, $vaga, $valor, $usuarioID);
+		
+		$c->carregaDados($idGrupo);
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuLogin = $_SESSION['login'];
+		$vagaNome = $c->getNomeVaga($vaga, 1);
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$acao = $usuLogin." disponibilizou para venda (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
+		$log->insereLog(array($usuarioID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+
 		echo json_encode(1);
 	}else{
 		 $erros = $v->get_errors();
@@ -763,6 +789,21 @@ function alteraValorVendaVaga(){
 		if(!$fraude){ echo json_encode("Erro na autenticação do usuário."); exit; }
 		
 		$c->excluiVenda($idHist);
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuLogin = $_SESSION['login'];
+		$c->carregaDadosHistoricos($idHist);
+		$idGrupo = $c->getCompartilhamentoId();
+		$c->carregaDados($idGrupo);
+		$vaga = $c->getVaga();
+		$vagaNome = $c->getNomeVaga($vaga, 1);
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$acao = $usuLogin." excluiu venda sem repasse (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
+		$log->insereLog(array($logado, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+		
 		echo json_encode(1);
 		exit;
 	}
@@ -789,6 +830,16 @@ function excluiUsuarioVaga(){
 	$texto = "Você foi retirado da vaga de $vagaNome do grupo aberto <b>'$nomeGrupo'</b> por <b>$criadorNome</b> em ".date('d-m-Y').".";
 	$texto = addslashes(utf8_encode($texto));
 	$a->insereAviso($idUsuario, $texto);
+	
+	$u2 = carregaClasse("Usuario");
+	$u2->carregaDados($idUsuario);
+	$loginExcluido = stripslashes(utf8_decode($u2->getLogin()));
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $criadorNome." excluiu usuario de grupo aberto (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / EXCLUÍDO: $loginExcluido)";
+	$log->insereLog(array($criadorID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
 
 	echo json_encode($ret);
 	exit;
@@ -841,11 +892,9 @@ function mostraFechamentoGrupo(){
 
 	$c->carregaDados($idGrupo);
 	$dados = $c->getDadosFechamento();
-	//echo json_encode($dados);exit;
 
 	$nomeConta = stripslashes(utf8_decode($c->getNome()));
 	$moeda = $c->getMoedaId();
-	//echo json_encode($nomeConta);exit;
 
 	if($dados["email"] != "" && !empty($dados["email"])) $email = $dados["email"];
 
@@ -985,7 +1034,6 @@ function gravaFechamentoGrupo(){
 	$valores = $_POST['valores'];
 	$idGrupo = $_POST['id'];
 	$moeda_id = $_POST['moeda'];
-	//echo json_encode($moeda_id);exit;
 
 	$campos_conta = array("email", "moeda_id");
 	$campos_historico = array("valor1", "valor2", "valor3", "senha_alterada");
@@ -1032,6 +1080,20 @@ function gravaFechamentoGrupo(){
 	$c->gravaDadosAdicionais($idGrupo, $valorTotal, $valor_convertido, $fator, $data);
 
 	$c->gravaGrupoFechamento($idGrupo, $campos_conta_result);
+	
+	$u = carregaClasse("Usuario");
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$c->carregaDados($idGrupo);
+	$criadorID = $c->getCriadorId();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$u->carregaDados($criadorID);
+	$loginCriador = stripslashes(utf8_decode($u->getLogin()));
+	$acao = $loginCriador." fechou um grupo aberto (GRUPO: '$nomeGrupo')";
+	$log->insereLog(array($criadorID, $loginCriador, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
 	echo json_encode(1);
 	exit;
 }
@@ -1202,18 +1264,27 @@ function alteraPerfil(){
 		case 'telefone':
 			$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			break;
+		case 'senha':
+			$valor = md5($valor);
+			$u->troca_senha_requisicao($usuarioID, $valor);
+			break;
+		default:
+			echo json_encode("Erro desconhecido!");
+			exit;
+			break;
 	}
 	if(isset($erro)) echo json_encode($erro);
-	else { 
-		/*
-		 * 
-		 *  ... OU GRAVAR REGISTRO AQUI
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-		echo json_encode(1);
+	else {
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuarioLogin = $_SESSION['login'];
+		if ($tipo == 'senha') $valor = "*******";
+		$acao = $usuarioLogin." alterou dados cadastrais (ITEM: '$tipo' / NOVO VALOR: $valor)";
+		$log->insereLog(array($usuarioID, $usuarioLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+		 
+		echo json_encode(1); 
 	}
 	exit;
 }

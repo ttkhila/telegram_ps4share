@@ -9,6 +9,7 @@ class usuarios{
 	private $senha;
 	private $telegram_id;
 	private $primeiro_acesso;
+	private $primeiro_acesso_data;
 	private $ativo;	
 	private $pontos;
 	private $id_email;
@@ -37,6 +38,8 @@ class usuarios{
 	public function getTelegramId(){return $this->telegram_id;}
 	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
+	public function setPrimeiroAcessoData($email){$this->primeiro_acesso_data = $email;}
+	public function getPrimeiroAcessoData(){return $this->primeiro_acesso_data;} 
 	public function setAtivo($valor){$this->ativo = $valor;}
 	public function getAtivo(){return $this->ativo;}
 	public function setPontos($valor){$this->pontos = $valor;}
@@ -58,6 +61,7 @@ class usuarios{
 		array_push($dados, $this->getSenha());
 		array_push($dados, $this->getTelegramId());
 		array_push($dados, $this->getPrimeiroAcesso());
+		array_push($dados, $this->getPrimeiroAcessoData());
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
 		array_push($dados, $this->getIdEmail());
@@ -75,6 +79,7 @@ class usuarios{
         $this->setSenha($res->senha); 
         $this->setTelegramId($res->telegram_id); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
+        $this->setPrimeiroAcessoData($res->primeiro_acesso_data);
         $this->setAtivo($res->ativo);
         $this->setPontos($res->pontos);
         $this->setIdEmail($res->id_email);  
@@ -98,6 +103,11 @@ class usuarios{
         //$senhaNova = md5($senhaNova);
         $dt = date("Y/m/d");
         $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0, primeiro_acesso_data = '$dt' WHERE id = $id";
+        try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+    }
+//---------------------------------------------------------------------------------------------------------------
+    public function troca_senha_requisicao($id, $senhaNova){
+        $query = "UPDATE usuarios SET senha = '$senhaNova' WHERE id = $id";
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
 //---------------------------------------------------------------------------------------------------------------

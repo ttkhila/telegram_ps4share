@@ -149,7 +149,7 @@
 					<div class="table-responsive"> 
 						<table class="table table-striped">
 							<thead>
-								<tr><th colspan="6"><label class='text-muted small'>Clique no botão azul com o nome do usuário para ver detalhes de como entrar em contato com o mesmo.</label></th></tr>
+								<tr><th colspan="6"><label class='text-muted small'>Clique no botão azul com o nome do usuário para ver suas recomendações e os detalhes de como entrar em contato com o mesmo.</label></th></tr>
 								<tr>
 									<th colspan="3">&nbsp;</th>
 									<th colspan="3" class="text-center success">Dados do Grupo</th>

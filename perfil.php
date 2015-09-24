@@ -23,11 +23,11 @@
 	$email = $u->getEmail();
 	$tel = $u->getTelefone();
 	$nomeGrupoAcesso = stripslashes(utf8_decode($ga->getNome()));
-	
-	//Recomendações
-	$recomendacoes = $r->getMinhasRecomendacoes($_SESSION['ID']);
-	
+	$usuarioDesde = $u->getPrimeiroAcessoData();
+
 	//estatísticas - usuário
+	if(is_null($usuarioDesde)) $usuarioDesde = "N/A";
+	else $usuarioDesde = date( 'd/m/Y', strtotime($usuarioDesde) );
 	$gt = $c->gruposTotaisUsuario($_SESSION['ID']);
 	$gtVaga = $c->gruposTotaisUsuarioPorVaga($_SESSION['ID']);
 	$gt2 = $c->gruposAtivos($_SESSION['ID']);
@@ -53,6 +53,9 @@
 	$jogoNome = stripslashes(utf8_decode($jogo->nomeJogo));
 	$jogoPlataforma = $jogo->plataforma;
 	$jogoQtd = $jogo->qtd;
+	
+	//Recomendações
+	$recomendacoes = $r->getMinhasRecomendacoes($_SESSION['ID']);
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script type="text/javascript" src="js/lib/jquery.mask.min.js"/></script>
@@ -197,6 +200,29 @@
 								<div class="col-sm-8"><label><?php echo $nomeGrupoAcesso; ?></label></div>
 							</div>
 						</li>
+						
+						<li class="list-group-item list-group-item-info">
+							<div class="row">
+								<div class="col-sm-offset-1 col-sm-3">
+									Senha do site:
+									
+								</div>	
+								<div class="col-sm-8">
+									<div id="fixo_senha" style="display:block">
+										<label><a href="#" name="edita-perfil" id="link_senha">[mudar a senha]</a></label>
+									</div>
+									<div id="edita_senha" style="display:none">
+										<input class="input-sm" type="password" name="txt_senha" id="txt_senha" maxlength="10" pattern="(^[\w-!#@+]{6,10})$" required="" placeholder="Digite a nova senha"  />&nbsp;
+										<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="bottom" data-html="true" 
+										title="Sua senha deve ter entre 6 e 10 caracteres,<br />podendo conter letras, números e os seguintes<br /> caracteres especiais: (_ - ! # @ +)."></span><br />
+										<input class="input-sm" type="password" name="txt_senha2" id="txt_senha2" maxlength="10" pattern="(^[\w-!#@+]{6,10})$" required="" placeholder="Re-digite a nova senha"  />
+										&nbsp;<button class="btn btn-xs btn-success glyphicon glyphicon-saved" name="btn-edita-perfil" id="btn-edita_senha"> Salvar</button>
+										&nbsp;<button class="btn btn-xs btn-danger glyphicon glyphicon-eye-close" name="btn-esconde-edita" id="btn-esconde_senha" title="Cancela Edição"></button>
+										<p class="bg-danger" style="display:none;"></p>
+									</div>
+								</div>
+							</div>
+						</li>
 
 					</ul>
 				</div>
@@ -209,11 +235,16 @@
 				<div class="panel-heading"><span class="glyphicon glyphicon-stats"></span> Estatísticas</div>
 				<div class="panel-body fixed-panel">
 				
-					<div class="panel panel-info"> 
+					<div class="panel panel-primary"> 
 						<div class="panel-heading">Usuário</div>
-						<div class="panel-body">
-							<ul class="list-group">
 
+							<ul class="list-group">
+								<li class="list-group-item list-group-item-warning">
+									<div class="row">
+										<span class="col-sm-offset-1 col-sm-7">Usuário Desde:</span>
+										<span class="col-sm-4"><label><?php echo $usuarioDesde; ?></label></span>
+									</div>
+								</li>
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Grupos Ativos que você faz parte:</span>
@@ -300,19 +331,25 @@
 									</div>
 								</li>
 							</ul>
-							
-						</div>
+
 					</div><!-- Panel-info - Usuário -->
 					
-					<div class="panel panel-info">
+					<div class="panel panel-primary">
 						<div class="panel-heading">Global</div>
-						<div class="panel-body">
 							
 							<ul class="list-group">
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
 										<span class="col-sm-offset-1 col-sm-7">Grupos totais já criados:</span>
 										<span class="col-sm-4"><label><?php echo $gtg2->qtd; ?></label></span>
+									</div>
+								</li>
+								<li class="list-group-item list-group-item-warning">
+									<div class="row">
+										<span class="col-sm-offset-1 col-sm-7">Moeda mais usada em criações de grupo:</span>
+										<span class="col-sm-4">
+											<label><?php echo $moedaNome." (".$moedaPais.") - ".$moedaQtd." grupos"; ?></label>
+										</span>
 									</div>
 								</li>
 								<li class="list-group-item list-group-item-warning">
@@ -355,14 +392,6 @@
 								</li>
 								<li class="list-group-item list-group-item-warning">
 									<div class="row">
-										<span class="col-sm-offset-1 col-sm-7">Moeda mais usada em criações de grupo:</span>
-										<span class="col-sm-4">
-											<label><?php echo $moedaNome." (".$moedaPais.") - ".$moedaQtd." grupos"; ?></label>
-										</span>
-									</div>
-								</li>
-								<li class="list-group-item list-group-item-warning">
-									<div class="row">
 										<span class="col-sm-offset-1 col-sm-11">Jogo mais compartilhado:</span>
 										<span class="col-sm-offset-1 col-sm-11">
 											<label><?php echo $jogoNome." (".$jogoPlataforma.") - ".$jogoQtd." grupos"; ?></label>
@@ -371,7 +400,6 @@
 								</li>
 							</ul>
 							
-						</div>
 					</div><!-- Panel-info - Global -->
 		
 				</div>
