@@ -150,9 +150,14 @@ class usuarios{
 		";
 		return $saida;
 	}
-	
-	
-	
+//---------------------------------------------------------------------------------------------------------------
+	public function is_adm($id){
+		$query = "SELECT grupo_acesso_id FROM usuarios WHERE id = $id";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->grupo_acesso_id == 1) return TRUE;
+		else return FALSE;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	
 	
 	

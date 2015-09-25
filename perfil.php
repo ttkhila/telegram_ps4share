@@ -54,10 +54,17 @@
 	$jogoPlataforma = $jogo->plataforma;
 	$jogoQtd = $jogo->qtd;
 	
-	//Recomendações
+	//Recomendações recebidas
 	$recomendacoes = $r->getMinhasRecomendacoes($_SESSION['ID']);
+	
+	//Recomendações efetuadas
+	$recomendacoesE = $r->getMinhasRecomendacoesEfetuadas($_SESSION['ID']);
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
+<style>
+#heading1 { cursor: pointer; }
+#heading2 {cursor: pointer; }
+</style>
 <script type="text/javascript" src="js/lib/jquery.mask.min.js"/></script>
 <script>
 	$(function(){ 
@@ -75,6 +82,17 @@
 			$("#edita_"+$campo).hide();
 			$("#fixo_"+$campo).show();
 		});
+		
+		
+		function toggleChevron(e) {
+		    $(e.target)
+			 .prev('.panel-heading')
+			 .find('.accordion-toggle')
+			 .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+		}
+		$('#grupo-recomenda').on('hidden.bs.collapse', toggleChevron);
+		$('#grupo-recomenda').on('shown.bs.collapse', toggleChevron);
+		
 		
 	});	
 </script>
@@ -408,31 +426,72 @@
 		
 	</div>
 		
-	<div class="row">
-		<div class="col-md-12">
-		<div class="panel panel-success">
-			<div class="panel-heading"><span class="glyphicon glyphicon-thumbs-up"></span> Recomendações</div>
-			<div class="panel-body">
-			<?php
-				if($recomendacoes->num_rows == 0) $rec = "<div class='col-md-12'><label>Não há recomendações recebidas até o momento.</label></div>";
-				else {
-					$rec = "<ul class='list-group'>";
-					while($dados = $recomendacoes->fetch_object()){
-						$rec .= "
-							<li class='list-group-item list-group-item-warning'>
-								<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
-								<br /><label>- ".stripslashes(utf8_decode($dados->texto))."</label>
-							</li><br />
-							";
+	<div class="panel-group" id="grupo-recomenda" role="tablist" aria-multiselectable="true">
+		<div class="panel panel-primary">
+			<div class="panel-heading" role="tab" id="heading1" data-toggle="collapse" data-parent="#grupo-recomenda" data-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+				<h4 class="panel-title">
+					<a role="button">
+						<span class="glyphicon glyphicon-star"></span> 
+						Recomendações Recebidas por você&nbsp;
+						<span class="glyphicon glyphicon-chevron-down accordion-toggle"></span> 
+					</a>
+				</h4>
+			</div>
+			
+			<div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
+				<div class="panel-body">
+				<?php
+					if($recomendacoes->num_rows == 0) $rec = "<div class='col-md-12'><label>Não há recomendações recebidas até o momento.</label></div>";
+					else {
+						$rec = "<ul class='list-group'>";
+						while($dados = $recomendacoes->fetch_object()){
+							$rec .= "
+								<li class='list-group-item list-group-item-warning'>
+									<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
+									<br /><label>- ".stripslashes(utf8_decode($dados->texto))."</label>
+								</li><br />
+								";
+						}
+						$rec .= "</ul>";
 					}
-					$rec .= "</ul>";
-				}
-				echo $rec;
-			?>
+					echo $rec;
+				?>
+				</div>
 			</div>
 		</div>
-		</div>	
-	</div>
+
+		<div class="panel panel-success">
+			<div class="panel-heading" role="tab" id="heading2" data-toggle="collapse" data-parent="#grupo-recomenda" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+				<h4 class="panel-title">
+					<a role="button">
+						<span class="glyphicon glyphicon-star-empty"></span> 
+						Recomendações Efetuadas por você&nbsp;
+						<span class="glyphicon glyphicon-chevron-down accordion-toggle"></span> 
+					</a>
+				</h4>
+			</div>
+			<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
+				<div class="panel-body">
+				<?php
+					if($recomendacoesE->num_rows == 0) $rec = "<div class='col-md-12'><label>Não há recomendações efetuadas por você até o momento.</label></div>";
+					else {
+						$rec = "<ul class='list-group'>";
+						while($dados = $recomendacoesE->fetch_object()){
+							$rec .= "
+								<li class='list-group-item list-group-item-warning'>
+									<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
+									<br /><label>- ".stripslashes(utf8_decode($dados->texto))."</label>
+								</li><br />
+								";
+						}
+						$rec .= "</ul>";
+					}
+					echo $rec;
+				?>
+				</div>
+			</div>
+		</div>
+	</div><!-- ID: grupo_recomenda -->
 
 	<!-- Conteúdo Principal: Fim -->
 	<?php $rodape = file_get_contents('rodape.html'); echo $rodape; //insere rodapé ?>

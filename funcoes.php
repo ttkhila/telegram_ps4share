@@ -3,8 +3,17 @@
 function login($mn){
 	if(!isset($_SESSION['login']))
 		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, Visitante! <a href='login.php' style='padding:0'>[login]</a></p>";
-	else  
-		$msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, ".$_SESSION['login']."! <a href='#' id='deslogar'>[sair]</a></p>";
+	else { 
+		include_once 'classes/usuarios.class.php';
+		$u = new usuarios();
+		$adm = $u->is_adm($_SESSION['ID']);
+		if ($adm) $msg = "
+			<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, ".$_SESSION['login']."! 
+				<a href='#' id='deslogar'>[sair]</a>
+				<a href='adm.php'>[adm]</a>
+			</p>";
+		else $msg = "<p class='navbar-inverse navbar-text' style='padding-left:15px;'>Ol&aacute;, ".$_SESSION['login']."! <a href='#' id='deslogar'>[sair]</a></p>";
+	}
 		
 	$mn = str_replace("%%user%%", $msg, $mn);
 	

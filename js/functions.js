@@ -90,7 +90,6 @@ $("#deslogar").click(function(e){
 });
 //********************************************************************************	
 //TOOLTIP
-//$('[data-toggle="tooltip"]').tooltip(); 
 $('body').tooltip({
 	selector: '[data-toggle="tooltip"]',
 	container: 'body'
@@ -103,6 +102,7 @@ $('body').popover({
 	container: 'body',
 	content: function() {
 		//alert($(this).attr("data-id"));
+		$("[data-toggle='popover']").not(this).popover('hide');
 		return $('#show-popover_'+$(this).attr("data-id")).html();
 	}
 }); 

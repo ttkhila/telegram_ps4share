@@ -143,7 +143,6 @@
 		</div><!-- panel panel-default -->
 	
 		<div class="panel panel-default">
-			
 			<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
 					<div class="table-responsive"> 

@@ -93,6 +93,15 @@ class recomendacoes{
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getMinhasRecomendacoesEfetuadas($usuarioID){
+		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto 
+			FROM recomendacoes r, usuarios u 
+			WHERE (r.vendedor_id = u.id) AND (r.efetuada = 1) AND (r.comprador_id = $usuarioID) 
+			ORDER BY r.data_recomendacao desc";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res;
+	}
 	
 }
 ?>

@@ -110,7 +110,7 @@
 
 	<div class="row">
 		<div class="col-md-12">
-			<div class="panel panel-success">
+			<div class="panel panel-primary">
 				<div class="panel-heading"><span class="glyphicon glyphicon-thumbs-up"></span> Recomendações recebidas por <?php echo $login; ?></div>
 				<div class="panel-body">
 				<?php
