@@ -2,3 +2,5 @@ classes/conexao.class.php
 arquivos
 js/functions_backup.js
 funcoes_ajax_backup.php
+backups
+envia_email.php

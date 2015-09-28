@@ -229,7 +229,7 @@
 											
 												<div class='div-painel-altera-venda' id='div-painel-altera-venda_".$v->id."'>
 													<label>novo valor - R$</label><br />
-													<input class='input-edita-valor' type='text' id='input-valor-venda_".$v->id."' maxlength='8' />
+													<input class='input-edita-valor' type='text' id='input-valor-venda_".$v->id."' maxlength='10' />
 													<button class='glyphicon glyphicon-ok btn btn-xs btn-primary' title='confirma'></button>
 												</div>
 											

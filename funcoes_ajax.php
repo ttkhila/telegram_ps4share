@@ -321,7 +321,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button>
 								</div>
 							</label>
@@ -336,7 +336,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='2' id='btn-grupo_".$idGrupo."_2'>Confirma</button>
 								</div> 
 							</label>
@@ -350,7 +350,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='3' id='btn-grupo_".$idGrupo."_3'>Confirma</button>
 								</div> 
 							</label>
