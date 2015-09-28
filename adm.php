@@ -30,15 +30,16 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li class="active"><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
+			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
 			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
+			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
 		</ul>
 		
 		<div id="my-tab-content" class="tab-content">
-			<div class="tab-pane active" id="aba-relatorios">
-				 Relatórios 
+			<div class="tab-pane active" id="aba-cadastros">
+				 Cadastros
 			</div>
 			
 			<div class="tab-pane" id="aba-logs">
@@ -51,6 +52,10 @@
 			
 			<div class="tab-pane" id="aba-avisos">
 				 Avisos 
+			</div>
+			
+			<div class="tab-pane" id="aba-relatorios">
+				 Relatórios 
 			</div>
 		</div>
 	</div>

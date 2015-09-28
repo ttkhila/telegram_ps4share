@@ -158,6 +158,35 @@ class usuarios{
 		else return FALSE;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function primeiro_registro_indicado($nome, $email, $tel, $indicador){
+		$query = "INSERT INTO indicados (nome, email, telefone, indicado_por) VALUES ('$nome', '$email', '$tel', $indicador)";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getUsuariosPorGrupoAcesso($grupo_acesso){
+		$query = "SELECT * FROM usuarios WHERE grupo_acesso_id = $grupo_acesso";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicadosPendentesPorIndicador($indicadorID){
+		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND pendente = 1 AND negado = 0";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+	
+
+
+
+
+
+
+
+
+
+
 	
 	
 	

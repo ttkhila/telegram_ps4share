@@ -1289,7 +1289,53 @@ function alteraPerfil(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function indicaUsuario(){
+	session_start();
+	$nome = $_POST['nome'];
+	$email = $_POST['email'];
+	$tel = $_POST['tel'];
+	$indicador = $_SESSION['ID'];
+	$u = carregaClasse("Usuario");
+	$v = carregaClasse('Validacao');
+	$v->set("Nome", $nome)->is_required();
+	$v->set("E-mail", $email)->is_required()->is_email();
+	$v->set("Celular", $tel)->is_required();
+	
+	//echo json_encode($dados);exit;
+	if($v->validate()){
+		$nome = addslashes(utf8_encode($nome));
+		$email = addslashes(utf8_encode($email));
+		$u->primeiro_registro_indicado($nome, $email, $tel, $indicador);
+		
+		//Grava Aviso aos ADMs que tem acesso a liberar indicados
+		$ga = carregaClasse("Grupo Acesso");
+		$grupos = $ga->getGruposPorAcesso("libera_indicados");
+		if($grupos) {
+			$a = carregaClasse("Aviso");
+			$indicadorNome = $_SESSION['login'];
+			$texto = "$indicadorNome fez uma indicação de usuário para o grupo de partilhas em ".date('d-m-Y').". Verifique a área administrativa para decidir liberar ou não essa indicação";
+			$texto = addslashes(utf8_encode($texto));
+			foreach($grupos as $grupo){
+				$usus = $u->getUsuariosPorGrupoAcesso($grupo);
+				if ($usus){
+					while ($dados = $usus->fetch_object()){
+						$a->insereAviso($dados->id, $texto);
+					}
+				}
+			}
+		}
 
+		echo json_encode("0");
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	
+	
+	
+	
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -1344,9 +1390,9 @@ function carregaClasse($secao){
 			require_once 'classes/logs.class.php';
 			$inst = new logs();
 			break;
-		case 'Disponibilidade':
-			require_once 'classes/disponibilidades.class.php';
-			$inst = new disponibilidades();
+		case 'Grupo Acesso':
+			require_once 'classes/grupos_acesso.class.php';
+			$inst = new grupos_acesso();
 			break;
 		default:
 			

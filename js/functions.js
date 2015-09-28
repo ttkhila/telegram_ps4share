@@ -994,7 +994,7 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 /*
  * 	ALTERAÇÕES NOS DADOS DE PERFIL DE USUÁRIO
  */
-$("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
+$("#aba-dados_cadastrais").on("click", "[name='btn-edita-perfil']", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
 	var divClone = botao.clone();
@@ -1087,6 +1087,53 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 	});
 });
 //********************************************************************************  
+//Formulário de Indicação
+$("#aba-indicacoes").find("form").submit(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button[type=submit]");
+	var divClone = botao.clone();
+	
+	var $nome = $.trim($("#nome").val());
+	var $email = $.trim($("#email").val());
+	var $tel = $.trim($("#telefone").val()); 
+
+	var pars = { nome: $nome, email: $email, tel: $tel, funcao: 'indicaUsuario'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == "0"){ //indicação efetuada
+				$("#aba-indicacoes").find("#sp-sucesso-msg-modal")
+					.fadeIn()
+					.html("<label>Indicação enviada a Administração com sucesso!</label>")
+					.delay(2500)
+					.fadeOut('slow');
+				$("#aba-indicacoes").find("form")[0].reset();
+			}else { //erros
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"<br />";
+				});
+				$("#aba-indicacoes").find("#sp-erro-msg-modal")
+					.fadeIn()
+					.html($error)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************  
 
 //********************************************************************************  

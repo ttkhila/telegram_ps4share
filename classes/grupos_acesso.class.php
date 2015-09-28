@@ -6,6 +6,7 @@ class grupos_acesso{
 	private $manipula_jogos;
 	private $manipula_usuarios;
 	private $manipula_configuracoes;
+	private $libera_indicados;
 	private $con;
 
 	public function __construct(){
@@ -28,6 +29,9 @@ class grupos_acesso{
 	
 	public function setManipulaConfiguracoes($valor){$this->manipula_configuracoes = $valor;}	
 	public function getManipulaConfiguracoes(){return $this->manipula_configuracoes;}
+	
+	public function setLiberaIndicados($valor){$this->libera_indicados = $valor;}	
+	public function getLiberaIndicados(){return $this->libera_indicados;}
 
 //---------------------------------------------------------------------------------------------------------------   
 	// Descarrega os dados QUE ESTÃO PREVIAMENTE CARREGADOS NAS VARIÁVEIS DA CLASSE
@@ -38,6 +42,7 @@ class grupos_acesso{
 		array_push($dados, $this->getManipulaJogos());
 		array_push($dados, $this->getManipulaUsuarios());
 		array_push($dados, $this->getManipulaConfiguracoes());
+		array_push($dados, $this->getLiberaIndicados());
 		return $dados;
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -53,6 +58,7 @@ class grupos_acesso{
 		$this->setManipulaJogos($res->manipula_jogos);
 		$this->setManipulaUsuarios($res->manipula_usuarios);
 		$this->setManipulaConfiguracoes($res->manipula_configuracoes);
+		$this->setLiberaIndicados($res->libera_indicados);
 	}
 //---------------------------------------------------------------------------------------
 function setPermissao($usuario){
@@ -61,103 +67,24 @@ function setPermissao($usuario){
 	
 	$this->carregaDados($res->id);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//---------------------------------------------------------------------------------------------------------------   
-	/*
-	 * 
-	 * 
-	 *  ATENÇÃO: AS VARIÁVEIS ABAIXO PRECISAM SER REVISTAS, POIS O ARQUIVO FOI COPIADO DE OUTRA CLASSE
-	 * 
-	 * 
-	 */
-    public function incluiGrupo($dados, $id = null){
-    	$query1 = '';
-		$query2 = '';
-
-    	foreach ($dados as $key => $value) {
-    		if ($key == 'login'){ //checar PSN (login) em duplicidade
-                if ($this->checaDuplicidade(trim($value)) > 0){ //duplicidade
-                	//$result[0] = utf8_encode("Já existe usuário cadastrado com esse login!");
-                    //return $result;
-                    return array("login", "Já existe usuário cadastrado com esse login!");
-                }
-            }
-			
-			if($key == 'email')
-				$email = trim($value); //valor a ser comparado com o e-mail repetido
-			
-			if($key == 'senha'){ //senha sendo último campo do formulário, caso contrário haverá erro
-				$senha_descrip = addslashes(utf8_encode($value)); //senha descriptografada
-				$query1 .= 'senha_descriptografada, ';
-				$query2 .= "'".$senha_descrip."', ";
-				$value = md5($value); //criptografa a senha
-				$query1 .= $key;
-				$query2 .= "'".addslashes(utf8_encode($value))."'";
-			} else {
-				$query1 .= $key.', ';
-				$query2 .= "'".addslashes(utf8_encode($value))."', ";
-			}
+//---------------------------------------------------------------------------------------
+	//retorna um array com as IDs dos grupos de acessos que tem um determinado acesso
+	public function getGruposPorAcesso($acesso){
+		$query = "SELECT id FROM grupos_acesso WHERE $acesso = 1";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e){ return $e.message; }
+		if ($res->num_rows == 0) return false;
+		
+		$ids = array();
+		while($id = $res->fetch_object()){
+			array_push($ids, $id->id);
 		}
+		return $ids;
+	}
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
 
-    	$query = "INSERT INTO usuarios (".$query1.") values (".$query2.")";
-		//echo $query;
-		//exit;
-    	$id = $this->con->executa($query, 1); //insere usuário e retorna seu ID
-        
-        
-        return array(1, "Cadastro efetuado com sucesso!");
-    }
-
-//---------------------------------------------------------------------------------------------------------------   
-    public function carregaCampos(){
-        $campos = array(
-            'login' => 'login',
-            'nome' => 'Nome',
-            'email' => 'E-mail',
-            'grupo' => 'Grupo'
-        );
-        return $campos;
-    }
-//---------------------------------------------------------------------------------------------------------------
-    public function validaLogin($dados){
-        $usuario = addslashes(utf8_encode($dados[0]));
-        $senha = md5(trim($dados[1]));
-        
-        $query = "SELECT id, login, trocar_senha FROM usuarios WHERE login = '$usuario' AND senha = '$senha'";
-
-        $res = $this->con->multiConsulta($query);
-        
-        if ($res->num_rows > 0) //login OK
-            return $res->fetch_object();
-    }
-//---------------------------------------------------------------------------------------------------------------
-    public function troca_senha($id, $senhaNova){
-        $senhaNova = md5($senhaNova);
-        $query = "UPDATE usuarios SET senha = '$senhaNova', senha_temp = '', trocar_senha = 0, ativo = 1 WHERE id = $id";
-        $this->con->executa($query);
-    }
-//---------------------------------------------------------------------------------------------------------------
 
 }
 ?>

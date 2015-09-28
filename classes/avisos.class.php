@@ -37,7 +37,7 @@ class avisos{
 	}	
  //---------------------------------------------------------------------------------------------------------------
 	public function insereAviso($para, $texto){
-		if (is_array($para)){ //array - original 1 e 2
+		if (is_array($para)){ //array - original 1 e 2 ou adms
 			foreach ($para as $valor){
 				if ($valor != 0) { //vaga diferente de "Vaga em aberto"
 					$query = "INSERT INTO avisos (para, texto) VALUES ($valor, '$texto')";
