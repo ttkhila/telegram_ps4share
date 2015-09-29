@@ -943,6 +943,73 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	});
 });
 //********************************************************************************
+//Negativa de Indicação de Usuário
+$("[name='btn-negar-indicacao']").click(function(){
+	var idIndicacao = parseInt($(this).attr('id').split("_")[1]);
+	var idIndicador = parseInt($(this).data('id'));
+	//alert(idIndicador);return;
+	var pars = { id: idIndicacao, indicador: idIndicador, funcao: 'mostraNegativaIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			//alert(data);
+			abreModal("#modal-indicacao-negada", data);
+		}
+	});
+});
+//********************************************************************************
+$("#modal-indicacao-negada").on("submit", "form", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button[type=submit]");
+	var divClone = botao.clone();
+	var $texto = $("#txtTexto").val();
+	var $indicacao = $("#indicacao_id").val();
+	//alert($indicacao); return;
+	var pars = { indicacao: $indicacao, texto: $texto, funcao: 'gravaRecusaIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1){
+				$("#modal-indicacao-negada").find("[data-dismiss=modal]").trigger("click"); //fecha modal
+				
+				var elem = $("#aba-cadastros").find("#negar-indicacao_"+$indicacao);
+				var $killrow = elem.parent().parent();
+				$killrow.addClass("danger");
+				$killrow.fadeOut(1000, function(){
+					$(this).remove(); //remove a linha da tabela em tempo de execução
+				});
+	
+			}else {
+				$("#modal-indicacao-negada").find("#sp-erro-msg-modal")
+					.fadeIn()
+					.html(data);
+				$("#txtTexto").focus();
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
+
+
+
+
+
+//********************************************************************************
 $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);

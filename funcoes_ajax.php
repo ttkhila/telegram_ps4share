@@ -3,6 +3,13 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
+/*
+ * Mudanças no banco
+ * Nova tabela: indicados
+ * novo campo na tabela grupos_acesso: libera_indicados
+ * 
+ */
+
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -310,7 +317,6 @@ function mostraGrupo(){
 					}
 					$saida .= "
 				</div>";
-		
 		$saida .= "
 				<div class='panel panel-info'>	
 					<div class='panel-heading'>
@@ -1098,6 +1104,77 @@ function gravaFechamentoGrupo(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function mostraNegativaIndicacao(){
+	$idIndicacao = $_POST['id'];
+	$idIndicador = $_POST['indicador'];
+	$u = carregaClasse("Usuario");
+	$u->carregaDados($idIndicador);
+	$indicacao = $u->getDadosIndicacao($idIndicacao);
+	
+	$login = stripslashes(utf8_decode($u->getLogin()));
+	$tela = "
+		<form role='form'>
+			<input type='hidden' id='indicacao_id' value='$idIndicacao' />
+			<div class='alert alert-warning'>
+				Informe motivo da recusa da indicação.<br /><b>Aviso:</b> O indicado será informado por e-mail e o indicador por aviso dentro do sistema.
+			</div>
+			<div class='form-group'>
+				<label>Indicado: </label>
+				<label>".stripslashes(utf8_decode($indicacao->nome))."</label>
+			</div>
+			<div class='form-group'>
+				<label>Indicador: </label>
+				<label>".$login."</label>
+			</div>
+			<div class='form-group'>
+				<label>Motivo da recusa:</label>
+				<textarea class='form-control' maxlength='250' id='txtTexto' autofocus required></textarea>
+				<small>Máximo de 250 caracteres</small>
+				<p class='bg-danger' id='sp-erro-msg-modal' style='display:none;'></p>
+			</div>
+			<div class='modal-footer'>
+				<button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+				<button type='submit' id='btn-confirma-negativa-indicacao' class='btn btn-primary'>Confirmar</button>
+			</div>
+		</form>
+	";
+	echo json_encode($tela);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function gravaRecusaIndicacao(){
+	$indicacaoID = $_POST['indicacao'];
+	$texto = $_POST['texto'];
+	
+	if (trim($texto) == ""){ echo json_encode("Preencha o campo do motivo da recusa."); exit; }
+	
+	$texto = addslashes(utf8_encode($texto));
+	$u = carregaClasse("Usuario");
+	$u->gravaRecusaIndicacao($indicacaoID, $texto);
+
+	//grava aviso
+	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
+	$indicadoNome = stripslashes(utf8_decode($indicacao->nome));
+	$indicadoPor = $indicacao->indicado_por;
+	$a = carregaClasse("Aviso");
+	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
+	$texto = addslashes(utf8_encode($texto));
+	$a->insereAviso($indicadoPor, $texto);
+	
+	/*
+	 * FALTA ENVIAR EMAIL AO INDICADO
+	 * 
+	 */
+
+	echo json_encode(1);
+	exit;
+}
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
 function executaFiltro(){
 	$dados = $_POST['dados'];
 	$tipoValor = $_POST['tipoValor'];
@@ -1330,10 +1407,6 @@ function indicaUsuario(){
 		 $erros = $v->get_errors();
 		 echo json_encode($erros);
 	}
-	
-	
-	
-	
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------

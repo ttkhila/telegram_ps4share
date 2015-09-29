@@ -62,6 +62,9 @@
 	
 	//Indicados Pendentes
 	$ind = $u->getIndicadosPendentesPorIndicador($_SESSION['ID']);
+	
+	//Indicações Negadas
+	$indNeg = $u->getIndicacoesNegadasPorIndicador($_SESSION['ID']);
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <style>
@@ -552,7 +555,22 @@
 							<div class="panel panel-danger">
 								<div class="panel-heading"><span class="glyphicon glyphicon-ban-circle"></span> Negadas</div>
 								<div class="panel-body">
-									Negadas aqui
+									<?php
+									if(!$indNeg){ $saida = "<div class='col-md-12'><label>Não há indicações suas negadas.</label></div>"; }
+									else {
+										$saida = "<ul class='list-group'>";
+										while($dados = $indNeg->fetch_object()){
+										$saida .= "
+											<li class='list-group-item list-group-item-text'>
+												<span class='glyphicon glyphicon-thumbs-down'></span> ".stripslashes(utf8_decode($dados->nome))."<br />
+												&nbsp;&nbsp;<span class='glyphicon glyphicon-arrow-right'></span><small> Motivo: ".stripslashes(utf8_decode($dados->motivo))."</small>
+											</li>
+											";
+										}
+										$saida .= "</ul>";
+									}
+									echo $saida;
+								?>
 								</div>
 							</div>
 						</div>

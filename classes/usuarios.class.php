@@ -152,9 +152,9 @@ class usuarios{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function is_adm($id){
-		$query = "SELECT grupo_acesso_id FROM usuarios WHERE id = $id";
+		$query = "SELECT ga.adm FROM grupos_acesso ga, usuarios u WHERE (ga.id = u.grupo_acesso_id) AND (u.id = $id)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
-		if ($res->grupo_acesso_id == 1) return TRUE;
+		if ($res->adm == 1) return TRUE;
 		else return FALSE;
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -176,6 +176,34 @@ class usuarios{
 		if ($res->num_rows == 0) return false;
 		return $res;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicadosPendentes(){
+		$query = "SELECT i.*, u.login, u.nome as nomeUsu FROM indicados i, usuarios u WHERE (pendente = 1) AND (negado = 0) AND (u.id = i.indicado_por)";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicacoesNegadasPorIndicador($indicadorID){
+		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND negado = 1 ORDER BY id desc";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getDadosIndicacao($idIndicacao){
+		$query = "SELECT * FROM indicados WHERE id = $idIndicacao";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+		
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaRecusaIndicacao($idIndicacao, $motivo){
+		$query = "UPDATE indicados SET negado = 1, pendente = 0, motivo = '$motivo' WHERE id = $idIndicacao";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	
 	
 
 
