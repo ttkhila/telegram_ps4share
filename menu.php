@@ -14,11 +14,11 @@
             <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
           </ul>
           <ul class="nav navbar-nav navbar-left">
-            <li><a href="./">Home</a></li>
-            <li><a href="grupos.php">Gerenciar Grupos</a></li>
-            <li><a href="jogos.php">Gerenciar Jogos</a></li>
-            <li><a href="classificados.php">Classificados</a></li>
-            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="./"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            <li><a href="grupos.php"><span class="glyphicon glyphicon-duplicate"></span> Grupos</a></li>
+            <li><a href="jogos.php"><span class="glyphicon glyphicon-knight"></span> Jogos</a></li>
+            <li><a href="classificados.php"><span class="glyphicon glyphicon-usd"></span> Classificados</a></li>
+            <li><a href="perfil.php"><span class="glyphicon glyphicon-user"></span> Meu Perfil</a></li>
             <li style='margin-right:70px;'>%%user%%</li>
           </ul>
           <!--

@@ -59,7 +59,7 @@
 							<input type="email" class="form-control" name="email" id="email" placeholder="E-mail da conta" />
 						</div>  	
 						<div class="col-md-2">
-							<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="right" data-html="true" 
+							<span class="glyphicon glyphicon-info-sign text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
 								title="E-mail da conta de jogo.<br /> 
 									N&atilde;o &eacute; obrigat&oacute;rio informar na criação do grupo,<br />a n&atilde;o ser que seja um grupo j&aacute; fechado.<br />
 									Respeitar padrão de e-mails conforme item 3.8<br />das regras de partilha do grupo."></span>
@@ -89,7 +89,7 @@
 					<!-- JOGOS-->
 					<div class="form-group col-md-12">
 						<h3>
-							Jogos <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+							Jogos <span class="glyphicon glyphicon-info-sign btn text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
 								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo."></span>
 						</h3>
 					</div>
@@ -113,7 +113,7 @@
                 			<!-- VAGAS-->
                 			<div class="form-group col-md-12">
 						<h3>
-							Vagas <span class="glyphicon glyphicon-info-sign btn" data-toggle="tooltip" data-placement="right" data-html="true" 
+							Vagas <span class="glyphicon glyphicon-info-sign btn text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
 							title="Na cria&ccedil;&atilde;o do grupo &eacute; obrigat&oacute;rio o preenchimento<br />do seu pr&oacute;prio ID numa das vagas."></span>
 						</h3>
 					</div>
@@ -153,8 +153,9 @@
 								<div class="checkbox">
 									<label><input type="checkbox" id="fechado" name="fechado" /><span class="sp-form">&nbsp;&nbsp;Grupo j&aacute; fechado?</span>&nbsp;&nbsp;</label> 
 									<label>
-										<img src='img/help.png' width='16' height='16' data-toggle="tooltip" data-placement="right" 
-										title="Se esse campo for marcado, ser&aacute; obrigat&oacute;rio o preenchimento de pelo menos uma vaga, os valores das vagas preenchidas, assim como o e-mail da conta criada." />
+										<span class="glyphicon glyphicon-info-sign btn text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
+											title="Se esse campo for marcado, ser&aacute; obrigat&oacute;rio o preenchimento de pelo menos uma vaga, os valores das vagas preenchidas, assim como o e-mail da conta criada."></span>
+										
 									</label>
 								</div><br /><p></p>
 								<button id="btn-grupo-novo" class="btn btn-success">Criar Grupo</button>

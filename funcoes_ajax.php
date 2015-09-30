@@ -3,6 +3,13 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
+/*
+ * Mudanças no banco
+ * Nova tabela: indicados
+ * novo campo na tabela grupos_acesso: libera_indicados
+ * 
+ */
+
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -38,13 +45,13 @@ function realizaLogin(){
         $_SESSION['ID'] = $resp->id; //Usuário ID
         $result = array(1);//sucesso
 
-        // --- LOG -> Início ---
-		$log = carregaClasse('Log');
-		$dt = $log->dateTimeOnline(); //date e hora no momento atual
-		$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
-		$acao = stripslashes(utf8_decode($usuLogin))." se logou!";
-		$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
-		// --- LOG -> Fim ---
+       // --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
+	$acao = stripslashes(utf8_decode($usuLogin))." se logou!";
+	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
     }
     echo json_encode($result); 
     exit;
@@ -92,6 +99,12 @@ function novoGrupo(){
 		}
 		
 		if(strstr($parte[0], "valor") && $parte[1] != "") $v->set($parte[0], str_replace(",", ".", $parte[1]))->is_float(); //VALOR
+		
+		//verifica duplicidade de e-mail, que significaria uma conta duplicada
+		if($parte[0] == 'email' && trim($parte[1]) != ""){
+			$dup = $c->checaDuplicidadeGrupo(trim($parte[1]));
+			if(!$dup) $v->set('Duplicidade', '')->set_error("O e-mail informado já está em uso em outro grupo. Esse grupo já existe!");
+		}
 			
 		if($fechado == 1){
 			if($parte[0] == 'email') $v->set($parte[0], $parte[1])->is_required()->is_email(); //E-MAIL
@@ -172,6 +185,13 @@ function novoGrupo(){
 				$a->insereAviso($orig[$i], $texto);
 			}
 		}
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$acao = $criadorNome." criou um novo grupo (ID: $idGrupo / NOME: $nomeGrupo)";
+		$log->insereLog(array($selfID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
 
 		 echo json_encode(1);
 	}else{
@@ -303,7 +323,6 @@ function mostraGrupo(){
 					}
 					$saida .= "
 				</div>";
-		
 		$saida .= "
 				<div class='panel panel-info'>	
 					<div class='panel-heading'>
@@ -314,7 +333,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_1' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button>
 								</div>
 							</label>
@@ -329,7 +348,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_2' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='2' id='btn-grupo_".$idGrupo."_2'>Confirma</button>
 								</div> 
 							</label>
@@ -343,7 +362,7 @@ function mostraGrupo(){
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
 									</button>
-									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' />
+									<input class='input-xs' type='text' id='txt-valor-venda_".$idGrupo."_3' maxlength='10' />
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='3' id='btn-grupo_".$idGrupo."_3'>Confirma</button>
 								</div> 
 							</label>
@@ -604,6 +623,13 @@ function gravaRepasse(){
 		$a->insereAviso($compradorID, $texto); //envia aviso ao destinatário da vaga
 		$a->insereAviso($outroOriginal, $textoOutroOriginal); //envia aviso ao(s) outro(s) original(is)
 		// *** GRAVA AVISO - FIM *** //
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$acao = $vendedorLogin." repassou (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / PARA: $compradorLogin)";
+		$log->insereLog(array($vendedor, $vendedorLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
 
 		if($ret) echo json_encode(1);
 		else echo json_encode($ret);
@@ -627,6 +653,18 @@ function gravaDisponibilidadeVaga(){
 	
 	if($v->validate()){
 		$c->gravaDisponibilidadeVaga($idGrupo, $vaga, $valor, $usuarioID);
+		
+		$c->carregaDados($idGrupo);
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuLogin = $_SESSION['login'];
+		$vagaNome = $c->getNomeVaga($vaga, 1);
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$acao = $usuLogin." disponibilizou para venda (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
+		$log->insereLog(array($usuarioID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+
 		echo json_encode(1);
 	}else{
 		 $erros = $v->get_errors();
@@ -763,6 +801,21 @@ function alteraValorVendaVaga(){
 		if(!$fraude){ echo json_encode("Erro na autenticação do usuário."); exit; }
 		
 		$c->excluiVenda($idHist);
+		
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuLogin = $_SESSION['login'];
+		$c->carregaDadosHistoricos($idHist);
+		$idGrupo = $c->getCompartilhamentoId();
+		$c->carregaDados($idGrupo);
+		$vaga = $c->getVaga();
+		$vagaNome = $c->getNomeVaga($vaga, 1);
+		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$acao = $usuLogin." excluiu venda sem repasse (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
+		$log->insereLog(array($logado, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+		
 		echo json_encode(1);
 		exit;
 	}
@@ -789,6 +842,16 @@ function excluiUsuarioVaga(){
 	$texto = "Você foi retirado da vaga de $vagaNome do grupo aberto <b>'$nomeGrupo'</b> por <b>$criadorNome</b> em ".date('d-m-Y').".";
 	$texto = addslashes(utf8_encode($texto));
 	$a->insereAviso($idUsuario, $texto);
+	
+	$u2 = carregaClasse("Usuario");
+	$u2->carregaDados($idUsuario);
+	$loginExcluido = stripslashes(utf8_decode($u2->getLogin()));
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $criadorNome." excluiu usuario de grupo aberto (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / EXCLUÍDO: $loginExcluido)";
+	$log->insereLog(array($criadorID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
 
 	echo json_encode($ret);
 	exit;
@@ -841,11 +904,9 @@ function mostraFechamentoGrupo(){
 
 	$c->carregaDados($idGrupo);
 	$dados = $c->getDadosFechamento();
-	//echo json_encode($dados);exit;
 
 	$nomeConta = stripslashes(utf8_decode($c->getNome()));
 	$moeda = $c->getMoedaId();
-	//echo json_encode($nomeConta);exit;
 
 	if($dados["email"] != "" && !empty($dados["email"])) $email = $dados["email"];
 
@@ -985,7 +1046,6 @@ function gravaFechamentoGrupo(){
 	$valores = $_POST['valores'];
 	$idGrupo = $_POST['id'];
 	$moeda_id = $_POST['moeda'];
-	//echo json_encode($moeda_id);exit;
 
 	$campos_conta = array("email", "moeda_id");
 	$campos_historico = array("valor1", "valor2", "valor3", "senha_alterada");
@@ -998,6 +1058,14 @@ function gravaFechamentoGrupo(){
 	// 'monta' um array ($campos_conta_result) com campos%=%valores
 	// 'monta' um array ($campos_historico_result) com campos%=%valores
 	foreach ($campos as $key => $value) {
+		//verifica duplicidade de e-mail, que significaria uma conta duplicada
+		if($value == 'email' && trim($valores[$key]) != ""){
+			$dup = $c->checaDuplicidadeGrupo(trim($valores[$key]));
+			if(!$dup) {
+				echo json_encode("O e-mail informado já está em uso em outro grupo. Esse grupo já existe!");
+				exit;
+			}
+		}
 		//Compartilhamento (conta)
 		if(in_array($value, $campos_conta)){
 			if(trim($valores[$key]) == "") {
@@ -1032,6 +1100,86 @@ function gravaFechamentoGrupo(){
 	$c->gravaDadosAdicionais($idGrupo, $valorTotal, $valor_convertido, $fator, $data);
 
 	$c->gravaGrupoFechamento($idGrupo, $campos_conta_result);
+	
+	$u = carregaClasse("Usuario");
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$c->carregaDados($idGrupo);
+	$criadorID = $c->getCriadorId();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$u->carregaDados($criadorID);
+	$loginCriador = stripslashes(utf8_decode($u->getLogin()));
+	$acao = $loginCriador." fechou um grupo aberto (GRUPO: '$nomeGrupo')";
+	$log->insereLog(array($criadorID, $loginCriador, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function mostraNegativaIndicacao(){
+	$idIndicacao = $_POST['id'];
+	$idIndicador = $_POST['indicador'];
+	$u = carregaClasse("Usuario");
+	$u->carregaDados($idIndicador);
+	$indicacao = $u->getDadosIndicacao($idIndicacao);
+	
+	$login = stripslashes(utf8_decode($u->getLogin()));
+	$tela = "
+		<form role='form'>
+			<input type='hidden' id='indicacao_id' value='$idIndicacao' />
+			<div class='alert alert-warning'>
+				Informe motivo da recusa da indicação.<br /><b>Aviso:</b> O indicado será informado por e-mail e o indicador por aviso dentro do sistema.
+			</div>
+			<div class='form-group'>
+				<label>Indicado: </label>
+				<label>".stripslashes(utf8_decode($indicacao->nome))."</label>
+			</div>
+			<div class='form-group'>
+				<label>Indicador: </label>
+				<label>".$login."</label>
+			</div>
+			<div class='form-group'>
+				<label>Motivo da recusa:</label>
+				<textarea class='form-control' maxlength='250' id='txtTexto' autofocus required></textarea>
+				<small>Máximo de 250 caracteres</small>
+				<p class='bg-danger' id='sp-erro-msg-modal' style='display:none;'></p>
+			</div>
+			<div class='modal-footer'>
+				<button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+				<button type='submit' id='btn-confirma-negativa-indicacao' class='btn btn-primary'>Confirmar</button>
+			</div>
+		</form>
+	";
+	echo json_encode($tela);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function gravaRecusaIndicacao(){
+	$indicacaoID = $_POST['indicacao'];
+	$texto = $_POST['texto'];
+	
+	if (trim($texto) == ""){ echo json_encode("Preencha o campo do motivo da recusa."); exit; }
+	
+	$texto = addslashes(utf8_encode($texto));
+	$u = carregaClasse("Usuario");
+	$u->gravaRecusaIndicacao($indicacaoID, $texto);
+
+	//grava aviso
+	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
+	$indicadoNome = stripslashes(utf8_decode($indicacao->nome));
+	$indicadoPor = $indicacao->indicado_por;
+	$a = carregaClasse("Aviso");
+	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
+	$texto = addslashes(utf8_encode($texto));
+	$a->insereAviso($indicadoPor, $texto);
+	
+	/*
+	 * FALTA ENVIAR EMAIL AO INDICADO
+	 * 
+	 */
+
 	echo json_encode(1);
 	exit;
 }
@@ -1105,6 +1253,101 @@ function montaResultadoBuscaClassificados($dados){
 				<td>".$d->dataCompra."</td>
 				<td>$stt</td>
 			</tr>";
+	}
+	return $saida;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function executaFiltroAdmGrupos(){
+	//echo json_encode("fwefewfwef"); exit; 
+	$dados = $_POST['dados'];
+	$c = carregaClasse("Compartilhamento");
+	//echo json_encode("fwefewfwef"); exit; 
+	$dados= array_filter($dados, 'is_not_null'); //elimina nulls e vazios (""). Mantem 0 (zero)
+	$ret = $c->buscaGruposAdm($dados);
+	//echo json_encode($ret); exit;  
+	$tela = montaResultadoBuscaGruposAdm($ret);
+	echo json_encode($tela);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function montaResultadoBuscaGruposAdm($dados){
+	
+	/*
+	 * 
+	 * 
+	 * 
+	 * 	FINALIZAR AQUI!!!!!!
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	
+	
+	
+	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum registro encontrado para os filtros informados!</label></div>";
+	//$j = carregaClasse("Jogo");
+	//$u = carregaClasse("Usuario");
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		$saida .= "
+			<div class='panel panel-primary'>
+				<div class='panel-heading'>".stripslashes(utf8_decode($d->nomeGrupo))."</div>
+				<div class='panel-body'>
+					<div class='col-md-7'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-success'>Vagas:</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Original 1:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Original 2:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Fantasma:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+						</ul>
+					</div>
+					
+					<div class='col-md-5'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-warning'>Jogo(s):</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 1:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 2:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 3:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+						</ul>
+					</div>					
+				</div>
+			</div><br />
+		";
 	}
 	return $saida;
 }
@@ -1202,23 +1445,74 @@ function alteraPerfil(){
 		case 'telefone':
 			$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			break;
+		case 'senha':
+			$valor = md5($valor);
+			$u->troca_senha_requisicao($usuarioID, $valor);
+			break;
+		default:
+			echo json_encode("Erro desconhecido!");
+			exit;
+			break;
 	}
 	if(isset($erro)) echo json_encode($erro);
-	else { 
-		/*
-		 * 
-		 *  ... OU GRAVAR REGISTRO AQUI
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-		echo json_encode(1);
+	else {
+		// --- LOG -> Início ---
+		$log = carregaClasse('Log');
+		$dt = $log->dateTimeOnline(); //date e hora no momento atual
+		$usuarioLogin = $_SESSION['login'];
+		if ($tipo == 'senha') $valor = "*******";
+		$acao = $usuarioLogin." alterou dados cadastrais (ITEM: '$tipo' / NOVO VALOR: $valor)";
+		$log->insereLog(array($usuarioID, $usuarioLogin, $dt, addslashes(utf8_encode($acao))));
+		// --- LOG -> Fim ---
+		 
+		echo json_encode(1); 
 	}
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function indicaUsuario(){
+	session_start();
+	$nome = $_POST['nome'];
+	$email = $_POST['email'];
+	$tel = $_POST['tel'];
+	$indicador = $_SESSION['ID'];
+	$u = carregaClasse("Usuario");
+	$v = carregaClasse('Validacao');
+	$v->set("Nome", $nome)->is_required();
+	$v->set("E-mail", $email)->is_required()->is_email();
+	$v->set("Celular", $tel)->is_required();
+	
+	//echo json_encode($dados);exit;
+	if($v->validate()){
+		$nome = addslashes(utf8_encode($nome));
+		$email = addslashes(utf8_encode($email));
+		$u->primeiro_registro_indicado($nome, $email, $tel, $indicador);
+		
+		//Grava Aviso aos ADMs que tem acesso a liberar indicados
+		$ga = carregaClasse("Grupo Acesso");
+		$grupos = $ga->getGruposPorAcesso("libera_indicados");
+		if($grupos) {
+			$a = carregaClasse("Aviso");
+			$indicadorNome = $_SESSION['login'];
+			$texto = "$indicadorNome fez uma indicação de usuário para o grupo de partilhas em ".date('d-m-Y').". Verifique a área administrativa para decidir liberar ou não essa indicação";
+			$texto = addslashes(utf8_encode($texto));
+			foreach($grupos as $grupo){
+				$usus = $u->getUsuariosPorGrupoAcesso($grupo);
+				if ($usus){
+					while ($dados = $usus->fetch_object()){
+						$a->insereAviso($dados->id, $texto);
+					}
+				}
+			}
+		}
 
+		echo json_encode("0");
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -1273,9 +1567,9 @@ function carregaClasse($secao){
 			require_once 'classes/logs.class.php';
 			$inst = new logs();
 			break;
-		case 'Disponibilidade':
-			require_once 'classes/disponibilidades.class.php';
-			$inst = new disponibilidades();
+		case 'Grupo Acesso':
+			require_once 'classes/grupos_acesso.class.php';
+			$inst = new grupos_acesso();
 			break;
 		default:
 			

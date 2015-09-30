@@ -90,7 +90,6 @@ $("#deslogar").click(function(e){
 });
 //********************************************************************************	
 //TOOLTIP
-//$('[data-toggle="tooltip"]').tooltip(); 
 $('body').tooltip({
 	selector: '[data-toggle="tooltip"]',
 	container: 'body'
@@ -103,6 +102,7 @@ $('body').popover({
 	container: 'body',
 	content: function() {
 		//alert($(this).attr("data-id"));
+		$("[data-toggle='popover']").not(this).popover('hide');
 		return $('#show-popover_'+$(this).attr("data-id")).html();
 	}
 }); 
@@ -943,6 +943,73 @@ $("#fecha-grupo").on('click', '#btn-confirma-fechamento', function(e){
 	});
 });
 //********************************************************************************
+//Negativa de Indicação de Usuário
+$("[name='btn-negar-indicacao']").click(function(){
+	var idIndicacao = parseInt($(this).attr('id').split("_")[1]);
+	var idIndicador = parseInt($(this).data('id'));
+	//alert(idIndicador);return;
+	var pars = { id: idIndicacao, indicador: idIndicador, funcao: 'mostraNegativaIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			//alert(data);
+			abreModal("#modal-indicacao-negada", data);
+		}
+	});
+});
+//********************************************************************************
+$("#modal-indicacao-negada").on("submit", "form", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button[type=submit]");
+	var divClone = botao.clone();
+	var $texto = $("#txtTexto").val();
+	var $indicacao = $("#indicacao_id").val();
+	//alert($indicacao); return;
+	var pars = { indicacao: $indicacao, texto: $texto, funcao: 'gravaRecusaIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1){
+				$("#modal-indicacao-negada").find("[data-dismiss=modal]").trigger("click"); //fecha modal
+				
+				var elem = $("#aba-cadastros").find("#negar-indicacao_"+$indicacao);
+				var $killrow = elem.parent().parent();
+				$killrow.addClass("danger");
+				$killrow.fadeOut(1000, function(){
+					$(this).remove(); //remove a linha da tabela em tempo de execução
+				});
+	
+			}else {
+				$("#modal-indicacao-negada").find("#sp-erro-msg-modal")
+					.fadeIn()
+					.html(data);
+				$("#txtTexto").focus();
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
+
+
+
+
+
+//********************************************************************************
 $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
@@ -994,7 +1061,7 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 /*
  * 	ALTERAÇÕES NOS DADOS DE PERFIL DE USUÁRIO
  */
-$("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
+$("#aba-dados_cadastrais").on("click", "[name='btn-edita-perfil']", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
 	var divClone = botao.clone();
@@ -1002,6 +1069,8 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 	var tipo = botao.attr("id").split("_")[1]; //nome, email, telegram, celular
 	var campo = $("#txt_"+tipo);
 	var valor = campo.val();
+		
+	//alert(tipo);return;
 	
 	switch(tipo){
 		case 'telegram':
@@ -1039,6 +1108,27 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 				return false;
 			}
 			break;
+		case 'senha':
+			var match = valor.match(/^[\w-!#@+]{6,10}$/);
+			var senha2 = $("#txt_senha2").val();
+			if(!match || match == "null") {
+				botao.siblings("p")
+					.fadeIn()
+					.html("Senha inválida")
+					.delay(2500)
+					.fadeOut('slow');	
+				campo.focus();
+				return false;
+			} else if (valor != senha2){
+				botao.siblings("p")
+					.fadeIn()
+					.html("A redigitação da senha nova não confere com a primeira!")
+					.delay(2500)
+					.fadeOut('slow');	
+				$("#txt_senha2").focus();
+				return false;
+			}
+			break;
 	}
 
 	var pars = { tp: tipo, vl: valor, funcao: 'alteraPerfil'};
@@ -1064,6 +1154,53 @@ $("#div-edita-perfil").on("click", "[name='btn-edita-perfil']", function(e){
 	});
 });
 //********************************************************************************  
+//Formulário de Indicação
+$("#aba-indicacoes").find("form").submit(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button[type=submit]");
+	var divClone = botao.clone();
+	
+	var $nome = $.trim($("#nome").val());
+	var $email = $.trim($("#email").val());
+	var $tel = $.trim($("#telefone").val()); 
+
+	var pars = { nome: $nome, email: $email, tel: $tel, funcao: 'indicaUsuario'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == "0"){ //indicação efetuada
+				$("#aba-indicacoes").find("#sp-sucesso-msg-modal")
+					.fadeIn()
+					.html("<label>Indicação enviada a Administração com sucesso!</label>")
+					.delay(2500)
+					.fadeOut('slow');
+				$("#aba-indicacoes").find("form")[0].reset();
+			}else { //erros
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"<br />";
+				});
+				$("#aba-indicacoes").find("#sp-erro-msg-modal")
+					.fadeIn()
+					.html($error)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************  
 
 //********************************************************************************  

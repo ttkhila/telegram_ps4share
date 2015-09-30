@@ -9,6 +9,7 @@ class usuarios{
 	private $senha;
 	private $telegram_id;
 	private $primeiro_acesso;
+	private $primeiro_acesso_data;
 	private $ativo;	
 	private $pontos;
 	private $id_email;
@@ -37,6 +38,8 @@ class usuarios{
 	public function getTelegramId(){return $this->telegram_id;}
 	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
 	public function getPrimeiroAcesso(){return $this->primeiro_acesso;} 
+	public function setPrimeiroAcessoData($email){$this->primeiro_acesso_data = $email;}
+	public function getPrimeiroAcessoData(){return $this->primeiro_acesso_data;} 
 	public function setAtivo($valor){$this->ativo = $valor;}
 	public function getAtivo(){return $this->ativo;}
 	public function setPontos($valor){$this->pontos = $valor;}
@@ -58,6 +61,7 @@ class usuarios{
 		array_push($dados, $this->getSenha());
 		array_push($dados, $this->getTelegramId());
 		array_push($dados, $this->getPrimeiroAcesso());
+		array_push($dados, $this->getPrimeiroAcessoData());
 		array_push($dados, $this->getAtivo());
 		array_push($dados, $this->getPontos());
 		array_push($dados, $this->getIdEmail());
@@ -75,6 +79,7 @@ class usuarios{
         $this->setSenha($res->senha); 
         $this->setTelegramId($res->telegram_id); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
+        $this->setPrimeiroAcessoData($res->primeiro_acesso_data);
         $this->setAtivo($res->ativo);
         $this->setPontos($res->pontos);
         $this->setIdEmail($res->id_email);  
@@ -98,6 +103,11 @@ class usuarios{
         //$senhaNova = md5($senhaNova);
         $dt = date("Y/m/d");
         $query = "UPDATE usuarios SET senha = '$senhaNova', primeiro_acesso = 0, primeiro_acesso_data = '$dt' WHERE id = $id";
+        try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
+    }
+//---------------------------------------------------------------------------------------------------------------
+    public function troca_senha_requisicao($id, $senhaNova){
+        $query = "UPDATE usuarios SET senha = '$senhaNova' WHERE id = $id";
         try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
     }
 //---------------------------------------------------------------------------------------------------------------
@@ -140,9 +150,71 @@ class usuarios{
 		";
 		return $saida;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function is_adm($id){
+		$query = "SELECT ga.adm FROM grupos_acesso ga, usuarios u WHERE (ga.id = u.grupo_acesso_id) AND (u.id = $id)";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->adm == 1) return TRUE;
+		else return FALSE;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function primeiro_registro_indicado($nome, $email, $tel, $indicador){
+		$query = "INSERT INTO indicados (nome, email, telefone, indicado_por) VALUES ('$nome', '$email', '$tel', $indicador)";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getUsuariosPorGrupoAcesso($grupo_acesso){
+		$query = "SELECT * FROM usuarios WHERE grupo_acesso_id = $grupo_acesso";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicadosPendentesPorIndicador($indicadorID){
+		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND pendente = 1 AND negado = 0";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicadosPendentes(){
+		$query = "SELECT i.*, u.login, u.nome as nomeUsu FROM indicados i, usuarios u WHERE (pendente = 1) AND (negado = 0) AND (u.id = i.indicado_por)";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicacoesNegadasPorIndicador($indicadorID){
+		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND negado = 1 ORDER BY id desc";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getDadosIndicacao($idIndicacao){
+		$query = "SELECT * FROM indicados WHERE id = $idIndicacao";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+		
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaRecusaIndicacao($idIndicacao, $motivo){
+		$query = "UPDATE indicados SET negado = 1, pendente = 0, motivo = '$motivo' WHERE id = $idIndicacao";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	
 	
-	
+
+
+
+
+
+
+
+
+
+
 	
 	
 	

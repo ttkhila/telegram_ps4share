@@ -210,6 +210,14 @@ class compartilhamentos{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function checaDuplicidadeGrupo($email){
+		$query = "SELECT id FROM compartilhamentos WHERE email = '$email'";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		if ($res->num_rows > 0) return false;
+		
+		return true;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function getGruposAntigos($usuarioID){
 		$query = "SELECT h.id, c.nome FROM compartilhamentos c, historicos h 
 			WHERE (c.id = h.compartilhamento_id) AND (h.vendedor_id = $usuarioID) 
@@ -399,7 +407,7 @@ class compartilhamentos{
 			else if($tipoValor == 2) $where = "h.valor_venda > ".floatval($dados['valor1']);
 			else $where = "h.valor_venda < ".floatval($dados['valor1']);
 		} else $where = "";
-		
+		//return "123456789";
 		if($dados["fechado"] == '1') { 
 			$where = $this->checaWhere($where);
 			$where .= "c.fechado = 1"; 
@@ -448,6 +456,44 @@ class compartilhamentos{
 		
 		return $where;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function buscaGruposAdm($dados){
+		$where = "";
+		if($dados["fechado"] == '1') { 
+			$where = $this->checaWhere($where);
+			$where .= "c.fechado = 1"; 
+		} 
+
+		if(isset($dados["comprador_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "(c.original1_id = ".$dados["comprador_id"]." OR c.original2_id = ".$dados["comprador_id"]." OR c.original3_id = ".$dados["comprador_id"].")";
+		}
+		//return $where;
+		if(isset($dados["jogo_id"])){
+			$where = $this->checaWhere($where);
+			$where .= "jc.jogo_id = ".$dados["jogo_id"];
+		}
+
+		if(isset($dados["nome"])){
+			$where = $this->checaWhere($where);
+			$dados["nome"] = addslashes(utf8_encode($dados["nome"]));
+			$where .= "c.nome = ".$dados["nome"];
+		}
+		
+		$where = $this->checaWhere($where);
+		//return $where;
+		$query = "SELECT c.id as idGrupo, c.nome as nomeGrupo, c.original1_id, c.original2_id, c.original3_id, DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dataCompra, c.fechado, c.criador_id, u4.login as loginCriador, 
+				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
+				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
+				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) 
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";
+		//return $query;
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		//return $query;
+		return $res;
+
+	}
+
 //---------------------------------------------------------------------------------------------------------------
 	public function getVendasAbertasPorUsuario($idUsuario){
 		$query = "SELECT h.*, j.nome as nomeJogo

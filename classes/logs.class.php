@@ -42,8 +42,8 @@ class logs{
 //---------------------------------------------------------------------------------------------------------------   
 	public function dateTimeOnline(){
 		setlocale(LC_ALL, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
-		date_default_timezone_set('America/Sao_Paulo'	);
-		return date(DATE_RFC822);
+		date_default_timezone_set('America/Sao_Paulo');
+		return date(DATE_RFC2822);
 	}
 //---------------------------------------------------------------------------------------------------------------  
 	public function insereLog($dados){
