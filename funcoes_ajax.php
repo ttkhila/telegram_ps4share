@@ -99,6 +99,12 @@ function novoGrupo(){
 		}
 		
 		if(strstr($parte[0], "valor") && $parte[1] != "") $v->set($parte[0], str_replace(",", ".", $parte[1]))->is_float(); //VALOR
+		
+		//verifica duplicidade de e-mail, que significaria uma conta duplicada
+		if($parte[0] == 'email' && trim($parte[1]) != ""){
+			$dup = $c->checaDuplicidadeGrupo(trim($parte[1]));
+			if(!$dup) $v->set('Duplicidade', '')->set_error("O e-mail informado já está em uso em outro grupo. Esse grupo já existe!");
+		}
 			
 		if($fechado == 1){
 			if($parte[0] == 'email') $v->set($parte[0], $parte[1])->is_required()->is_email(); //E-MAIL
@@ -1052,6 +1058,14 @@ function gravaFechamentoGrupo(){
 	// 'monta' um array ($campos_conta_result) com campos%=%valores
 	// 'monta' um array ($campos_historico_result) com campos%=%valores
 	foreach ($campos as $key => $value) {
+		//verifica duplicidade de e-mail, que significaria uma conta duplicada
+		if($value == 'email' && trim($valores[$key]) != ""){
+			$dup = $c->checaDuplicidadeGrupo(trim($valores[$key]));
+			if(!$dup) {
+				echo json_encode("O e-mail informado já está em uso em outro grupo. Esse grupo já existe!");
+				exit;
+			}
+		}
 		//Compartilhamento (conta)
 		if(in_array($value, $campos_conta)){
 			if(trim($valores[$key]) == "") {
@@ -1169,11 +1183,6 @@ function gravaRecusaIndicacao(){
 	echo json_encode(1);
 	exit;
 }
-
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------
 function executaFiltro(){
 	$dados = $_POST['dados'];
@@ -1244,6 +1253,101 @@ function montaResultadoBuscaClassificados($dados){
 				<td>".$d->dataCompra."</td>
 				<td>$stt</td>
 			</tr>";
+	}
+	return $saida;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function executaFiltroAdmGrupos(){
+	//echo json_encode("fwefewfwef"); exit; 
+	$dados = $_POST['dados'];
+	$c = carregaClasse("Compartilhamento");
+	//echo json_encode("fwefewfwef"); exit; 
+	$dados= array_filter($dados, 'is_not_null'); //elimina nulls e vazios (""). Mantem 0 (zero)
+	$ret = $c->buscaGruposAdm($dados);
+	//echo json_encode($ret); exit;  
+	$tela = montaResultadoBuscaGruposAdm($ret);
+	echo json_encode($tela);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function montaResultadoBuscaGruposAdm($dados){
+	
+	/*
+	 * 
+	 * 
+	 * 
+	 * 	FINALIZAR AQUI!!!!!!
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	
+	
+	
+	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum registro encontrado para os filtros informados!</label></div>";
+	//$j = carregaClasse("Jogo");
+	//$u = carregaClasse("Usuario");
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		$saida .= "
+			<div class='panel panel-primary'>
+				<div class='panel-heading'>".stripslashes(utf8_decode($d->nomeGrupo))."</div>
+				<div class='panel-body'>
+					<div class='col-md-7'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-success'>Vagas:</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Original 1:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Original 2:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Fantasma:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+						</ul>
+					</div>
+					
+					<div class='col-md-5'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-warning'>Jogo(s):</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 1:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 2:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-3'>Jogo 3:</label>
+									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+								</div>
+							</li>
+						</ul>
+					</div>					
+				</div>
+			</div><br />
+		";
 	}
 	return $saida;
 }

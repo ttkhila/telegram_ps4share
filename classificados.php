@@ -82,7 +82,9 @@
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="headingOne">
 				<h4 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Filtros</a>
+					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						<span class="glyphicon glyphicon-filter"></span> Filtros
+					</a>
 				</h4>
 			</div>
 			<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
@@ -95,7 +97,7 @@
 							<label for="jogo1_id" class="control-label col-sm-2">- por Jogo</label>
 							<div class="col-sm-8">     
 								<input type="hidden" name="jogo_id[]" id="jogo1_id" /> 
-								<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" />
+								<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo" />
 							</div>
 							<div class="col-sm-2">
 								<span id="jogo1_check"><img src="" /></span>
@@ -135,7 +137,7 @@
 							</div>
 						</div>
 						<div class="form-group col-md-12">
-							<button id="btn-envia-busca" class="btn btn-primary"  data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Enviar</button>
+							<button id="btn-envia-busca" class="btn btn-primary"  data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Buscar</button>
 						</div>
 					</div><!-- form-group -->
 				</div><!-- panel-body -->

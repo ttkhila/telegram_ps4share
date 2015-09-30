@@ -113,7 +113,7 @@
 			<li class="active"><a href="#aba-dados_cadastrais" data-toggle="tab"><span class="glyphicon glyphicon-user"></span> Dados Cadastrais</a></li>
 			<li><a href="#aba-estatisticas" data-toggle="tab"><span class="glyphicon glyphicon-stats"></span> Estatísticas</a></li>
 			<li><a href="#aba-recomendacoes" data-toggle="tab"><span class="glyphicon glyphicon-thumbs-up"></span> Recomendações</a></li>
-			<li><a href="#aba-indicacoes" data-toggle="tab"><span class="glyphicon glyphicon-hand-right"></span> Indicações</a></li>
+			<!--<li><a href="#aba-indicacoes" data-toggle="tab"><span class="glyphicon glyphicon-hand-right"></span> Indicações</a></li>-->
 			<li><a href="#aba-preferencias" data-toggle="tab"><span class="glyphicon glyphicon-cog"></span> Preferências</a></li>
 		</ul>
 		
@@ -433,12 +433,12 @@
 								<a role="button">
 									<span class="glyphicon glyphicon-star"></span> 
 									Recomendações Recebidas por você&nbsp;
-									<span class="glyphicon glyphicon-chevron-down accordion-toggle"></span> 
+									<span class="glyphicon glyphicon-chevron-up accordion-toggle"></span> 
 								</a>
 							</h4>
 						</div>
 						
-						<div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
+						<div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
 							<div class="panel-body">
 							<?php
 								if($recomendacoes->num_rows == 0) $rec = "<div class='col-md-12'><label>Não há recomendações recebidas até o momento.</label></div>";
@@ -549,7 +549,7 @@
 							<div class="panel panel-success">
 								<div class="panel-heading"><span class="glyphicon glyphicon-ok-circle"></span> Confirmadas</div>
 								<div class="panel-body">
-									Confirmadas aqui
+									Em construção
 								</div>
 							</div>
 							<div class="panel panel-danger">
@@ -580,7 +580,7 @@
 			</div><!-- aba-indicacoes -->
 			
 			<div class="tab-pane" id="aba-preferencias"><!-- ABA PREFERÊNCIAS  -->
-				 Preferências
+				 Em construção
 			</div><!-- aba-preferencias -->
 			
 		</div>
