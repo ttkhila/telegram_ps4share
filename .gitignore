@@ -5,3 +5,5 @@ funcoes_ajax_backup.php
 backups
 envia_email.php
 /fonts/
+autocomplete_email.php
+envia_email_front_end.php

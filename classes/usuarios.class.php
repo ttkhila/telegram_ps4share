@@ -203,6 +203,12 @@ class usuarios{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function insereUsuario($nome, $login, $email, $tel, $emailID){
+		$query = "INSERT INTO usuarios (nome, login, email, telefone, id_email) 
+			VALUES ('$nome', '$login', '$email', '$tel', '$emailID')";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	
 	
 
