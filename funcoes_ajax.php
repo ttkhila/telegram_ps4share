@@ -222,6 +222,7 @@ function montaPadraoEmail(){
 //----------------------------------------------------------------------------------------------------------------------------
 function mostraGrupo(){
 	$idGrupo = $_POST['id'];
+	
 	$selfID = $_POST['selfid'];
 	$c = carregaClasse('Compartilhamento');
 	$c2 = carregaClasse('Compartilhamento');
@@ -230,7 +231,9 @@ function mostraGrupo(){
 	$c->carregaDados($idGrupo);
 	$saida = "";
 	$simboloMoeda = $c->recupera_dados_moedas($c->getMoedaId())->simbolo;
+	
 	$nomeMoeda = stripslashes(utf8_decode($c->recupera_dados_moedas($c->getMoedaId())->nome));
+	
 	if($c->getFechado() == 1) $fechado = "Sim"; else $fechado = "Não";
 
 	if($c->getOrig1() == 0){ 
@@ -337,7 +340,6 @@ function mostraGrupo(){
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button>
 								</div>
 							</label>
-							 
 							<label class='col-sm-3'>Valor pago: </label>
 							<label class='col-sm-3' style='font-weight:normal;'>$valor1</label>
 						</div>
@@ -372,7 +374,6 @@ function mostraGrupo(){
 					</div>
 				</div>
 			</div>"; //close panel panel-primary"; 
-	
 		if($c->getFechado() == 1){
 			$saida .= "
 			<div class='panel panel-primary'>
@@ -500,7 +501,7 @@ function mostraGrupo(){
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
 	$saida = str_replace("%%opcoes3%%", $opcoes3, $saida);
-
+	
 	echo json_encode($saida);
 	exit;
 }
