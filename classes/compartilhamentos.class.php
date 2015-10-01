@@ -525,6 +525,22 @@ class compartilhamentos{
 		return $vagaNome;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	// retorna todos os históricos de um determinado GRUPO ($idGrupo)
+	public function getHistoricos($idGrupo){
+		$query = "SELECT * FROM historicos WHERE compartilhamento_id = $idGrupo";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------	
+	public function excluiHistoricos($idGrupo){
+		$query = "DELETE FROM historicos WHERE compartilhamento_id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function excluiGrupo($idGrupo){
+		$query = "DELETE FROM compartilhamentos WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
 /***************************************************
  ***************  ESTATÍSTICAS *********************
  ***************************************************/

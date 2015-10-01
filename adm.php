@@ -44,6 +44,29 @@
 			});
 		});
 		
+		$("#aba-grupos").on("click", "[name=btn-excluir-grupo]", function(e){
+			e.preventDefault(); //previne o evento 'normal'
+			if(!confirm("Atenção: A exclusão de um grupo é um processo irreversível!\nTenha absoluta certeza de não haver outra alternativa antes de realizar essa operação.\nConfirma a exclusão?"))
+				return false;
+			var $idGrupo = parseInt($(this).attr('id').split("_")[1]);
+			//alert($idGrupo);
+			var pars = { idGrupo: $idGrupo,  funcao: 'excluirGrupo'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#aba-grupos").find("#panel-grupo_"+$idGrupo).remove();
+					alert("Grupo excluído!");
+				}	
+			});
+		});
+		
 		$('#abas-adm').tab();
 		
 	});	
@@ -128,7 +151,7 @@
 						</div>
 						<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 							<div class="panel-body" id="form-busca">
-								<div class="alert alert-info">
+								<div class="alert alert-success">
 									<span class="glyphicon glyphicon-info-sign"></span> Defina um ou mais filtros abaixo para auxiliar na busca
 								 </div>
 								<div class="form-group">

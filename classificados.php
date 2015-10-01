@@ -70,6 +70,14 @@
 				}	
 		});
 		
+		//fecha popover ao clicar em qq lugar da tela fora deles
+		$('body').on('click', function (e) {
+			//only buttons
+			if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) { 
+				$('[data-toggle="popover"]').popover('hide');
+			}
+		});
+		
 	});	
 </script>
 </head>

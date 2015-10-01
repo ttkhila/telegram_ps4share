@@ -100,7 +100,7 @@ $('body').popover({
 	selector: '[data-toggle="popover"]',
 	html: true,
 	container: 'body',
-	content: function() {
+	content: function(e) {
 		//alert($(this).attr("data-id"));
 		$("[data-toggle='popover']").not(this).popover('hide');
 		return $('#show-popover_'+$(this).attr("data-id")).html();
