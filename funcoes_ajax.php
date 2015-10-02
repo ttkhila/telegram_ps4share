@@ -1295,13 +1295,18 @@ function montaResultadoBuscaGruposAdm($dados){
 			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
 				<div class='panel-heading'>
 					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
-					<div class='badge'>
-						<a role='button' href='#' id='exclui-grupo_".$d->idGrupo."' name='btn-excluir-grupo'>
-							<span class='glyphicon glyphicon-remove'></span> excluir grupo
-						</a>
-						<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='right' data-html='true' 
-							title='Exclui o grupo e todo seu histórico, sem direito a reversão.'></span>
-					</div>	
+					<div class='btn-group btn-group-xs' role='group'>
+						<button type='button' class='btn btn-warning' id='inativa-grupo_".$d->idGrupo."' name='btn-inativar-grupo'>
+							<span class='glyphicon glyphicon-eye-close'></span> Inativar Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='O grupo fica indisponível para os usuários, porém ainda faz parte do sistema e seu histórico não é apagado.'></span>
+						</button>
+						<button type='button' class='btn btn-danger' id='exclui-grupo_".$d->idGrupo."' name='btn-excluir-grupo'>
+							<span class='glyphicon glyphicon-remove'></span> Excluir Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='Exclui o grupo e todo seu histórico, sem direito a reversão.'></span>
+						</button>
+					</div>
 				</div>
 				<div class='panel-body'>
 					<div class='col-md-8'>
@@ -1387,6 +1392,138 @@ function excluirGrupo(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function InativarGrupo(){
+	session_start();
+	$idGrupo = $_POST['idGrupo'];
+	$c= carregaClasse("Compartilhamento");
+	$c->inativaGrupo($idGrupo);
+	
+	//Envia avisos aos usuários do grupo	
+	$c->carregaDados($idGrupo); 
+	$orig1ID = $c->getOrig1();
+	$orig2ID = $c->getOrig2();
+	$orig3ID = $c->getOrig3();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$a = carregaClasse("Aviso");
+	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi inativado do sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
+	$texto = addslashes(utf8_encode($texto));
+	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
+	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
+	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
+	
+	// --- LOG -> Início ---
+	$idExecutante = $_SESSION['ID'];
+	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $loginExecutante." inativou um grupo do sistema (GRUPO: $nomeGrupo).";
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function mostraGruposInativos(){
+	$c= carregaClasse("Compartilhamento");
+	$ret = $c->getGruposInativos();
+	
+	$tela = montaResultadoGruposInativos($ret);
+	echo json_encode($tela);
+	exit;	
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function montaResultadoGruposInativos($dados){
+	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum há nenhum grupo inativo no momento!</label></div>";
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		if ($d->original1_id == 0){
+			$d->login1 = "Vaga em aberto";
+		}
+		if ($d->original2_id == 0){
+			$d->login2 = "Vaga em aberto";
+		}
+		if ($d->original3_id == 0){
+			$d->login3 = "Vaga em aberto";
+		}
+		$saida .= "
+			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
+				<div class='panel-heading'>
+					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
+					<div class='btn-group btn-group-xs' role='group'>
+						<button type='button' class='btn btn-success' id='ativa-grupo_".$d->idGrupo."' name='btn-ativar-grupo'>
+							<span class='glyphicon glyphicon-eye-open'></span> Re-ativar Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='O grupo volta a ficar disponível para os usuários, inclusive novas negociações.'></span>
+						</button>
+					</div>
+				</div>
+				<div class='panel-body'>
+					<div class='col-md-12'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-success'>Vagas:</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Original 1:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login1))."</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Original 2:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login2))."</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Fantasma:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login3))."</label>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div><br />
+		";
+	}
+	return $saida;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function reativarGrupo(){
+	session_start();
+	$idGrupo = $_POST['idGrupo'];
+	$c= carregaClasse("Compartilhamento");
+	$c->reativaGrupo($idGrupo);
+	
+	//Envia avisos aos usuários do grupo	
+	$c->carregaDados($idGrupo); 
+	$orig1ID = $c->getOrig1();
+	$orig2ID = $c->getOrig2();
+	$orig3ID = $c->getOrig3();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$a = carregaClasse("Aviso");
+	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi re-ativado no sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
+	$texto = addslashes(utf8_encode($texto));
+	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
+	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
+	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
+	
+	// --- LOG -> Início ---
+	$idExecutante = $_SESSION['ID'];
+	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $loginExecutante." re-ativou um grupo do sistema (GRUPO: $nomeGrupo).";
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+
 function marcaLidoAviso(){
 	$idAviso = $_POST['aviso'];
 	$a = carregaClasse("Aviso");

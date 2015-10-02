@@ -35,10 +35,12 @@
 	<h1 class="page-header">Gerenciar Grupos</h1>
 	<a href="#" id="foco"></a>
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		<div class="panel panel-default">
+		<div class="panel panel-success">
 			<div class="panel-heading" role="tab" id="headingOne">
 				<h4 class="panel-title">
-					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Novo Grupo</a>
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+						<span class="glyphicon glyphicon-plus"></span> Novo Grupo
+					</a>
 				</h4>
 			</div>
 			<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
@@ -167,9 +169,13 @@
                </div><!-- panel panel-default -->
                
                <!-- GRUPO ATUAIS -->
-		<div class="panel panel-default">
+		<div class="panel panel-info">
 			<div class="panel-heading" role="tab" id="headingTwo">
-				<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Meus Grupos</a></h4>
+				<h4 class="panel-title">
+					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+					<span class="glyphicon glyphicon-list"></span> Meus Grupos
+					</a>
+				</h4>
 			</div><!-- panel-heading -->
 			<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
 				<div class="panel-body">
@@ -209,10 +215,12 @@
 		</div><!-- panel panel-default -->
 		
 		  <!-- GRUPO ANTIGOS -->
-		<div class="panel panel-default">
+		<div class="panel panel-warning">
 			<div class="panel-heading" role="tab" id="headingThree">
 				<h4 class="panel-title">
-					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Grupos Antigos (vagas já repassadas)</a>
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+						<span class="glyphicon glyphicon-th-list"></span> Grupos Antigos (vagas já repassadas)
+					</a>
 				</h4>
 			</div>
 			<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">

@@ -205,7 +205,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosPorUsuario($usuarioID){
 		$query = "SELECT c.* , u.nome as criador, u.login FROM compartilhamentos c, usuarios u
-			WHERE (c.criador_id = u.id) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";
+			WHERE (c.criador_id = u.id) AND (c.ativo = 1) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
@@ -441,7 +441,7 @@ class compartilhamentos{
 		$query = "SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dataCompra, c.fechado, c.criador_id, u4.login as loginCriador, 
 				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
 				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
-				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) 
+				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) AND (c.ativo = 1) 
 				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";
 		//return $query;
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
@@ -486,7 +486,7 @@ class compartilhamentos{
 				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
 				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
 				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) 
-				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";
+				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) AND (c.ativo = 1) GROUP BY c.id ORDER BY j.nome";
 		//return $query;
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		//return $query;
@@ -498,7 +498,7 @@ class compartilhamentos{
 	public function getVendasAbertasPorUsuario($idUsuario){
 		$query = "SELECT h.*, j.nome as nomeJogo
 			FROM historicos h, compartilhamentos c, jogos j, jogos_compartilhados jc
-			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND 
+			WHERE (h.a_venda = 1) AND (c.id = h.compartilhamento_id) AND (j.id = jc.jogo_id) AND (c.id = jc.compartilhamento_id) AND  (c.ativo = 1) AND 
 				((h.comprador_id = $idUsuario) OR 
 				((h.comprador_id = 0) AND (c.criador_id = $idUsuario) AND (c.criador_id = c.original1_id)) OR 
 				((h.comprador_id = 0) AND (c.original1_id = $idUsuario) AND (c.criador_id <> c.original1_id)) OR 
@@ -541,11 +541,31 @@ class compartilhamentos{
 		$query = "DELETE FROM compartilhamentos WHERE id = $idGrupo";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
+//---------------------------------------------------------------------------------------------------------------
+	public function inativaGrupo($idGrupo){
+		$query = "UPDATE compartilhamentos SET ativo = 0 WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function reativaGrupo($idGrupo){
+		$query = "UPDATE compartilhamentos SET ativo = 1 WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getGruposInativos(){
+		$query = "SELECT c.id as idGrupo, c.nome as nomeGrupo, c.original1_id, c.original2_id, c.original3_id, c.criador_id, 
+			u4.login as loginCriador, u1.login as login1, u2.login as login2, u3.login as login3 
+			FROM compartilhamentos c, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
+			WHERE (c.ativo = 0) AND (c.original1_id = u1.id) AND (c.original2_id = u2.id) AND (c.original3_id = u3.id) AND (c.criador_id = u4.id) ORDER BY c.nome";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
 /***************************************************
  ***************  ESTATÍSTICAS *********************
  ***************************************************/
 	 public function gruposTotaisUsuario($idUsuario){
-		$query = "SELECT count(*) as qtd, sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos WHERE comprador_id = $idUsuario";
+		$query = "SELECT count(*) as qtd, sum(h.valor_pago) as valorTotal, sum(h.a_venda) as qtdVenda FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (h.comprador_id = $idUsuario)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
 		
 		return $res;
@@ -553,7 +573,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function gruposTotaisUsuarioPorVaga($idUsuario){
 		for($i=1; $i<=3; $i++){
-			$query = "SELECT count(*) as qtd FROM historicos WHERE comprador_id = $idUsuario AND vaga = '$i'";
+			$query = "SELECT count(*) as qtd FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (h.comprador_id = $idUsuario) AND (h.vaga = '$i')";
 			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário por vaga."); }
 			$vaga[$i] = $res->qtd;
 		}
@@ -561,14 +581,14 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gruposCriadosUsuario($idUsuario){
-		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE criador_id = $idUsuario";
+		$query = "SELECT count(*) as qtd FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (criador_id = $idUsuario)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
 		
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	 public function gruposAtivos($idUsuario){
-		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original1_id = $idUsuario OR original2_id = $idUsuario OR original3_id = $idUsuario";
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE (ativo = 1) AND (original1_id = $idUsuario OR original2_id = $idUsuario OR original3_id = $idUsuario)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário."); }
 		
 		return $res;
@@ -576,7 +596,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function gruposAtivosPorVaga($idUsuario){
 		for($i=1; $i<=3; $i++){
-			$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE original".$i."_id = $idUsuario";
+			$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE ativo = 1 AND original".$i."_id = $idUsuario";
 			//die($query);
 			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos ativos do usuário por vaga."); }
 			$vaga[$i] = $res->qtd;
@@ -585,28 +605,28 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function montanteArrecadado($idUsuario){
-		$query = "SELECT sum(valor_pago) as valorTotal FROM historicos WHERE vendedor_id = $idUsuario";
+		$query = "SELECT sum(h.valor_pago) as valorTotal FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (vendedor_id = $idUsuario)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da soma dos valores das contas vendidas pelo usuário."); }
 		
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function montanteArrecadadoGlobal(){
-		$query = "SELECT sum(valor_pago) as valorTotal, sum(a_venda) as qtdVenda FROM historicos";
+		$query = "SELECT sum(h.valor_pago) as valorTotal, sum(h.a_venda) as qtdVenda FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do montante de vendas total global."); }
 		
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gruposTotaisGlobal(){
-		$query = "SELECT count(*) as qtd FROM compartilhamentos";
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE ativo = 1";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação do total de contas criadas - Global."); }
 		
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function totalRepassesGlobal(){
-		$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0";
+		$query = "SELECT count(*) as qtd FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (h.vendedor_id <> 0)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses total global."); }
 
 		return $res;
@@ -614,7 +634,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function totalRepassesGlobalPorVaga(){
 		for($i=1; $i<=3; $i++){
-			$query = "SELECT count(*) as qtd FROM historicos WHERE vendedor_id <> 0 AND vaga = '$i'";
+			$query = "SELECT count(*) as qtd FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (vendedor_id <> 0) AND (vaga = '$i')";
 			try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de repasses global por vaga."); }
 			$vaga[$i] = $res->qtd;
 		}
@@ -622,15 +642,15 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function moedaPreferida(){
-		$query = "SELECT count(*) as qtd, m.* FROM compartilhamentos c, moedas m WHERE (c.moeda_id = m.id) GROUP BY (moeda_id) ORDER BY qtd desc";
+		$query = "SELECT count(*) as qtd, m.* FROM compartilhamentos c, moedas m WHERE (c.moeda_id = m.id) AND (c.ativo = 1) GROUP BY (moeda_id) ORDER BY qtd desc";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de moeda preferida."); }
 
 		return $res;
 	}
-	
+//---------------------------------------------------------------------------------------------------------------	
 	public function jogoPreferido(){
-		$query = "SELECT count(*) as qtd, j.nome as nomeJogo, p.nome_abrev as plataforma FROM jogos_compartilhados jc, jogos j, plataformas p
-			WHERE (jc.jogo_id = j.id) AND (j.plataforma_id = p.id) 
+		$query = "SELECT count(*) as qtd, j.nome as nomeJogo, p.nome_abrev as plataforma FROM jogos_compartilhados jc, jogos j, plataformas p, compartilhamentos c 
+			WHERE (c.ativo = 1) AND (c.id = jc.compartilhamento_id) AND (jc.jogo_id = j.id) AND (j.plataforma_id = p.id) 
 			GROUP BY jc.jogo_id ORDER BY qtd desc";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação de jogo mais compartilhado."); }
 
