@@ -242,7 +242,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, 1);
 		$c2->carregaUltimoHistorico($idGrupo, 1);
 		$orig1 = stripslashes(utf8_decode($u->getLogin())); 
-		$orig1Nome = stripslashes(utf8_decode($u->getNome()));
+		$orig1Nome = stripslashes($u->getNome());
 		$orig1ID = $u->getId();
 		$link1 = "<a href='perfil_usuario.php?user=$orig1ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
@@ -267,7 +267,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "2");
 		$c2->carregaUltimoHistorico($idGrupo, '2');
 		$orig2 = stripslashes(utf8_decode($u->getLogin()));
-		$orig2Nome = stripslashes(utf8_decode($u->getNome()));
+		$orig2Nome = stripslashes($u->getNome());
 		$orig2ID = $u->getId();
 		$link2 = "<a href='perfil_usuario.php?user=$orig2ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
@@ -292,7 +292,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "3");
 		$c2->carregaUltimoHistorico($idGrupo, '3');
 		$orig3 = stripslashes(utf8_decode($u->getLogin()));
-		$orig3Nome = stripslashes(utf8_decode($u->getNome())); 
+		$orig3Nome = stripslashes($u->getNome()); 
 		$orig3ID = $u->getId();
 		$link3 = "<a href='perfil_usuario.php?user=$orig3ID' target='_blank'>";
 		$valorPago = $c->getValorPago(); 
@@ -518,7 +518,7 @@ function mostraHistorico(){
 			$saida .= "<td>$data_venda (criação da conta)</td>";
 		}
 		if($d->comprador_id == 0) $saida .= "<td>Vaga em aberto</td>"; //vaga não foi vendida no fechamento do grupo
-		else $saida .= "<td title='".stripslashes(utf8_decode($d->nome))."'>".stripslashes(utf8_decode($d->login))."</td>";
+		else $saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes(utf8_decode($d->login))."</td>";
 		$cont ++;
 	}
 	$saida .= "</tr>";
@@ -530,11 +530,11 @@ function mostraHistorico(){
 			$data_venda = date( 'd-m-Y', $phpdate );
 			$saida .= "<tr><td>$data_venda</td>";
 			if($d->vaga == '1') { //Original 1
-				$saida .= "<td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '2') { //Original 2
-				$saida .= "<td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
+				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '3') { //Fantasma
-				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
+				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
 			}	
 		}
 	}
@@ -1128,7 +1128,7 @@ function mostraNegativaIndicacao(){
 			</div>
 			<div class='form-group'>
 				<label>Indicado: </label>
-				<label>".stripslashes(utf8_decode($indicacao->nome))."</label>
+				<label>".stripslashes($indicacao->nome)."</label>
 			</div>
 			<div class='form-group'>
 				<label>Indicador: </label>
@@ -1162,7 +1162,7 @@ function gravaRecusaIndicacao(){
 
 	//grava aviso
 	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
-	$indicadoNome = stripslashes(utf8_decode($indicacao->nome));
+	$indicadoNome = stripslashes($indicacao->nome);
 	$indicadoPor = $indicacao->indicado_por;
 	$a = carregaClasse("Aviso");
 	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
@@ -1595,7 +1595,7 @@ function alteraPerfil(){
 		case 'nome':
 			if(trim($valor) == "") $erro = "Nome Inválido";
 			else {
-				$valor = addslashes(utf8_encode($valor));
+				$valor = addslashes($valor);
 				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			}
 			break;
@@ -1656,7 +1656,7 @@ function indicaUsuario(){
 	
 	//echo json_encode($dados);exit;
 	if($v->validate()){
-		$nome = addslashes(utf8_encode($nome));
+		$nome = addslashes($nome);
 		$email = addslashes(utf8_encode($email));
 		$u->primeiro_registro_indicado($nome, $email, $tel, $indicador);
 		

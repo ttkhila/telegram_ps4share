@@ -16,7 +16,7 @@
 	//dados cadastrais
 	$u->carregaDados($_SESSION['ID']);
 	$ga->carregaDados($u->getGrupoAcessoId());
-	$nome = stripslashes(utf8_decode($u->getNome()));
+	$nome = stripslashes($u->getNome());
 	$telegramID = $u->getTelegramId();
 	$login = stripslashes(utf8_decode($u->getLogin()));
 	$emailID = $u->getIdEmail();
@@ -535,7 +535,7 @@
 										while($dados = $ind->fetch_object()){
 										$saida .= "
 											<li class='list-group-item list-group-item-default'>
-												<span class='glyphicon glyphicon-circle-arrow-right'></span> ".stripslashes(utf8_decode($dados->nome))."<small> - Celular: ".$dados->telefone."</small>
+												<span class='glyphicon glyphicon-circle-arrow-right'></span> ".stripslashes($dados->nome)."<small> - Celular: ".$dados->telefone."</small>
 											</li>
 											";
 										}
@@ -562,7 +562,7 @@
 										while($dados = $indNeg->fetch_object()){
 										$saida .= "
 											<li class='list-group-item list-group-item-text'>
-												<span class='glyphicon glyphicon-thumbs-down'></span> ".stripslashes(utf8_decode($dados->nome))."<br />
+												<span class='glyphicon glyphicon-thumbs-down'></span> ".stripslashes($dados->nome)."<br />
 												&nbsp;&nbsp;<span class='glyphicon glyphicon-arrow-right'></span><small> Motivo: ".stripslashes(utf8_decode($dados->motivo))."</small>
 											</li>
 											";

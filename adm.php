@@ -177,10 +177,10 @@
 							while ($dados = $indPend->fetch_object()){
 								$saida .= "
 									<tr>
-										<td>".stripslashes(utf8_decode($dados->nome))."</td>
+										<td>".stripslashes($dados->nome)."</td>
 										<td>".stripslashes(utf8_decode($dados->email))."</td>
 										<td><label id='lbl_tel'>".$dados->telefone."</label></td>
-										<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes(utf8_decode($dados->nomeUsu))."'>".stripslashes(utf8_decode($dados->login))."</a></td>
+										<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes(utf8_decode($dados->login))."</a></td>
 										<td>
 											<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
 											<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
