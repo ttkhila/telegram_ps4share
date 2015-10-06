@@ -482,6 +482,7 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 
 //********************************************************************************
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
+	//alert($(this).attr('title'));
 	VAGA_REPASSE = $(this).attr('rel');
 	GRUPO_REPASSE = parseInt($(this).attr("id").split("_")[1]);
 	dataID = $(this).data('id');
@@ -598,6 +599,7 @@ $("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[n
 //********************************************************************************
 //Abre DIV para confrmar disponibilização de vaga
 $(".container-grupos").on("click", "[name='img-disponibiliza']", function(){
+	//alert($(this).attr('title'));
 	var parte = $(this).attr('id').split("_");
 	var id = parte[1];
 	var vaga = parte[2];
@@ -1203,7 +1205,7 @@ $("#aba-indicacoes").find("form").submit(function(e){
 	});
 });
 //********************************************************************************  
-
+	
 //********************************************************************************  
 
 //********************************************************************************  

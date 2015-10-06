@@ -80,8 +80,8 @@
 							<select class="form-control" id="moedas" name="moedas">                            
 								<?php
 								while($m = $moedas->fetch_object()){
-									if($m->pais == "BRL") echo "<option value='".$m->id."' selected='selected'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
-									else echo "<option value='".$m->id."'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
+									if($m->pais == "BRL") echo "<option value='".$m->id."' selected='selected'>".stripslashes($m->nome)." (".$m->pais.")</option>";
+									else echo "<option value='".$m->id."'>".stripslashes($m->nome)." (".$m->pais.")</option>";
 								}
 								?>
 							</select>
@@ -190,8 +190,8 @@
 									if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 									echo "<div id ='grupo_".$d->id."' class='panel'>";
 										echo "<div name='div-casulo-grupo' id='grupo-titulo_".$d->id."' class='panel-title'>";
-											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome));
-											echo " <font color='#999'>(criado por: ".stripslashes(utf8_decode($d->login)).")</font> $fechado</div>";
+											echo "<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes($d->nome);
+											echo " <font color='#999'>(criado por: ".stripslashes($d->login).")</font> $fechado</div>";
 										echo "</div>";
 										echo "<div name='div-casulo-conteudo-grupo' id ='grupo-conteudo_".$d->id."' class='list-group col-md-12' style='display:none;'></div>";
 										//echo "<hr />";
@@ -237,7 +237,7 @@
 									$saida .= "
 										<div class='panel'>
 											<div name='div-titulo-grupos-antigos' id='div-titulo-grupos-antigos_".$d->id."' class='panel-title'>
-												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes(utf8_decode($d->nome))."</div>
+												<div class='panel'><img src='img/plus.png' width='16' height='16' id='_1' name='imgMais' style='cursor:pointer;' /> ".stripslashes($d->nome)."</div>
 											</div>
 											<div name='div-conteudo-grupos-antigos' id ='div-conteudo-grupos-antigos_".$d->id."' class='list-group col-md-12' style='display:none;'></div>
 										</div>";

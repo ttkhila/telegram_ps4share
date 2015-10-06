@@ -73,7 +73,7 @@
 							<select class="form-control" id="plataforma" name="plataforma">
 								<?php
 								while($p = $plat->fetch_object()){
-									echo "<option value='".$p->id."'>".stripslashes(utf8_decode($p->nome))."</option>";
+									echo "<option value='".$p->id."'>".stripslashes($p->nome)."</option>";
 								}
 								?>
 							</select>
@@ -113,7 +113,7 @@
 								<?php
 								$plat->data_seek(0);
 								while($p = $plat->fetch_object()){
-									echo "<option value='".$p->id."'>".stripslashes(utf8_decode($p->nome))."</option>";
+									echo "<option value='".$p->id."'>".stripslashes($p->nome)."</option>";
 								}
 								?>
 							</select>

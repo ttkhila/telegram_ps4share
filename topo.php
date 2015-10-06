@@ -21,4 +21,5 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/lib/bootswatch.js"></script>
 		<script src="js/functions.js"></script>
+		<script src="js/lib/jquery.tablesorter.min.js"></script>
 		

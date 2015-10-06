@@ -34,7 +34,7 @@ function realizaLogin(){
 		}	
         
         session_start();
-        $_SESSION['login'] = stripslashes(utf8_decode($resp->login)); //PSN ID
+        $_SESSION['login'] = stripslashes($resp->login); //PSN ID
         $_SESSION['ID'] = $resp->id; //Usuário ID
         $result = array(1);//sucesso
 
@@ -42,8 +42,8 @@ function realizaLogin(){
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
-	$acao = stripslashes(utf8_decode($usuLogin))." se logou!";
-	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+	$acao = stripslashes($usuLogin)." se logou!";
+	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
     }
     echo json_encode($result); 
@@ -60,8 +60,8 @@ function realizaLogout(){
 	// --- LOG -> Início ---
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
-	$acao = stripslashes(utf8_decode($usuLogin))." se deslogou!";
-	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+	$acao = stripslashes($usuLogin)." se deslogou!";
+	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 	exit;
 }
@@ -121,7 +121,7 @@ function novoGrupo(){
 			$parte = explode("%=%", $value);
 			if(in_array($parte[0], $consolidados)) { //está entre os dados que coincidem nome do campo no form com nome do campo no BD
 				array_push($campos, $parte[0]);
-				array_push($valores, "'".addslashes(utf8_encode($parte[1]))."'");
+				array_push($valores, "'".addslashes($parte[1])."'");
 			} else { //dados restantes
 				$outrosDados[$parte[0]] = $parte[1];
 			}
@@ -166,15 +166,15 @@ function novoGrupo(){
 		$a = carregaClasse("Aviso");
 		$u = carregaClasse("Usuario");
 		$c->carregaDados($idGrupo);
-		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$nomeGrupo = stripslashes($c->getNome());
 		$u->carregaDados($selfID);
-		$criadorNome = stripslashes(utf8_decode($u->getLogin()));
+		$criadorNome = stripslashes($u->getLogin());
 		for($i=1; $i<=3; $i++){
 			if($orig[$i] > 0 && $orig[$i] != $selfID){
 				$u->carregaDados($orig[$i]);
 				if($i == 3) $vagaNome = "Fantasma"; else $vagaNome = "Original ".$i;
 				$texto = "O usuário <b>$criadorNome</b> criou um novo grupo <b>'$nomeGrupo'</b> e incluiu você na vaga de $vagaNome em ".date('d-m-Y').".";
-				$texto = addslashes(utf8_encode($texto));
+				$texto = addslashes($texto);
 				$a->insereAviso($orig[$i], $texto);
 			}
 		}
@@ -183,7 +183,7 @@ function novoGrupo(){
 		$log = carregaClasse('Log');
 		$dt = $log->dateTimeOnline(); //date e hora no momento atual
 		$acao = $criadorNome." criou um novo grupo (ID: $idGrupo / NOME: $nomeGrupo)";
-		$log->insereLog(array($selfID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+		$log->insereLog(array($selfID, $criadorNome, $dt, addslashes($acao)));
 		// --- LOG -> Fim ---
 
 		 echo json_encode(1);
@@ -225,7 +225,7 @@ function mostraGrupo(){
 	$saida = "";
 	$simboloMoeda = $c->recupera_dados_moedas($c->getMoedaId())->simbolo;
 	
-	$nomeMoeda = stripslashes(utf8_decode($c->recupera_dados_moedas($c->getMoedaId())->nome));
+	$nomeMoeda = stripslashes($c->recupera_dados_moedas($c->getMoedaId())->nome);
 	
 	if($c->getFechado() == 1) $fechado = "Sim"; else $fechado = "Não";
 
@@ -241,7 +241,7 @@ function mostraGrupo(){
 		$u->carregaDados($c->getOrig1()); 
 		$c->carregaDadosHistoricos($idGrupo, 1);
 		$c2->carregaUltimoHistorico($idGrupo, 1);
-		$orig1 = stripslashes(utf8_decode($u->getLogin())); 
+		$orig1 = stripslashes($u->getLogin()); 
 		$orig1Nome = stripslashes($u->getNome());
 		$orig1ID = $u->getId();
 		$link1 = "<a href='perfil_usuario.php?user=$orig1ID' target='_blank'>";
@@ -266,7 +266,7 @@ function mostraGrupo(){
 		$u->carregaDados($c->getOrig2()); 
 		$c->carregaDadosHistoricos($idGrupo, "2");
 		$c2->carregaUltimoHistorico($idGrupo, '2');
-		$orig2 = stripslashes(utf8_decode($u->getLogin()));
+		$orig2 = stripslashes($u->getLogin());
 		$orig2Nome = stripslashes($u->getNome());
 		$orig2ID = $u->getId();
 		$link2 = "<a href='perfil_usuario.php?user=$orig2ID' target='_blank'>";
@@ -291,7 +291,7 @@ function mostraGrupo(){
 		$u->carregaDados($c->getOrig3()); 
 		$c->carregaDadosHistoricos($idGrupo, "3");
 		$c2->carregaUltimoHistorico($idGrupo, '3');
-		$orig3 = stripslashes(utf8_decode($u->getLogin()));
+		$orig3 = stripslashes($u->getLogin());
 		$orig3Nome = stripslashes($u->getNome()); 
 		$orig3ID = $u->getId();
 		$link3 = "<a href='perfil_usuario.php?user=$orig3ID' target='_blank'>";
@@ -373,7 +373,7 @@ function mostraGrupo(){
 				<div class='panel-heading'>
 					<div class='row'>
 						<label class='col-sm-offset-1 col-sm-3'>E-mail da conta:</label>
-						<label class='col-sm-8'>".stripslashes(utf8_decode($c->getEmail()))."</label>
+						<label class='col-sm-8'>".stripslashes($c->getEmail())."</label>
 					</div>
 				</div>
 			</div>
@@ -415,7 +415,7 @@ function mostraGrupo(){
 				<div class='panel-heading'>Jogo(s) nesta conta:</div>
 					<div class='panel-body'>";
 						while($d = $jogos->fetch_object()){
-							$saida .= "<span>- ".stripslashes(utf8_decode($d->jogo))." (".$d->nome_abrev.")</span><br />";	
+							$saida .= "<span>- ".stripslashes($d->jogo)." (".$d->nome_abrev.")</span><br />";	
 						}
 						$saida .= "
 					</div>
@@ -507,7 +507,7 @@ function mostraHistorico(){
 	$dadosHist = $c->getDadosHistorico($idGrupo);
 	$saida = "";
 	$saida .= "<table class='table'><thead>";
-	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Grupo: ".stripslashes(utf8_decode($c->getNome()))."</th></tr>";
+	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Grupo: ".stripslashes($c->getNome())."</th></tr>";
 	$saida .= "<tr><th width='40%'>Linha do Tempo</th><th width='20%'>Original 1</th><th width='20%'>Original 2</th><th width='20%'>Fantasma</th></tr></thead>";
 	$saida .= "<tbody><tr>";
 	$cont = 0;
@@ -518,7 +518,7 @@ function mostraHistorico(){
 			$saida .= "<td>$data_venda (criação da conta)</td>";
 		}
 		if($d->comprador_id == 0) $saida .= "<td>Vaga em aberto</td>"; //vaga não foi vendida no fechamento do grupo
-		else $saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes(utf8_decode($d->login))."</td>";
+		else $saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)."</td>";
 		$cont ++;
 	}
 	$saida .= "</tr>";
@@ -530,11 +530,11 @@ function mostraHistorico(){
 			$data_venda = date( 'd-m-Y', $phpdate );
 			$saida .= "<tr><td>$data_venda</td>";
 			if($d->vaga == '1') { //Original 1
-				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '2') { //Original 2
-				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
+				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '3') { //Fantasma
-				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
+				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td></tr>";
 			}	
 		}
 	}
@@ -585,8 +585,8 @@ function gravaRepasse(){
 		$a = carregaClasse("Aviso");
 		$u = carregaClasse("Usuario");
 		$c->carregaDados($idGrupo);
-		$vendedorLogin = stripslashes(utf8_decode($_SESSION["login"]));
-		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$vendedorLogin = $_SESSION["login"];
+		$nomeGrupo = stripslashes($c->getNome());
 		$u->carregaDados($compradorID);
 		$compradorLogin = $u->getLogin();
 		if ($vaga == 1){ 
@@ -612,8 +612,8 @@ function gravaRepasse(){
 		//echo json_encode($outroOriginal); exit;
 		$texto = "O usuário <b>$vendedorLogin</b> repassou a vaga de $vagaNome da conta <b>'$nomeGrupo'</b> para você em ".date('d-m-Y', strtotime($data_venda)).".";
 		$textoOutroOriginal = "O usuário <b>$vendedorLogin</b> repassou a vaga de $vagaNome da conta <b>'$nomeGrupo'</b>, da qual você faz parte, para <b>$compradorLogin</b> em ".date('d-m-Y', strtotime($data_venda)).".";
-		$texto = addslashes(utf8_encode($texto));
-		$textoOutroOriginal = addslashes(utf8_encode($textoOutroOriginal));
+		$texto = addslashes($texto);
+		$textoOutroOriginal = addslashes($textoOutroOriginal);
 		$a->insereAviso($compradorID, $texto); //envia aviso ao destinatário da vaga
 		$a->insereAviso($outroOriginal, $textoOutroOriginal); //envia aviso ao(s) outro(s) original(is)
 		// *** GRAVA AVISO - FIM *** //
@@ -622,7 +622,7 @@ function gravaRepasse(){
 		$log = carregaClasse('Log');
 		$dt = $log->dateTimeOnline(); //date e hora no momento atual
 		$acao = $vendedorLogin." repassou (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / PARA: $compradorLogin)";
-		$log->insereLog(array($vendedor, $vendedorLogin, $dt, addslashes(utf8_encode($acao))));
+		$log->insereLog(array($vendedor, $vendedorLogin, $dt, addslashes($acao)));
 		// --- LOG -> Fim ---
 
 		if($ret) echo json_encode(1);
@@ -654,9 +654,9 @@ function gravaDisponibilidadeVaga(){
 		$dt = $log->dateTimeOnline(); //date e hora no momento atual
 		$usuLogin = $_SESSION['login'];
 		$vagaNome = $c->getNomeVaga($vaga, 1);
-		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$nomeGrupo = stripslashes($c->getNome());
 		$acao = $usuLogin." disponibilizou para venda (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
-		$log->insereLog(array($usuarioID, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		$log->insereLog(array($usuarioID, $usuLogin, $dt, addslashes($acao)));
 		// --- LOG -> Fim ---
 
 		echo json_encode(1);
@@ -687,7 +687,7 @@ function mostraGrupoAntigo(){
 	//Comprador
 	$comprador_id = $c->getCompradorId();
 	$u->carregaDados($comprador_id);
-	$compradorLogin = stripslashes(utf8_decode($u->getLogin()));
+	$compradorLogin = stripslashes($u->getLogin());
 	
 	//Dados do Grupo
 	$idGrupo = $c->getCompartilhamentoId();
@@ -700,21 +700,21 @@ function mostraGrupoAntigo(){
 	if ($orig1 == 0){ $orig1Login = "Vaga em aberto"; $link1 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig1);
-		$orig1Login = stripslashes(utf8_decode($u->getLogin()));
+		$orig1Login = stripslashes($u->getLogin());
 		$link1= "<a href='perfil_usuario.php?user=$orig1' target='_blank'>";
 	}
 	//Original 2
 	if ($orig2 == 0){ $orig2Login = "Vaga em aberto"; $link2 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig2);
-		$orig2Login = stripslashes(utf8_decode($u->getLogin()));
+		$orig2Login = stripslashes($u->getLogin());
 		$link2= "<a href='perfil_usuario.php?user=$orig2' target='_blank'>";
 	}
 	//Fantasma
 	if ($orig3 == 0){ $orig3Login = "Vaga em aberto"; $link3 = "<a name='link_vazio' href='#'>"; }
 	else{
 		$u->carregaDados($orig3);
-		$orig3Login = stripslashes(utf8_decode($u->getLogin()));
+		$orig3Login = stripslashes($u->getLogin());
 		$link3= "<a href='perfil_usuario.php?user=$orig3' target='_blank'>";
 	}
 	
@@ -748,7 +748,7 @@ function mostraGrupoAntigo(){
 					<div class='panel-heading'>Jogo(s) nesta conta:</div>
 					<div class='panel-body'>";
 						while($d = $jogos->fetch_object()){
-							$saida .= "<span>- ".stripslashes(utf8_decode($d->jogo))." (".$d->nome_abrev.")</span><br />";	
+							$saida .= "<span>- ".stripslashes($d->jogo)." (".$d->nome_abrev.")</span><br />";	
 						}
 						$saida .= "
 					</div>
@@ -805,9 +805,9 @@ function alteraValorVendaVaga(){
 		$c->carregaDados($idGrupo);
 		$vaga = $c->getVaga();
 		$vagaNome = $c->getNomeVaga($vaga, 1);
-		$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+		$nomeGrupo = stripslashes($c->getNome());
 		$acao = $usuLogin." excluiu venda sem repasse (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo')";
-		$log->insereLog(array($logado, $usuLogin, $dt, addslashes(utf8_encode($acao))));
+		$log->insereLog(array($logado, $usuLogin, $dt, addslashes($acao)));
 		// --- LOG -> Fim ---
 		
 		echo json_encode(1);
@@ -827,24 +827,24 @@ function excluiUsuarioVaga(){
 	$u = carregaClasse("Usuario");
 	$c->carregaDados($idGrupo);
 	$criadorID = $c->getCriadorId();
-	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$nomeGrupo = stripslashes($c->getNome());
 	$u->carregaDados($criadorID);
-	$criadorNome = stripslashes(utf8_decode($u->getLogin()));
+	$criadorNome = stripslashes($u->getLogin());
 	if ($vaga == 1) $vagaNome = "Original 1";
 	else if ($vaga == 2) $vagaNome = "Original 2";
 	else $vagaNome = "Fantasma";
 	$texto = "Você foi retirado da vaga de $vagaNome do grupo aberto <b>'$nomeGrupo'</b> por <b>$criadorNome</b> em ".date('d-m-Y').".";
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	$a->insereAviso($idUsuario, $texto);
 	
 	$u2 = carregaClasse("Usuario");
 	$u2->carregaDados($idUsuario);
-	$loginExcluido = stripslashes(utf8_decode($u2->getLogin()));
+	$loginExcluido = stripslashes($u2->getLogin());
 	// --- LOG -> Início ---
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$acao = $criadorNome." excluiu usuario de grupo aberto (VAGA: '$vagaNome' / GRUPO: '$nomeGrupo' / EXCLUÍDO: $loginExcluido)";
-	$log->insereLog(array($criadorID, $criadorNome, $dt, addslashes(utf8_encode($acao))));
+	$log->insereLog(array($criadorID, $criadorNome, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 
 	echo json_encode($ret);
@@ -899,7 +899,7 @@ function mostraFechamentoGrupo(){
 	$c->carregaDados($idGrupo);
 	$dados = $c->getDadosFechamento();
 
-	$nomeConta = stripslashes(utf8_decode($c->getNome()));
+	$nomeConta = stripslashes($c->getNome());
 	$moeda = $c->getMoedaId();
 
 	if($dados["email"] != "" && !empty($dados["email"])) $email = $dados["email"];
@@ -910,7 +910,7 @@ function mostraFechamentoGrupo(){
 		$valorPago = $c->getValorPago();
 		if(empty($valorPago)) $valor1 = "";
 		else $valor1 = number_format($valorPago, 2, ',', '.');
-		$login1 = stripslashes(utf8_decode($u->getLogin()));
+		$login1 = stripslashes($u->getLogin());
 		$id1 = $dados["orig1"];
 		$disable1 = "";
 	} else {
@@ -926,7 +926,7 @@ function mostraFechamentoGrupo(){
 		$valorPago = $c->getValorPago();
 		if(empty($valorPago)) $valor2 = "";
 		else $valor2 = number_format($valorPago, 2, ',', '.');
-		$login2 = stripslashes(utf8_decode($u->getLogin()));
+		$login2 = stripslashes($u->getLogin());
 		$id2 = $dados["orig2"];
 		$disable2 = "";
 	} else {
@@ -942,7 +942,7 @@ function mostraFechamentoGrupo(){
 		$valorPago = $c->getValorPago();
 		if(empty($valorPago)) $valor3 = "";
 		else $valor3 = number_format($valorPago, 2, ',', '.');
-		$login3 = stripslashes(utf8_decode($u->getLogin()));
+		$login3 = stripslashes($u->getLogin());
 		$id3 = $dados["orig3"];
 		$disable3 = "";
 	} else {
@@ -975,8 +975,8 @@ function mostraFechamentoGrupo(){
 		<label class='control-label'>Moeda de Compra</label>
 		<select class='form-control' id='moedas-fechamento' name='moedas-fechamento'>";                            
 			while($m = $moedas->fetch_object()){
-				if($m->id === $moeda) $saida .= "<option value='".$m->id."' selected='selected'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
-				else $saida .= "<option value='".$m->id."'>".stripslashes(utf8_decode($m->nome))." (".$m->pais.")</option>";
+				if($m->id === $moeda) $saida .= "<option value='".$m->id."' selected='selected'>".stripslashes($m->nome)." (".$m->pais.")</option>";
+				else $saida .= "<option value='".$m->id."'>".stripslashes($m->nome)." (".$m->pais.")</option>";
 			}
 		$saida .= "
 		</select>
@@ -1101,11 +1101,11 @@ function gravaFechamentoGrupo(){
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$c->carregaDados($idGrupo);
 	$criadorID = $c->getCriadorId();
-	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$nomeGrupo = stripslashes($c->getNome());
 	$u->carregaDados($criadorID);
-	$loginCriador = stripslashes(utf8_decode($u->getLogin()));
+	$loginCriador = stripslashes($u->getLogin());
 	$acao = $loginCriador." fechou um grupo aberto (GRUPO: '$nomeGrupo')";
-	$log->insereLog(array($criadorID, $loginCriador, $dt, addslashes(utf8_encode($acao))));
+	$log->insereLog(array($criadorID, $loginCriador, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 	
 	echo json_encode(1);
@@ -1119,7 +1119,7 @@ function mostraNegativaIndicacao(){
 	$u->carregaDados($idIndicador);
 	$indicacao = $u->getDadosIndicacao($idIndicacao);
 	
-	$login = stripslashes(utf8_decode($u->getLogin()));
+	$login = stripslashes($u->getLogin());
 	$tela = "
 		<form role='form'>
 			<input type='hidden' id='indicacao_id' value='$idIndicacao' />
@@ -1151,12 +1151,13 @@ function mostraNegativaIndicacao(){
 }
 //----------------------------------------------------------------------------------------------------------------------------
 function gravaRecusaIndicacao(){
+	session_start();
 	$indicacaoID = $_POST['indicacao'];
 	$texto = $_POST['texto'];
 	
 	if (trim($texto) == ""){ echo json_encode("Preencha o campo do motivo da recusa."); exit; }
 	
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	$u = carregaClasse("Usuario");
 	$u->gravaRecusaIndicacao($indicacaoID, $texto);
 
@@ -1166,8 +1167,19 @@ function gravaRecusaIndicacao(){
 	$indicadoPor = $indicacao->indicado_por;
 	$a = carregaClasse("Aviso");
 	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	$a->insereAviso($indicadoPor, $texto);
+	
+	$u->carregaDados($indicadoPor);
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$recusanteID = $_SESSION['ID'];
+	$recusanteLogin = $_SESSION['login'];
+	$indicadorLogin = stripslashes($u->getLogin());
+	$acao = "Recusou uma indicação ao grupo (Recusado: '$indicadoNome' / Indicador: '$indicadorLogin')";
+	$log->insereLog(array($recusanteID, $recusanteLogin, $dt, addslashes($acao)));
+	// --- LOG -> Fim ---
 	
 	/*
 	 * FALTA ENVIAR EMAIL AO INDICADO
@@ -1205,16 +1217,16 @@ function montaResultadoBuscaClassificados($dados){
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
 		$title = "";
 		while($jogo = $jogos->fetch_object()){
-			$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+			$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 			$nomeAbrev = $jogo->nome_abrev;
 			$title .= "- $nome ($nomeAbrev)<br />";
 		}
 		
 		$grupo = $d->idGrupo;
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
-		if($d->original1_id == 0) { $login1 = "Vaga aberta"; $orig1 = $d->original2_id; } else { $login1 = stripslashes(utf8_decode($d->login1)); $orig1 = $d->original1_id; }
-		if($d->original2_id == 0){ $login2 = "Vaga aberta"; $orig2 = $d->original1_id; } else { $login2 = stripslashes(utf8_decode($d->login2)); $orig2 = $d->original2_id; }
-		if($d->original3_id == 0){ $login3 = "Vaga aberta"; $orig3 = (!empty($d->original1_id)) ? $d->original1_id : $d->original2_id; } else { $login3 = stripslashes(utf8_decode($d->login3)); $orig3 = $d->original3_id; }
+		if($d->original1_id == 0) { $login1 = "Vaga aberta"; $orig1 = $d->original2_id; } else { $login1 = stripslashes($d->login1); $orig1 = $d->original1_id; }
+		if($d->original2_id == 0){ $login2 = "Vaga aberta"; $orig2 = $d->original1_id; } else { $login2 = stripslashes($d->login2); $orig2 = $d->original2_id; }
+		if($d->original3_id == 0){ $login3 = "Vaga aberta"; $orig3 = (!empty($d->original1_id)) ? $d->original1_id : $d->original2_id; } else { $login3 = stripslashes($d->login3); $orig3 = $d->original3_id; }
 
 		$saida .= "
 			<tr>
@@ -1243,7 +1255,7 @@ function montaResultadoBuscaClassificados($dados){
 				$saida .= "
 				</td>
 				<td>R$ ".number_format($d->valor_venda, 2, ',', '.')."</td>
-				<td>".stripslashes(utf8_decode($d->loginCriador))."</td>
+				<td>".stripslashes($d->loginCriador)."</td>
 				<td>".$d->dataCompra."</td>
 				<td>$stt</td>
 			</tr>";
@@ -1252,13 +1264,10 @@ function montaResultadoBuscaClassificados($dados){
 }
 //----------------------------------------------------------------------------------------------------------------------------
 function executaFiltroAdmGrupos(){
-	//echo json_encode("fwefewfwef"); exit; 
 	$dados = $_POST['dados'];
 	$c = carregaClasse("Compartilhamento");
-	//echo json_encode("fwefewfwef"); exit; 
 	$dados= array_filter($dados, 'is_not_null'); //elimina nulls e vazios (""). Mantem 0 (zero)
 	$ret = $c->buscaGruposAdm($dados);
-	//echo json_encode($ret); exit;  
 	$tela = montaResultadoBuscaGruposAdm($ret);
 	echo json_encode($tela);
 	exit;
@@ -1274,7 +1283,7 @@ function montaResultadoBuscaGruposAdm($dados){
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
 		$title = "";
 		while($jogo = $jogos->fetch_object()){
-			$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+			$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 			$nomeAbrev = $jogo->nome_abrev;
 			$title .= "
 				<li class='list-group-item list-group-item-default'>
@@ -1294,7 +1303,7 @@ function montaResultadoBuscaGruposAdm($dados){
 		$saida .= "
 			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
 				<div class='panel-heading'>
-					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
+					".stripslashes($d->nomeGrupo)." (criador: ".stripslashes($d->loginCriador).")&nbsp;&nbsp;
 					<div class='btn-group btn-group-xs' role='group'>
 						<button type='button' class='btn btn-warning' id='inativa-grupo_".$d->idGrupo."' name='btn-inativar-grupo'>
 							<span class='glyphicon glyphicon-eye-close'></span> Inativar Grupo
@@ -1315,19 +1324,19 @@ function montaResultadoBuscaGruposAdm($dados){
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Original 1:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login1))."</label>
+									<label class='col-md-10'>".stripslashes($d->login1)."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Original 2:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login2))."</label>
+									<label class='col-md-10'>".stripslashes($d->login2)."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Fantasma:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login3))."</label>
+									<label class='col-md-10'>".stripslashes($d->login3)."</label>
 								</div>
 							</li>
 						</ul>
@@ -1341,6 +1350,31 @@ function montaResultadoBuscaGruposAdm($dados){
 					</div>					
 				</div>
 			</div><br />
+		";
+	}
+	return $saida;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function executaFiltroAdmLogs(){
+	$dados = $_POST['dados'];
+	$l = carregaClasse("Log");
+	$dados= array_filter($dados, 'is_not_null'); //elimina nulls e vazios (""). Mantem 0 (zero)
+	$ret = $l->buscaLogsAdm($dados); 
+	$tela = montaResultadoBuscaLogsAdm($ret);
+	echo json_encode($tela);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function montaResultadoBuscaLogsAdm($dados){
+	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum registro encontrado para os filtros informados!</label></div>";
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		$saida .= "
+			<tr>
+				<td>".substr($d->data_hora, 0, 25)."</td>
+				<td>".stripslashes($d->usuario_login)."</td>
+				<td>".stripslashes($d->acao)."</td>
+			</tr>
 		";
 	}
 	return $saida;
@@ -1371,21 +1405,21 @@ function excluirGrupo(){
 	$orig1ID = $c->getOrig1();
 	$orig2ID = $c->getOrig2();
 	$orig3ID = $c->getOrig3();
-	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$nomeGrupo = stripslashes($c->getNome());
 	$a = carregaClasse("Aviso");
 	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi excluído do sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
 	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
 	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
 	
 	// --- LOG -> Início ---
 	$idExecutante = $_SESSION['ID'];
-	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$loginExecutante = $_SESSION['login'];
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$acao = $loginExecutante." excluiu um grupo do sistema (GRUPO: $nomeGrupo).";
-	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 
 	echo json_encode(1);
@@ -1403,21 +1437,21 @@ function InativarGrupo(){
 	$orig1ID = $c->getOrig1();
 	$orig2ID = $c->getOrig2();
 	$orig3ID = $c->getOrig3();
-	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$nomeGrupo = stripslashes($c->getNome());
 	$a = carregaClasse("Aviso");
 	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi inativado do sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
 	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
 	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
 	
 	// --- LOG -> Início ---
 	$idExecutante = $_SESSION['ID'];
-	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$loginExecutante = $_SESSION['login'];
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$acao = $loginExecutante." inativou um grupo do sistema (GRUPO: $nomeGrupo).";
-	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 	
 	echo json_encode(1);
@@ -1449,7 +1483,7 @@ function montaResultadoGruposInativos($dados){
 		$saida .= "
 			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
 				<div class='panel-heading'>
-					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
+					".stripslashes($d->nomeGrupo)." (criador: ".stripslashes($d->loginCriador).")&nbsp;&nbsp;
 					<div class='btn-group btn-group-xs' role='group'>
 						<button type='button' class='btn btn-success' id='ativa-grupo_".$d->idGrupo."' name='btn-ativar-grupo'>
 							<span class='glyphicon glyphicon-eye-open'></span> Re-ativar Grupo
@@ -1465,19 +1499,19 @@ function montaResultadoGruposInativos($dados){
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Original 1:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login1))."</label>
+									<label class='col-md-10'>".stripslashes($d->login1)."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Original 2:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login2))."</label>
+									<label class='col-md-10'>".stripslashes($d->login2)."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
 									<label class='col-md-2'>Fantasma:</label>
-									<label class='col-md-10'>".stripslashes(utf8_decode($d->login3))."</label>
+									<label class='col-md-10'>".stripslashes($d->login3)."</label>
 								</div>
 							</li>
 						</ul>
@@ -1500,30 +1534,27 @@ function reativarGrupo(){
 	$orig1ID = $c->getOrig1();
 	$orig2ID = $c->getOrig2();
 	$orig3ID = $c->getOrig3();
-	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$nomeGrupo = stripslashes($c->getNome());
 	$a = carregaClasse("Aviso");
 	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi re-ativado no sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
-	$texto = addslashes(utf8_encode($texto));
+	$texto = addslashes($texto);
 	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
 	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
 	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
 	
 	// --- LOG -> Início ---
 	$idExecutante = $_SESSION['ID'];
-	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$loginExecutante = $_SESSION['login'];
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$acao = $loginExecutante." re-ativou um grupo do sistema (GRUPO: $nomeGrupo).";
-	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 	
 	echo json_encode(1);
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
-
-
 function marcaLidoAviso(){
 	$idAviso = $_POST['aviso'];
 	$a = carregaClasse("Aviso");
@@ -1558,7 +1589,7 @@ function gravaRecomendacao(){
 	
 	if($v->validate()){
 		$dt = date('Y-m-d');
-		$r->gravaRecomendacao($recomendacaoID, addslashes(utf8_encode($texto)), $dt);
+		$r->gravaRecomendacao($recomendacaoID, addslashes($texto), $dt);
 		
 		//Grava Aviso ao vendedor
 		$a = carregaClasse("Aviso");
@@ -1566,7 +1597,7 @@ function gravaRecomendacao(){
 		$vendedorID = $r->getVendedorId();
 		$compradorLogin = $_SESSION['login'];
 		$texto = "O usuário $compradorLogin registrou uma recomendação a você em ".date('d-m-Y').".";
-		$texto = addslashes(utf8_encode($texto));
+		$texto = addslashes($texto);
 		$a->insereAviso($vendedorID, $texto);
 
 		echo json_encode(1);
@@ -1603,14 +1634,14 @@ function alteraPerfil(){
 			$tipo = "telegram_id";
 			if(preg_match("/^[a-zA-Z0-9_]{5,30}$/", $valor) != 1) $erro = "Telegram ID inválido";
 			else{
-				$valor = addslashes(utf8_encode($valor));
+				$valor = addslashes($valor);
 				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			}
 			break;
 		case 'email':
 			if(!preg_match("/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/", $valor)) $erro = "E-mail inválido";
 			else{
-				$valor = addslashes(utf8_encode($valor));
+				$valor = addslashes($valor);
 				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			}
 			break;
@@ -1634,7 +1665,7 @@ function alteraPerfil(){
 		$usuarioLogin = $_SESSION['login'];
 		if ($tipo == 'senha') $valor = "*******";
 		$acao = $usuarioLogin." alterou dados cadastrais (ITEM: '$tipo' / NOVO VALOR: $valor)";
-		$log->insereLog(array($usuarioID, $usuarioLogin, $dt, addslashes(utf8_encode($acao))));
+		$log->insereLog(array($usuarioID, $usuarioLogin, $dt, addslashes($acao)));
 		// --- LOG -> Fim ---
 		 
 		echo json_encode(1); 
@@ -1657,7 +1688,7 @@ function indicaUsuario(){
 	//echo json_encode($dados);exit;
 	if($v->validate()){
 		$nome = addslashes($nome);
-		$email = addslashes(utf8_encode($email));
+		$email = addslashes($email);
 		$u->primeiro_registro_indicado($nome, $email, $tel, $indicador);
 		
 		//Grava Aviso aos ADMs que tem acesso a liberar indicados
@@ -1667,7 +1698,7 @@ function indicaUsuario(){
 			$a = carregaClasse("Aviso");
 			$indicadorNome = $_SESSION['login'];
 			$texto = "$indicadorNome fez uma indicação de usuário para o grupo de partilhas em ".date('d-m-Y').". Verifique a área administrativa para decidir liberar ou não essa indicação";
-			$texto = addslashes(utf8_encode($texto));
+			$texto = addslashes($texto);
 			foreach($grupos as $grupo){
 				$usus = $u->getUsuariosPorGrupoAcesso($grupo);
 				if ($usus){

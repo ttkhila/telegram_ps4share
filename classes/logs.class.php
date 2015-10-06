@@ -71,7 +71,26 @@ class logs{
 		return $ret;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function buscaLogsAdm($dados){
+		$where = "";
 
+		if(isset($dados["usuario_id"])) $where .= "usuario_id = ".$dados["usuario_id"]."";
+		if ($where != "") $where = "WHERE $where";
+
+		//return $where;
+		$query = "SELECT * FROM logs
+				$where ORDER BY log_id DESC";
+				
+		if(isset($dados["ultimos"]) && $dados["ultimos"] != 0) { 
+			$ult = $dados["ultimos"];
+			$query .= " LIMIT 0, ".$ult.""; 
+		}
+		//return $query;
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		//return $query;
+		return $res;
+
+	}
 //---------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------------------------------
