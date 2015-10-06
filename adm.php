@@ -44,6 +44,95 @@
 			});
 		});
 		
+		$("#aba-grupos").on("click", "[name=btn-excluir-grupo]", function(e){
+			e.preventDefault(); //previne o evento 'normal'
+			if(!confirm("Atenção: A exclusão de um grupo é um processo irreversível!\nTenha absoluta certeza de não haver outra alternativa antes de realizar essa operação.\nConfirma a opção?"))
+				return false;
+			var $idGrupo = parseInt($(this).attr('id').split("_")[1]);
+			//alert($idGrupo);
+			var pars = { idGrupo: $idGrupo,  funcao: 'excluirGrupo'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#aba-grupos").find("#panel-grupo_"+$idGrupo).remove();
+					alert("Grupo excluído!");
+				}	
+			});
+		});
+		
+		//Inativa um grupo
+		$("#aba-grupos").on("click", "[name=btn-inativar-grupo]", function(e){
+			e.preventDefault(); //previne o evento 'normal'
+			if(!confirm("A inativação não é definitiva e pode ser revertida posteriormente.\nConfirma a opção?"))
+				return false;
+			var $idGrupo = parseInt($(this).attr('id').split("_")[1]);
+			//alert($idGrupo); return;
+			var pars = { idGrupo: $idGrupo,  funcao: 'InativarGrupo'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#aba-grupos").find("#panel-grupo_"+$idGrupo).remove();
+					alert("Grupo inativado!");
+				}	
+			});
+		});
+		
+		// GRUPOS INATIVOS
+		$("[href=#collapseThree]").click(function(){
+			var pars = { funcao: 'mostraGruposInativos'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#collapseThree .panel-body").html(data);
+				}	
+			});
+		});
+		
+		//RE-ativa um grupo
+		$("#aba-grupos").on("click", "[name=btn-ativar-grupo]", function(e){
+			e.preventDefault(); //previne o evento 'normal'
+			if(!confirm("O grupo voltará a ficar disponível para os usuários.\nConfirma a opção?"))
+				return false;
+			var $idGrupo = parseInt($(this).attr('id').split("_")[1]);
+			//alert($idGrupo); return;
+			var pars = { idGrupo: $idGrupo,  funcao: 'reativarGrupo'};
+			$.ajax({
+				url: 'funcoes_ajax.php',
+				type: 'POST',
+				dataType: "json",
+				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+				data: pars,
+				beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+				complete: function(){ $("img.pull-right").fadeOut('fast'); },
+				success: function(data){ 
+					console.log(data); 
+					$("#aba-grupos").find("#panel-grupo_"+$idGrupo).remove();
+					alert("Grupo re-ativado!");
+				}	
+			});
+		});
+		
 		$('#abas-adm').tab();
 		
 	});	
@@ -56,16 +145,16 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
+			<li><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
-			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
+			<li class="active"><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
 			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
 		</ul>
 		
 		<div id="my-tab-content" class="tab-content">
 
-			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
+			<div class="tab-pane" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
 				<div class="panel panel-warning">
 					<div class="panel-heading"><span class="glyphicon glyphicon-time"></span> Indicações Pendentes</div>
 					<div class="panel-body">
@@ -88,10 +177,10 @@
 							while ($dados = $indPend->fetch_object()){
 								$saida .= "
 									<tr>
-										<td>".stripslashes(utf8_decode($dados->nome))."</td>
+										<td>".stripslashes($dados->nome)."</td>
 										<td>".stripslashes(utf8_decode($dados->email))."</td>
 										<td><label id='lbl_tel'>".$dados->telefone."</label></td>
-										<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes(utf8_decode($dados->nomeUsu))."'>".stripslashes(utf8_decode($dados->login))."</a></td>
+										<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes(utf8_decode($dados->login))."</a></td>
 										<td>
 											<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
 											<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
@@ -111,7 +200,7 @@
 				 Em construção
 			</div>
 
-			<div class="tab-pane" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
+			<div class="tab-pane active" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
 				  <div class="alert alert-warning" style="margin-top:5px;">
 					<span class="glyphicon glyphicon-exclamation-sign"></span> <b>Importante:</b> Aqui os administradores podem gerenciar aspectos nos grupos que não podem ser resolvidos em outro local, como uma possível exclusão de 
 					grupo ou mudança de algum dado que seria impossível em outro local, como o e-mail da conta ou remoção de algum usuário da mesma.<br />Utilize com <b>cuidado</b>
@@ -128,7 +217,7 @@
 						</div>
 						<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 							<div class="panel-body" id="form-busca">
-								<div class="alert alert-info">
+								<div class="alert alert-success">
 									<span class="glyphicon glyphicon-info-sign"></span> Defina um ou mais filtros abaixo para auxiliar na busca
 								 </div>
 								<div class="form-group">
@@ -172,30 +261,26 @@
 					<div class="panel panel-default">
 						<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
 							<div class="panel-body">
-								<!--
-								<div class="table-responsive"> 
-									<table class="table table-striped">
-										<thead>
-											<tr><th colspan="6"><label class='text-muted small'>Clique no botão azul com o nome do usuário para ver suas recomendações e os detalhes de como entrar em contato com o mesmo.</label></th></tr>
-											<tr>
-												<th colspan="3">&nbsp;</th>
-												<th colspan="3" class="text-center success">Dados do Grupo</th>
-											</tr>
-											<tr class="success">
-												<th >Jogo(s) na conta</th>
-												<th >Proprietários das vagas atuais</th>
-												<th>Preço da vaga</th>
-												<th>Criador</th>
-												<th>Data criação</th>
-												<th>Status</th>
-											</tr>
-										</thead>
-										<tbody></tbody>
-									</table>
-								</div><!-- table-responsive -->
+								
 							</div><!-- panel-body -->
 						</div><!-- collapseTwo -->
 					</div><!-- panel panel-default -->
+					
+					<div class="panel panel-warning">
+						<div class="panel-heading" role="tab" id="headingThree">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+									<span class="glyphicon glyphicon-eye-close"></span> Grupos Inativos
+								</a>
+							</h4>
+						</div>
+						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+							<div class="panel-body">
+								bla
+							</div><!-- panel-body -->
+						</div><!-- collapseThree -->
+					</div><!-- panel panel-default -->
+					
 				</div><!-- panel-group -->
 			</div><!-- ABA GRUPOS - FIM -->
 			

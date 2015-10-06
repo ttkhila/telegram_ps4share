@@ -102,6 +102,12 @@ class recomendacoes{
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	//quando um grupo é excluído, altera o historico da(s) recomendação(ões) para 0 (zero)
+	public function apagaOrigemRecomendacao($idHist){
+		$query = "UPDATE recomendacoes SET historico_id = 0 WHERE historico_id = $idHist";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }	
+	}
 	
 }
 ?>

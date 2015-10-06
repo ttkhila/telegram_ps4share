@@ -3,13 +3,6 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
-/*
- * Mudanças no banco
- * Nova tabela: indicados
- * novo campo na tabela grupos_acesso: libera_indicados
- * 
- */
-
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -222,6 +215,7 @@ function montaPadraoEmail(){
 //----------------------------------------------------------------------------------------------------------------------------
 function mostraGrupo(){
 	$idGrupo = $_POST['id'];
+	
 	$selfID = $_POST['selfid'];
 	$c = carregaClasse('Compartilhamento');
 	$c2 = carregaClasse('Compartilhamento');
@@ -230,7 +224,9 @@ function mostraGrupo(){
 	$c->carregaDados($idGrupo);
 	$saida = "";
 	$simboloMoeda = $c->recupera_dados_moedas($c->getMoedaId())->simbolo;
+	
 	$nomeMoeda = stripslashes(utf8_decode($c->recupera_dados_moedas($c->getMoedaId())->nome));
+	
 	if($c->getFechado() == 1) $fechado = "Sim"; else $fechado = "Não";
 
 	if($c->getOrig1() == 0){ 
@@ -246,7 +242,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, 1);
 		$c2->carregaUltimoHistorico($idGrupo, 1);
 		$orig1 = stripslashes(utf8_decode($u->getLogin())); 
-		$orig1Nome = stripslashes(utf8_decode($u->getNome()));
+		$orig1Nome = stripslashes($u->getNome());
 		$orig1ID = $u->getId();
 		$link1 = "<a href='perfil_usuario.php?user=$orig1ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
@@ -271,7 +267,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "2");
 		$c2->carregaUltimoHistorico($idGrupo, '2');
 		$orig2 = stripslashes(utf8_decode($u->getLogin()));
-		$orig2Nome = stripslashes(utf8_decode($u->getNome()));
+		$orig2Nome = stripslashes($u->getNome());
 		$orig2ID = $u->getId();
 		$link2 = "<a href='perfil_usuario.php?user=$orig2ID' target='_blank'>";
 		$valorPago = $c->getValorPago();
@@ -296,7 +292,7 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "3");
 		$c2->carregaUltimoHistorico($idGrupo, '3');
 		$orig3 = stripslashes(utf8_decode($u->getLogin()));
-		$orig3Nome = stripslashes(utf8_decode($u->getNome())); 
+		$orig3Nome = stripslashes($u->getNome()); 
 		$orig3ID = $u->getId();
 		$link3 = "<a href='perfil_usuario.php?user=$orig3ID' target='_blank'>";
 		$valorPago = $c->getValorPago(); 
@@ -337,7 +333,6 @@ function mostraGrupo(){
 									<button name='btn-grupo' class='btn btn-xs btn-primary' rel='1' id='btn-grupo_".$idGrupo."_1'>Confirma</button>
 								</div>
 							</label>
-							 
 							<label class='col-sm-3'>Valor pago: </label>
 							<label class='col-sm-3' style='font-weight:normal;'>$valor1</label>
 						</div>
@@ -372,7 +367,6 @@ function mostraGrupo(){
 					</div>
 				</div>
 			</div>"; //close panel panel-primary"; 
-	
 		if($c->getFechado() == 1){
 			$saida .= "
 			<div class='panel panel-primary'>
@@ -500,7 +494,7 @@ function mostraGrupo(){
 	$saida = str_replace("%%opcoes1%%", $opcoes1, $saida);	
 	$saida = str_replace("%%opcoes2%%", $opcoes2, $saida);
 	$saida = str_replace("%%opcoes3%%", $opcoes3, $saida);
-
+	
 	echo json_encode($saida);
 	exit;
 }
@@ -524,7 +518,7 @@ function mostraHistorico(){
 			$saida .= "<td>$data_venda (criação da conta)</td>";
 		}
 		if($d->comprador_id == 0) $saida .= "<td>Vaga em aberto</td>"; //vaga não foi vendida no fechamento do grupo
-		else $saida .= "<td title='".stripslashes(utf8_decode($d->nome))."'>".stripslashes(utf8_decode($d->login))."</td>";
+		else $saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes(utf8_decode($d->login))."</td>";
 		$cont ++;
 	}
 	$saida .= "</tr>";
@@ -536,11 +530,11 @@ function mostraHistorico(){
 			$data_venda = date( 'd-m-Y', $phpdate );
 			$saida .= "<tr><td>$data_venda</td>";
 			if($d->vaga == '1') { //Original 1
-				$saida .= "<td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '2') { //Original 2
-				$saida .= "<td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
+				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '3') { //Fantasma
-				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes(utf8_decode($d->nome_comprador))."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
+				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes(utf8_decode($d->login_comprador))." $img</td></tr>";
 			}	
 		}
 	}
@@ -1134,7 +1128,7 @@ function mostraNegativaIndicacao(){
 			</div>
 			<div class='form-group'>
 				<label>Indicado: </label>
-				<label>".stripslashes(utf8_decode($indicacao->nome))."</label>
+				<label>".stripslashes($indicacao->nome)."</label>
 			</div>
 			<div class='form-group'>
 				<label>Indicador: </label>
@@ -1168,7 +1162,7 @@ function gravaRecusaIndicacao(){
 
 	//grava aviso
 	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
-	$indicadoNome = stripslashes(utf8_decode($indicacao->nome));
+	$indicadoNome = stripslashes($indicacao->nome);
 	$indicadoPor = $indicacao->indicado_por;
 	$a = carregaClasse("Aviso");
 	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
@@ -1271,78 +1265,78 @@ function executaFiltroAdmGrupos(){
 }
 //----------------------------------------------------------------------------------------------------------------------------
 function montaResultadoBuscaGruposAdm($dados){
-	
-	/*
-	 * 
-	 * 
-	 * 
-	 * 	FINALIZAR AQUI!!!!!!
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	
-	
-	
-	
 	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum registro encontrado para os filtros informados!</label></div>";
-	//$j = carregaClasse("Jogo");
+	$j = carregaClasse("Jogo");
 	//$u = carregaClasse("Usuario");
 	$saida = "";
 	while($d = $dados->fetch_object()){
+		
+		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
+		$title = "";
+		while($jogo = $jogos->fetch_object()){
+			$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+			$nomeAbrev = $jogo->nome_abrev;
+			$title .= "
+				<li class='list-group-item list-group-item-default'>
+					- $nome ($nomeAbrev)
+				</li>";
+		}
+		
+		if ($d->original1_id == 0){
+			$d->login1 = "Vaga em aberto";
+		}
+		if ($d->original2_id == 0){
+			$d->login2 = "Vaga em aberto";
+		}
+		if ($d->original3_id == 0){
+			$d->login3 = "Vaga em aberto";
+		}
 		$saida .= "
-			<div class='panel panel-primary'>
-				<div class='panel-heading'>".stripslashes(utf8_decode($d->nomeGrupo))."</div>
+			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
+				<div class='panel-heading'>
+					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
+					<div class='btn-group btn-group-xs' role='group'>
+						<button type='button' class='btn btn-warning' id='inativa-grupo_".$d->idGrupo."' name='btn-inativar-grupo'>
+							<span class='glyphicon glyphicon-eye-close'></span> Inativar Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='O grupo fica indisponível para os usuários, porém ainda faz parte do sistema e seu histórico não é apagado.'></span>
+						</button>
+						<button type='button' class='btn btn-danger' id='exclui-grupo_".$d->idGrupo."' name='btn-excluir-grupo'>
+							<span class='glyphicon glyphicon-remove'></span> Excluir Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='Exclui o grupo e todo seu histórico, sem direito a reversão.'></span>
+						</button>
+					</div>
+				</div>
 				<div class='panel-body'>
-					<div class='col-md-7'>
+					<div class='col-md-8'>
 						<ul class='list-group'>
 							<li class='list-group-item list-group-item-success'>Vagas:</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
-									<label class='col-md-3'>Original 1:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+									<label class='col-md-2'>Original 1:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login1))."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
-									<label class='col-md-3'>Original 2:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+									<label class='col-md-2'>Original 2:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login2))."</label>
 								</div>
 							</li>
 							<li class='list-group-item list-group-item-default'>
 								<div class='row'>
-									<label class='col-md-3'>Fantasma:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
+									<label class='col-md-2'>Fantasma:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login3))."</label>
 								</div>
 							</li>
 						</ul>
 					</div>
 					
-					<div class='col-md-5'>
+					<div class='col-md-4'>
 						<ul class='list-group'>
 							<li class='list-group-item list-group-item-warning'>Jogo(s):</li>
-							<li class='list-group-item list-group-item-default'>
-								<div class='row'>
-									<label class='col-md-3'>Jogo 1:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
-								</div>
-							</li>
-							<li class='list-group-item list-group-item-default'>
-								<div class='row'>
-									<label class='col-md-3'>Jogo 2:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
-								</div>
-							</li>
-							<li class='list-group-item list-group-item-default'>
-								<div class='row'>
-									<label class='col-md-3'>Jogo 3:</label>
-									<label class='col-md-9'>xxxxxxxxxxxxx</label>
-								</div>
-							</li>
+							$title
 						</ul>
 					</div>					
 				</div>
@@ -1352,6 +1346,184 @@ function montaResultadoBuscaGruposAdm($dados){
 	return $saida;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function excluirGrupo(){
+	session_start();
+	$idGrupo = $_POST['idGrupo'];
+	$c= carregaClasse("Compartilhamento");
+	$r= carregaClasse("Recomendacao");
+	$j = carregaClasse("Jogo");
+	$hist = $c->getHistoricos($idGrupo); //retorna todos os históricos de um grupo
+	
+	//zera historico_id da tabela de recomendações
+	while ($h = $hist->fetch_object()) $r->apagaOrigemRecomendacao($h->id);
+	
+	//apaga registros na tabela jogos_compartilhados
+	$j->excluiJogosCompartilhados($idGrupo);
+	
+	//apaga registros da tabela historicos
+	$c->excluiHistoricos($idGrupo);
+	
+	//apaga o registro do Grupo
+	$c->carregaDados($idGrupo); //armazena dados do grupo antes de excluir para enviar aviso aos integrantes
+	$c->excluiGrupo($idGrupo);
+	
+	//Envia avisos aos usuários do grupo	
+	$orig1ID = $c->getOrig1();
+	$orig2ID = $c->getOrig2();
+	$orig3ID = $c->getOrig3();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$a = carregaClasse("Aviso");
+	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi excluído do sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
+	$texto = addslashes(utf8_encode($texto));
+	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
+	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
+	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
+	
+	// --- LOG -> Início ---
+	$idExecutante = $_SESSION['ID'];
+	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $loginExecutante." excluiu um grupo do sistema (GRUPO: $nomeGrupo).";
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function InativarGrupo(){
+	session_start();
+	$idGrupo = $_POST['idGrupo'];
+	$c= carregaClasse("Compartilhamento");
+	$c->inativaGrupo($idGrupo);
+	
+	//Envia avisos aos usuários do grupo	
+	$c->carregaDados($idGrupo); 
+	$orig1ID = $c->getOrig1();
+	$orig2ID = $c->getOrig2();
+	$orig3ID = $c->getOrig3();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$a = carregaClasse("Aviso");
+	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi inativado do sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
+	$texto = addslashes(utf8_encode($texto));
+	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
+	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
+	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
+	
+	// --- LOG -> Início ---
+	$idExecutante = $_SESSION['ID'];
+	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $loginExecutante." inativou um grupo do sistema (GRUPO: $nomeGrupo).";
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function mostraGruposInativos(){
+	$c= carregaClasse("Compartilhamento");
+	$ret = $c->getGruposInativos();
+	
+	$tela = montaResultadoGruposInativos($ret);
+	echo json_encode($tela);
+	exit;	
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function montaResultadoGruposInativos($dados){
+	if($dados->num_rows == 0) return "<div class='col-md-12'><label>Nenhum há nenhum grupo inativo no momento!</label></div>";
+	$saida = "";
+	while($d = $dados->fetch_object()){
+		if ($d->original1_id == 0){
+			$d->login1 = "Vaga em aberto";
+		}
+		if ($d->original2_id == 0){
+			$d->login2 = "Vaga em aberto";
+		}
+		if ($d->original3_id == 0){
+			$d->login3 = "Vaga em aberto";
+		}
+		$saida .= "
+			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
+				<div class='panel-heading'>
+					".stripslashes(utf8_decode($d->nomeGrupo))." (criador: ".stripslashes(utf8_decode($d->loginCriador)).")&nbsp;&nbsp;
+					<div class='btn-group btn-group-xs' role='group'>
+						<button type='button' class='btn btn-success' id='ativa-grupo_".$d->idGrupo."' name='btn-ativar-grupo'>
+							<span class='glyphicon glyphicon-eye-open'></span> Re-ativar Grupo
+							<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+								title='O grupo volta a ficar disponível para os usuários, inclusive novas negociações.'></span>
+						</button>
+					</div>
+				</div>
+				<div class='panel-body'>
+					<div class='col-md-12'>
+						<ul class='list-group'>
+							<li class='list-group-item list-group-item-success'>Vagas:</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Original 1:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login1))."</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Original 2:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login2))."</label>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='row'>
+									<label class='col-md-2'>Fantasma:</label>
+									<label class='col-md-10'>".stripslashes(utf8_decode($d->login3))."</label>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div><br />
+		";
+	}
+	return $saida;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function reativarGrupo(){
+	session_start();
+	$idGrupo = $_POST['idGrupo'];
+	$c= carregaClasse("Compartilhamento");
+	$c->reativaGrupo($idGrupo);
+	
+	//Envia avisos aos usuários do grupo	
+	$c->carregaDados($idGrupo); 
+	$orig1ID = $c->getOrig1();
+	$orig2ID = $c->getOrig2();
+	$orig3ID = $c->getOrig3();
+	$nomeGrupo = stripslashes(utf8_decode($c->getNome()));
+	$a = carregaClasse("Aviso");
+	$texto = "O grupo <b>'$nomeGrupo'</b> da qual você faz parte, foi re-ativado no sistema pela administração em ".date('d-m-Y').". Em caso de dúvida, fazer contato com algum membro da administração.";
+	$texto = addslashes(utf8_encode($texto));
+	if ($orig1ID != 0) $a->insereAviso($orig1ID, $texto);
+	if ($orig2ID != 0) $a->insereAviso($orig2ID, $texto);
+	if ($orig3ID != 0) $a->insereAviso($orig3ID, $texto);
+	
+	// --- LOG -> Início ---
+	$idExecutante = $_SESSION['ID'];
+	$loginExecutante = stripslashes(utf8_decode($_SESSION['login']));
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$acao = $loginExecutante." re-ativou um grupo do sistema (GRUPO: $nomeGrupo).";
+	$log->insereLog(array($idExecutante, $loginExecutante, $dt, addslashes(utf8_encode($acao))));
+	// --- LOG -> Fim ---
+	
+	echo json_encode(1);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+
 function marcaLidoAviso(){
 	$idAviso = $_POST['aviso'];
 	$a = carregaClasse("Aviso");
@@ -1423,7 +1595,7 @@ function alteraPerfil(){
 		case 'nome':
 			if(trim($valor) == "") $erro = "Nome Inválido";
 			else {
-				$valor = addslashes(utf8_encode($valor));
+				$valor = addslashes($valor);
 				$u->alteraCampoPerfil($tipo, $valor, $usuarioID);
 			}
 			break;
@@ -1484,7 +1656,7 @@ function indicaUsuario(){
 	
 	//echo json_encode($dados);exit;
 	if($v->validate()){
-		$nome = addslashes(utf8_encode($nome));
+		$nome = addslashes($nome);
 		$email = addslashes(utf8_encode($email));
 		$u->primeiro_registro_indicado($nome, $email, $tel, $indicador);
 		

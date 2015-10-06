@@ -100,7 +100,7 @@ $('body').popover({
 	selector: '[data-toggle="popover"]',
 	html: true,
 	container: 'body',
-	content: function() {
+	content: function(e) {
 		//alert($(this).attr("data-id"));
 		$("[data-toggle='popover']").not(this).popover('hide');
 		return $('#show-popover_'+$(this).attr("data-id")).html();
@@ -433,7 +433,8 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 		return false;
 	}
 	var $elem = $(this);
-		
+	
+	//alert("SELFID: "+$selfId+" / ID: "+$id+" ELEM SRC: "+$elem.attr("src"));
 	var pars = { id: $id, selfid: $selfId, funcao: 'mostraGrupo'};
 	$.ajax({
 		url: 'funcoes_ajax.php',
@@ -453,7 +454,7 @@ $("#div-listagem-grupos").find("[name='div-casulo-grupo'] img[name='imgMais']").
 			$elem.prop("id", "_0");
 		},
 		error: function(e){
-			console.log(e.responseText);
+			console.log(e);
         }
 	});
 });

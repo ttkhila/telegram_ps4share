@@ -114,5 +114,13 @@ class jogos{
 		
 		return $res;
 	}
+//---------------------------------------------------------------------------------------------------------------
+	//Exclui dados da tabela quando um grupo é excluído pela administração
+	public function excluiJogosCompartilhados($idGrupo){
+		$query = "DELETE FROM jogos_compartilhados WHERE compartilhamento_id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+
+
 }
 ?>

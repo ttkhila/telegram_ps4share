@@ -70,6 +70,14 @@
 				}	
 		});
 		
+		//fecha popover ao clicar em qq lugar da tela fora deles
+		$('body').on('click', function (e) {
+			//only buttons
+			if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) { 
+				$('[data-toggle="popover"]').popover('hide');
+			}
+		});
+		
 	});	
 </script>
 </head>
@@ -79,7 +87,7 @@
 	
 	<h1 class="page-header">Classificados</h1>
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		<div class="panel panel-default">
+		<div class="panel panel-info">
 			<div class="panel-heading" role="tab" id="headingOne">
 				<h4 class="panel-title">
 					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">

@@ -129,7 +129,7 @@ class usuarios{
 				<li class='list-group-item list-group-item-warning'>
 					<div class='row'>
 						<div class='col-sm-5'><label>Nome:</label></div>
-						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->nome))."</label></div>
+						<div class='col-sm-7'><label>".stripslashes($res->nome)."</label></div>
 					</div>
 				</li>
 				<li class='list-group-item list-group-item-warning'>
@@ -203,6 +203,26 @@ class usuarios{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function insereUsuario($nome, $login, $email, $tel, $emailID){
+		$query = "INSERT INTO usuarios (nome, login, email, telefone, id_email) 
+			VALUES ('$nome', '$login', '$email', '$tel', '$emailID')";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function retornaTudoArray($ordem){
+		$arrUsuarios = array();
+		$res = $this->con->multiConsulta("SELECT * FROM usuarios WHERE id <> 0 ORDER BY $ordem"); 
+		while($u = $res->fetch_object()){
+			array_push($arrUsuarios, $u->nome);
+		}
+		return $arrUsuarios;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function alteraNome($velhoNome, $novoNome){
+		$query = "UPDATE usuarios SET nome = '$novoNome' WHERE nome = '$velhoNome'";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	
 	
 
@@ -232,7 +252,7 @@ class usuarios{
 	
 //---------------------------------------------------------------------------------------------------------------
 	public function retornaTudo($ordem){
-		return $res = $this->con->multiConsulta("SELECT * FROM usuarios WHERE id <> 0 AND ativo = 1 ORDER BY $ordem"); 
+		return $res = $this->con->multiConsulta("SELECT * FROM usuarios WHERE id <> 0 ORDER BY $ordem"); 
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function totalUsuarios(){
