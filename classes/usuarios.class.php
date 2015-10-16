@@ -218,6 +218,13 @@ class usuarios{
 		return $arrUsuarios;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function retornaTudoQuery(){
+		$query = "SELECT u.*, ga.nome as grupo FROM usuarios u, grupos_acesso ga 
+			WHERE (u.grupo_acesso_id = ga.id) AND (u.id <> 0) ORDER BY u.id";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function alteraNome($velhoNome, $novoNome){
 		$query = "UPDATE usuarios SET nome = '$novoNome' WHERE nome = '$velhoNome'";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }

@@ -1205,8 +1205,60 @@ $("#aba-indicacoes").find("form").submit(function(e){
 	});
 });
 //********************************************************************************  
+//ADM - Edita dados de usuários - aba USUÁRIOS
+$("#aba-cadastros").find("#tab-user td").click(function(e){
+	e.preventDefault(); //previne o evento 'normal'
 	
-//********************************************************************************  
+	$(".div-float-edit").hide(); //fecha algum input, caso ele esteja aberto
+	$("#tab-user span").show(); //mostra algum campo que possa estar encoberto por algum input recem fechado
+	$(this).find("span").hide();
+	$(this).find(".div-float-edit").show();
+});
+//********************************************************************************
+$("#tab-user").find("[name='edita-cadastro']").click(function(){
+	var $tipo = $(this).parent().parent('td').attr('rel'); //tipo de campo (email. telefone, nome, etc)
+	var $id = $(this).parent().parent('td').parent('tr').attr('id').split("_")[1]; //id do usuário
+	var campo = $(this).siblings('input');
+	var valor = $(this).siblings('input').val();
+	//alert(valor);return;
+	switch($tipo){
+		case 'nome':
+			if($.trim(valor) == ""){
+				alert('Nome Inválido');
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'email':
+			var match = valor.match(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/);
+			if(!match || match == "null") {
+				alert("E-mail inválido");
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'login':  
+			var match = valor.match(/(^[\w-]{3,16})$/);
+			if(!match || match == "null") {
+				alert("Login Inválido");
+				campo.focus();
+				return false;
+			}
+			break;
+	}
+	
+	/*
+	 * 
+	 * 
+	 * FALTA VALIDAR TELEFONE E ID-EMAIL
+	 * FALTA GRUPOS ACESSO E AÇÕES (INATIVAR E EXCLUIR USUÁRIO)
+	 * SALVAR
+	 * 
+	 */
+	
+	
+	
+});  
 
 //********************************************************************************  
 

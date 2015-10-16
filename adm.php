@@ -14,13 +14,21 @@
 	include 'funcoes.php';
 	
 	$indPend = $u->getIndicadosPendentes();
+	$allUser = $u->retornaTudoQuery();
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script type="text/javascript" src="js/lib/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="js/lib/jquery.mask.min.js"/></script>
 <link href="css/blue/style.css" rel="stylesheet" />
 <script>
 	$(function(){ 
 		
+		$(document).on('keydown', 'body', function(e){
+			if(e.keyCode == 8 && e.target.tagName != 'INPUT' && e.target.tagName != 'TEXTAREA'){ 
+				//alert(e.target.tagName);
+				e.preventDefault();
+			}	
+		});
 		
 		$("#btn-envia-busca").click(function(){
 			var $dados = {}; //Object JSON
@@ -162,13 +170,45 @@
 		});
 		
 		// ORDENAÇÃO DA TABELA DE LOGS
-		$('.tablesorter').tablesorter({
+		$('#tab-log').tablesorter({
 			headers: { 0: 
 				{ sorter: false }	
 			},
 		})
 		
+		// ORDENAÇÃO DA TABELA DE USUÁRIOS
+		$('#tab-user').tablesorter({
+			headers: { 
+				0: {
+					sorter: "text"
+				},
+				1: {
+					sorter: "text"
+				},
+				2: {
+					sorter: "text"
+				},
+				3: {
+					sorter: false
+				},
+				4: { 
+					sorter: "text"
+				},
+				5: {
+					sorter: "text"
+				},
+				6: {
+					sorter: "text"
+				},
+				7: { 
+					sorter: false 
+				}
+			},
+		})
+		
 		$('#abas-adm').tab();
+		
+		$(".mskTel").mask("(00) 0000-00009");
 		
 	});	
 </script>
@@ -180,8 +220,8 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
-			<li class="active"><a href="#aba-logs" data-toggle="tab">Logs</a></li>
+			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
+			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
 			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
 			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
@@ -189,49 +229,136 @@
 		
 		<div id="my-tab-content" class="tab-content">
 
-			<div class="tab-pane" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
-				<div class="panel panel-warning">
-					<div class="panel-heading"><span class="glyphicon glyphicon-time"></span> Indicações Pendentes</div>
-					<div class="panel-body">
-					<?php
-						if (!$indPend) $saida = "<div class='col-md-12'><label>Não há indicações pendentes de confirmação.</label></div>";
-						else {
-							$saida = "
-								<table class='table table-striped'>
+			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
+				<div class="panel-group" id="accordion3" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
+					
+					<div class="panel panel-info">
+						<div class="panel-heading" role="tab" id="headingOne4">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne4" aria-expanded="true" aria-controls="collapseOne4">
+									<span class="glyphicon glyphicon-user"></span> Gerenciar Cadastros
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne4">
+							<div class="panel-body">
+								<table class="table table-striped tablesorter" id="tab-user">
 									<thead>
 										<tr>
-											<th>Nome</th>
-											<th>E-mail</th>
-											<th>Celular</th>
-											<th>Indicado por</th>
-											<th>Ação</th>
+											<th class="header">ID (login)</th>
+											<th class="header">Nome</th>
+											<th class="header">E-mail</th>
+											<th>Telefone</th>
+											<th class="header">Telegram ID</th>
+											<th class="header">ID E-mail</th>
+											<th class="header">Grupo de Acesso</th>
+											<th>Ações</th>
 										</tr>
 									</thead>
 									<tbody>
-							";
-							while ($dados = $indPend->fetch_object()){
-								$saida .= "
-									<tr>
-										<td>".stripslashes($dados->nome)."</td>
-										<td>".stripslashes($dados->email)."</td>
-										<td><label id='lbl_tel'>".$dados->telefone."</label></td>
-										<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
-										<td>
-											<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
-											<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
-										</td>
-									</tr>
-								";
-							}
-							$saida .= "</tbody></table>";
-						}
-						echo $saida;
-					?>
-					</div>
-				</div>
+									<?php
+										while($user = $allUser->fetch_object()){
+											echo "
+												<tr id='tr-usuario_".$user->id."'>
+													<td rel='login'>
+														<div class='div-float-edit form-inline' style='display:none;'>
+															<input type='text' value='".stripslashes($user->login)."' />
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span>".stripslashes($user->login)."</span>
+													</td>
+													<td rel='nome'>
+														<div class='div-float-edit' style='display:none;'>
+															<input type='text' value='".stripslashes($user->nome)."' />
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span>".stripslashes($user->nome)."</span>
+													</td>
+													<td rel='email'>
+														<div class='div-float-edit' style='display:none;'>
+															<input type='text' value='".stripslashes($user->email)."' />
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span>".stripslashes($user->email)."</span>
+													</td>
+													<td rel='telefone'>
+														<div class='div-float-edit' style='display:none;'>
+															<input type='text' class='mskTel' value='".$user->telefone."' style='width:140px;' />
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span class='mskTel'>".$user->telefone."</span>
+													</td>
+													<td>".$user->telegram_id."</td>
+													<td rel='idEmail'>
+														<div class='div-float-edit' style='display:none;'>
+															<input type='text' value='".$user->id_email."' style='width:70px;' />
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span>".$user->id_email."</span>
+													</td>
+													<td rel='grupo'>".stripslashes($user->grupo)."</td>
+													<td>&nbsp;</td>
+												</tr>";
+										}
+									?>
+									</tbody>
+								</table>
+							</div><!-- panel-body -->
+						</div><!-- collapseOne4 -->
+					</div><!-- panel panel-info -->
+					
+					<div class="panel panel-warning">
+						<div class="panel-heading" role="tab" id="headingOne3">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne3" aria-expanded="true" aria-controls="collapseOne3">
+									<span class="glyphicon glyphicon-time"></span> Indicações Pendentes
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne3">
+							<div class="panel-body">
+							<?php
+								if (!$indPend) $saida = "<div class='col-md-12'><label>Não há indicações pendentes de confirmação.</label></div>";
+								else {
+									$saida = "
+										<table class='table table-striped'>
+											<thead>
+												<tr>
+													<th>Nome</th>
+													<th>E-mail</th>
+													<th>Celular</th>
+													<th>Indicado por</th>
+													<th>Ação</th>
+												</tr>
+											</thead>
+											<tbody>
+									";
+									while ($dados = $indPend->fetch_object()){
+										$saida .= "
+											<tr>
+												<td>".stripslashes($dados->nome)."</td>
+												<td>".stripslashes($dados->email)."</td>
+												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
+												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
+												<td>
+													<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
+													<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
+												</td>
+											</tr>
+										";
+									}
+									$saida .= "</tbody></table>";
+								}
+								echo $saida;
+							?>
+							</div><!-- panel-body -->
+						</div><!-- collapseOne3 -->
+					</div><!-- panel panel-warning -->
+
+				</div><!-- panel-group -->
 			</div><!-- ABA CADASTROS - FIM -->
 	
-			<div class="tab-pane active" id="aba-logs"><!-- ABA LOGS - INICIO -->
+			<div class="tab-pane" id="aba-logs"><!-- ABA LOGS - INICIO -->
 				 <div class="panel-group" id="accordion2" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
 					<div class="panel panel-info">
 						<div class="panel-heading" role="tab" id="headingOne2">
@@ -273,7 +400,7 @@
 					<div class="panel panel-default">
 						<div id="collapseTwo2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo2">
 							<div class="panel-body">
-								<table class="table table-striped tablesorter">
+								<table class="table table-striped tablesorter" id="tab-log">
 									<thead>
 										<tr>
 											<th>Dia/Hora</th>
