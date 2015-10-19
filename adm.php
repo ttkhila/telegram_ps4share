@@ -22,13 +22,7 @@
 <link href="css/blue/style.css" rel="stylesheet" />
 <script>
 	$(function(){ 
-		
-		$(document).on('keydown', 'body', function(e){
-			if(e.keyCode == 8 && e.target.tagName != 'INPUT' && e.target.tagName != 'TEXTAREA'){ 
-				//alert(e.target.tagName);
-				e.preventDefault();
-			}	
-		});
+	
 		
 		$("#btn-envia-busca").click(function(){
 			var $dados = {}; //Object JSON
@@ -220,7 +214,7 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Cadastros</a></li>
+			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Usuários</a></li>
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
 			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
@@ -232,7 +226,7 @@
 			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
 				<div class="panel-group" id="accordion3" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
 					
-					<div class="panel panel-info">
+					<div class="panel panel-primary">
 						<div class="panel-heading" role="tab" id="headingOne4">
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne4" aria-expanded="true" aria-controls="collapseOne4">
@@ -242,13 +236,22 @@
 						</div>
 						<div id="collapseOne4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne4">
 							<div class="panel-body">
+							
+								<div class="alert alert-info" style="margin-top:5px;">
+									<b><u>Dicas:</u></b><br />
+									<span class="glyphicon glyphicon-hand-right"></span> Clique nos cabeçalhos da tabela abaixo para ordenar os campos de forma crescente 
+									ou decrescente.<br />
+									<span class="glyphicon glyphicon-hand-right"></span> Clique em cima do dado do usuário que deseja alterar para editar seu valor. Obs.: Nem todos os dados 
+									podem ser editados.
+								</div>
+							
 								<table class="table table-striped tablesorter" id="tab-user">
 									<thead>
 										<tr>
 											<th class="header">ID (login)</th>
 											<th class="header">Nome</th>
 											<th class="header">E-mail</th>
-											<th>Telefone</th>
+											<th>Celular</th>
 											<th class="header">Telegram ID</th>
 											<th class="header">ID E-mail</th>
 											<th class="header">Grupo de Acesso</th>
@@ -265,36 +268,36 @@
 															<input type='text' value='".stripslashes($user->login)."' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
-														<span>".stripslashes($user->login)."</span>
+														<span class='sp-clicavel'>".stripslashes($user->login)."</span>
 													</td>
 													<td rel='nome'>
 														<div class='div-float-edit' style='display:none;'>
 															<input type='text' value='".stripslashes($user->nome)."' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
-														<span>".stripslashes($user->nome)."</span>
+														<span class='sp-clicavel'>".stripslashes($user->nome)."</span>
 													</td>
 													<td rel='email'>
 														<div class='div-float-edit' style='display:none;'>
 															<input type='text' value='".stripslashes($user->email)."' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
-														<span>".stripslashes($user->email)."</span>
+														<span class='sp-clicavel'>".stripslashes($user->email)."</span>
 													</td>
 													<td rel='telefone'>
 														<div class='div-float-edit' style='display:none;'>
-															<input type='text' class='mskTel' value='".$user->telefone."' style='width:140px;' />
+															<input type='text' class='mskTel' value='".$user->telefone."' style='width:110px;' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
-														<span class='mskTel'>".$user->telefone."</span>
+														<span class='mskTel sp-clicavel'>".$user->telefone."</span>
 													</td>
 													<td>".$user->telegram_id."</td>
-													<td rel='idEmail'>
+													<td rel='id_email'>
 														<div class='div-float-edit' style='display:none;'>
-															<input type='text' value='".$user->id_email."' style='width:70px;' />
+															<input type='text' value='".$user->id_email."' style='width:50px;' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
-														<span>".$user->id_email."</span>
+														<span class='sp-clicavel'>".$user->id_email."</span>
 													</td>
 													<td rel='grupo'>".stripslashes($user->grupo)."</td>
 													<td>&nbsp;</td>

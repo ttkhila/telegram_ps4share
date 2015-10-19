@@ -232,3 +232,5 @@ div#dialog table th, td{padding:5px;}
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
 }
+
+.sp-clicavel{ cursor: pointer; }

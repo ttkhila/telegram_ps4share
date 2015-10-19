@@ -1717,6 +1717,44 @@ function indicaUsuario(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function salvaDadosCadastroAdm(){
+	$tipo = $_POST['tipo'];
+	$id = $_POST['id'];
+	$valor = $_POST['val'];
+	
+	$u = carregaClasse("Usuario");
+	$v = carregaClasse('Validacao');
+	//echo json_encode($valor);exit;
+	switch($tipo){
+		case 'login':
+			$v->set("Login", $valor)->is_required()->between_length(3,16)->is_alpha_num('_-');
+			$valor = addslashes($valor);
+			break;
+		case 'nome':
+			$v->set("Nome", $valor)->is_required()->between_length(3,60);
+			$valor = addslashes($valor);
+			break;
+		case 'email':
+			$v->set("E-mail", $valor)->is_required()->is_email()->between_length(8,100);
+			break;
+		case 'telefone':
+			$v->set("Celular", $valor)->is_required()->is_phone();
+			break;
+		case 'id_email':
+			$v->set("ID E-mail", $valor)->is_required()->min_length(6,true)->max_length(6,true)->is_alpha_num('_-');
+			$valor = addslashes($valor);
+			break;
+	} 
+
+	if($v->validate()){
+		$u->alteraCampoPerfil($tipo, $valor, $id);
+		echo json_encode("0");
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	exit;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------
 

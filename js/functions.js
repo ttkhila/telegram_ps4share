@@ -1215,12 +1215,20 @@ $("#aba-cadastros").find("#tab-user td").click(function(e){
 	$(this).find(".div-float-edit").show();
 });
 //********************************************************************************
-$("#tab-user").find("[name='edita-cadastro']").click(function(){
+//ADM - Salva dados editados anteriormente
+$("#tab-user").on("click", "[name='edita-cadastro']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone();
+	
 	var $tipo = $(this).parent().parent('td').attr('rel'); //tipo de campo (email. telefone, nome, etc)
 	var $id = $(this).parent().parent('td').parent('tr').attr('id').split("_")[1]; //id do usuário
 	var campo = $(this).siblings('input');
 	var valor = $(this).siblings('input').val();
-	//alert(valor);return;
+	var campoOrig = $(this).parent().parent().children('span');
+	var divPai = $(this).parent();
+	//alert("gguygyuguy");return;
+	
 	switch($tipo){
 		case 'nome':
 			if($.trim(valor) == ""){
@@ -1240,17 +1248,61 @@ $("#tab-user").find("[name='edita-cadastro']").click(function(){
 		case 'login':  
 			var match = valor.match(/(^[\w-]{3,16})$/);
 			if(!match || match == "null") {
-				alert("Login Inválido");
+				alert("Login Inválido!\nO login deve ter entre 3 e 16 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).");
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'telefone':
+			if($.trim(valor) == "" || $.trim(valor) == "("){
+				alert('Celular Inválido');
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'id_email':  
+			var match = valor.match(/(^[\w-]{6})$/);
+			if(!match || match == "null") {
+				alert("ID de e-mail inválido!\nO login deve ter exatamente 6 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).");
 				campo.focus();
 				return false;
 			}
 			break;
 	}
 	
+	var pars = { tipo: $tipo, id: $id, val: valor, funcao: 'salvaDadosCadastroAdm'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == "0"){ //indicação efetuada
+				divPai.hide();
+				campoOrig.text(valor);
+				campoOrig.show();
+			}else { //erros
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"\n";
+				});
+				alert($error);
+			}
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+	
 	/*
 	 * 
 	 * 
-	 * FALTA VALIDAR TELEFONE E ID-EMAIL
 	 * FALTA GRUPOS ACESSO E AÇÕES (INATIVAR E EXCLUIR USUÁRIO)
 	 * SALVAR
 	 * 
