@@ -482,6 +482,7 @@ $(".list-group").on("click", "[name='historico-grupo']", function(e){
 
 //********************************************************************************
 $(".container-grupos").on("click", "[name='img-repasse']", function(){
+	//alert($(this).attr('title'));
 	VAGA_REPASSE = $(this).attr('rel');
 	GRUPO_REPASSE = parseInt($(this).attr("id").split("_")[1]);
 	dataID = $(this).data('id');
@@ -598,6 +599,7 @@ $("#div-listagem-grupos-antigos").find("[name='div-titulo-grupos-antigos'] img[n
 //********************************************************************************
 //Abre DIV para confrmar disponibilização de vaga
 $(".container-grupos").on("click", "[name='img-disponibiliza']", function(){
+	//alert($(this).attr('title'));
 	var parte = $(this).attr('id').split("_");
 	var id = parte[1];
 	var vaga = parte[2];
@@ -1203,8 +1205,112 @@ $("#aba-indicacoes").find("form").submit(function(e){
 	});
 });
 //********************************************************************************  
-
-//********************************************************************************  
+//ADM - Edita dados de usuários - aba USUÁRIOS
+$("#aba-cadastros").find("#tab-user td").click(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	
+	$(".div-float-edit").hide(); //fecha algum input, caso ele esteja aberto
+	$("#tab-user span").show(); //mostra algum campo que possa estar encoberto por algum input recem fechado
+	$(this).find("span").hide();
+	$(this).find(".div-float-edit").show();
+});
+//********************************************************************************
+//ADM - Salva dados editados anteriormente
+$("#tab-user").on("click", "[name='edita-cadastro']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone();
+	
+	var $tipo = $(this).parent().parent('td').attr('rel'); //tipo de campo (email. telefone, nome, etc)
+	var $id = $(this).parent().parent('td').parent('tr').attr('id').split("_")[1]; //id do usuário
+	var campo = $(this).siblings('input');
+	var valor = $(this).siblings('input').val();
+	var campoOrig = $(this).parent().parent().children('span');
+	var divPai = $(this).parent();
+	//alert("gguygyuguy");return;
+	
+	switch($tipo){
+		case 'nome':
+			if($.trim(valor) == ""){
+				alert('Nome Inválido');
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'email':
+			var match = valor.match(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/);
+			if(!match || match == "null") {
+				alert("E-mail inválido");
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'login':  
+			var match = valor.match(/(^[\w-]{3,16})$/);
+			if(!match || match == "null") {
+				alert("Login Inválido!\nO login deve ter entre 3 e 16 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).");
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'telefone':
+			if($.trim(valor) == "" || $.trim(valor) == "("){
+				alert('Celular Inválido');
+				campo.focus();
+				return false;
+			}
+			break;
+		case 'id_email':  
+			var match = valor.match(/(^[\w-]{6})$/);
+			if(!match || match == "null") {
+				alert("ID de e-mail inválido!\nO login deve ter exatamente 6 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).");
+				campo.focus();
+				return false;
+			}
+			break;
+	}
+	
+	var pars = { tipo: $tipo, id: $id, val: valor, funcao: 'salvaDadosCadastroAdm'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == "0"){ //indicação efetuada
+				divPai.hide();
+				campoOrig.text(valor);
+				campoOrig.show();
+			}else { //erros
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"\n";
+				});
+				alert($error);
+			}
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+	
+	/*
+	 * 
+	 * 
+	 * FALTA GRUPOS ACESSO E AÇÕES (INATIVAR E EXCLUIR USUÁRIO)
+	 * SALVAR
+	 * 
+	 */
+	
+	
+	
+});  
 
 //********************************************************************************  
 

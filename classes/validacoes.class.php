@@ -732,7 +732,7 @@ class validacoes {
      * @return Data_Validator The self instance
      */
     public function is_phone(){
-        $verify = preg_match('/^(\(0?\d{2}\)\s?|0?\d{2}[\s.-]?)\d{4,5}[\s.-]?\d{4}$/', $this->_data['value']);
+        $verify = preg_match('/^(\(0?\d{2}\)\s?|0?\d{2}[\s.-]?)\d{4,5}[\s.-]?\d{4,5}$/', $this->_data['value']);
         if(!$verify){
             $this->set_error(sprintf($this->_messages['is_phone'], $this->_data['name']));
         }

@@ -93,7 +93,7 @@ class usuarios{
 	}
 //---------------------------------------------------------------------------------------------------------------
     public function validaLogin($dados){
-	$query = "SELECT * FROM usuarios WHERE login='".addslashes(utf8_encode($dados['login']))."' AND senha='".md5(trim($dados['senha']))."'";
+	$query = "SELECT * FROM usuarios WHERE login='".addslashes($dados['login'])."' AND senha='".md5(trim($dados['senha']))."'";
         $res = $this->con->multiConsulta($query); 
         if ($res->num_rows > 0) //login OK
             return $res->fetch_object();
@@ -135,7 +135,7 @@ class usuarios{
 				<li class='list-group-item list-group-item-warning'>
 					<div class='row'>
 						<div class='col-sm-5'><label>ID:</label></div>
-						<div class='col-sm-7'><label>".stripslashes(utf8_decode($res->login))."</label></div>
+						<div class='col-sm-7'><label>".stripslashes($res->login)."</label></div>
 					</div>
 				</li>
 				<li class='list-group-item list-group-item-warning'>
@@ -216,6 +216,13 @@ class usuarios{
 			array_push($arrUsuarios, $u->nome);
 		}
 		return $arrUsuarios;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function retornaTudoQuery(){
+		$query = "SELECT u.*, ga.nome as grupo FROM usuarios u, grupos_acesso ga 
+			WHERE (u.grupo_acesso_id = ga.id) AND (u.id <> 0) ORDER BY u.id";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function alteraNome($velhoNome, $novoNome){
@@ -301,10 +308,10 @@ class usuarios{
 			} else { //...ou seleciona INATIVO
 				$classe = 'inativo';
 			}
-			$cont .= "<tr class='".$classe."'><td>".stripslashes(utf8_decode($d->login))."</td>
-				<td>".stripslashes(utf8_decode($d->nome))."</td>
-				<td>".stripslashes(utf8_decode($d->email))."</td>
-				<td>".stripslashes(utf8_decode($d->grupo_nome))."</td>
+			$cont .= "<tr class='".$classe."'><td>".stripslashes($d->login)."</td>
+				<td>".stripslashes($d->nome)."</td>
+				<td>".stripslashes($d->email)."</td>
+				<td>".stripslashes($d->grupo_nome)."</td>
 				<td align='left'>
 				<a href='#' name='btnAltera' id='Usuario_".$d->usuario_id."'>alterar</a> | ";
 				if($d->ativo == 1)
@@ -341,7 +348,7 @@ class usuarios{
     	foreach ($dados as $key => $value) {
     		if ($key == 'login'){ //checar PSN (login) em duplicidade
                 if ($this->checaDuplicidade(trim($value)) > 0){ //duplicidade
-                	//$result[0] = utf8_encode("Já existe usuário cadastrado com esse login!");
+                	//$result[0] = "Já existe usuário cadastrado com esse login!";
                     //return $result;
                     return array("login", "Já existe usuário cadastrado com esse login!", 0);
                 }
@@ -351,15 +358,15 @@ class usuarios{
 				$email = trim($value); //valor a ser comparado com o e-mail repetido
 			
 			if($key == 'senha'){ //senha sendo último campo do formulário, caso contrário haverá erro
-				$senha_descrip = addslashes(utf8_encode($value)); //senha descriptografada
+				$senha_descrip = addslashes($value); //senha descriptografada
 				$query1 .= 'senha_descriptografada, ';
 				$query2 .= "'".$senha_descrip."', ";
 				$value = md5($value); //criptografa a senha
 				$query1 .= $key;
-				$query2 .= "'".addslashes(utf8_encode($value))."'";
+				$query2 .= "'".addslashes($value)."'";
 			} else {
 				$query1 .= $key.', ';
-				$query2 .= "'".addslashes(utf8_encode($value))."', ";
+				$query2 .= "'".addslashes($value)."', ";
 			}
 		}
 
@@ -377,7 +384,7 @@ class usuarios{
         $query = "SELECT nome, login, senha_descriptografada FROM usuarios WHERE usuario_id = ".$id;
         $res = $this->con->uniConsulta($query);
         
-        $body_email = "Olá, ".stripslashes(utf8_decode($res->login))."!\r\nSua senha provisória de acesso ao sistema é: ".$res->senha_descriptografada."\r\n";
+        $body_email = "Olá, ".stripslashes($res->login)."!\r\nSua senha provisória de acesso ao sistema é: ".$res->senha_descriptografada."\r\n";
         $body_email .= "Acesse nosso site e faça login com essa senha e o login cadastrado.\r\n";
         $body_email .= "Nesse primeiro acesso, você terá que mudar sua senha. Assim que o fizer, estará apto a utilizar todas as funcionalidades do site.";
         
@@ -389,7 +396,7 @@ class usuarios{
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
         
         // Additional headers
-        $headers .= 'To: '.stripslashes(utf8_decode($res->nome))."\r\n";  
+        $headers .= 'To: '.stripslashes($res->nome)."\r\n";  
         $headers .= 'X-Mailer: PHP/' . phpversion();
         
         ini_set("SMTP", "smtp.mail.yahoo.com.br");
@@ -422,10 +429,10 @@ class usuarios{
 					$gaAtual = new grupos_acesso();
 					$gaNovo = new grupos_acesso();
 					//recupera os NOMES dos grupos de acesso atual e os novos
-					$gaAtual->carregaDados($this->getGrupoId());$grupoAtual = stripslashes(utf8_decode($gaAtual->getNome()));
-					$gaNovo->carregaDados($value);$grupoNovo = stripslashes(utf8_decode($gaNovo->getNome())); 
+					$gaAtual->carregaDados($this->getGrupoId());$grupoAtual = stripslashes($gaAtual->getNome());
+					$gaNovo->carregaDados($value);$grupoNovo = stripslashes($gaNovo->getNome()); 
 					
-					$usuario = stripslashes(utf8_decode($this->getLogin())); //recupera NOME do usuário qu está fazendo a alteração			
+					$usuario = stripslashes($this->getLogin()); //recupera NOME do usuário qu está fazendo a alteração			
 					$acao = $m->incluiAcao($_SESSION['ID']); //cria uma nova ação
 					$dados['texto'] = "O usuário <strong>$usuario</strong> alterou seu próprio acesso ao sistema, passando de <strong>'$grupoAtual'</strong> para <strong>'$grupoNovo'</strong>.<br />
 						Para que essa mudança tenha validade, é preciso que outro ADM confirme.<br />
@@ -443,10 +450,10 @@ class usuarios{
 					$m->incluiMensagem($dados, 0, $para);
 					
 					//faz alteração do grupo TEMPORÁRIA
-					$query .= 'grupo_acesso_id_temp = "'.addslashes(utf8_encode($value)).'", ';
+					$query .= 'grupo_acesso_id_temp = "'.addslashes($value).'", ';
 				}
 			} else 
-				$query .= $key.' = "'.addslashes(utf8_encode($value)).'", ';
+				$query .= $key.' = "'.addslashes($value).'", ';
         }
         $query = substr_replace($query ,"",-2);
         $query = "UPDATE usuarios SET ".$query." WHERE usuario_id = ".$id;
@@ -467,7 +474,7 @@ class usuarios{
 //---------------------------------------------------------------------------------------------------------------
     public function checaDuplicidade($login){
     	
-    	$login = addslashes(utf8_encode($login));
+    	$login = addslashes($login);
         $query = "SELECT usuario_id FROM usuarios WHERE login = '$login'";
         $res = $this->con->multiConsulta($query);
 

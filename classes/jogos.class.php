@@ -67,7 +67,7 @@ class jogos{
 //---------------------------------------------------------------------------------------------------------------
 	public function gravaJogo($dados){
 		//$dados = Ordem dos valores (NOME, PLATAFORMA)
-		$nome = addslashes(utf8_encode($dados[0]));
+		$nome = addslashes($dados[0]);
 		$plataforma = intval($dados[1]);
 		$query = "INSERT INTO jogos (nome, plataforma_id) VALUES ('$nome', $plataforma)";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }
@@ -76,7 +76,7 @@ class jogos{
 	public function alteraJogo($dados){
 		//$dados = Ordem dos valores (ID, NOME, PLATAFORMA)
 		$id = intval($dados[0]);
-		$nome = addslashes(utf8_encode($dados[1]));
+		$nome = addslashes($dados[1]);
 		$plataforma = intval($dados[2]);
 		$query = "UPDATE jogos SET nome = '$nome', plataforma_id = $plataforma WHERE id = $id";
 		try{ $this->con->executa($query); } catch(Exception $e) { return $e.message; }

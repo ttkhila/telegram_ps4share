@@ -367,7 +367,7 @@ class compartilhamentos{
 	public function gravaGrupoFechamento($id, $dados){
 		foreach ($dados as $value) {
 			$parte = explode("%=%", $value);
-			$parte[1] = addslashes(utf8_encode($parte[1]));
+			$parte[1] = addslashes($parte[1]);
 			$query = "UPDATE compartilhamentos SET $parte[0] = '$parte[1]' WHERE id = $id";
 			try{ $this->con->executa($query); } catch(Exception $e) { die("Erro na solicitação com banco de dados."); }
 		}
@@ -476,7 +476,7 @@ class compartilhamentos{
 
 		if(isset($dados["nome"])){
 			$where = $this->checaWhere($where);
-			$dados["nome"] = addslashes(utf8_encode($dados["nome"]));
+			$dados["nome"] = addslashes($dados["nome"]);
 			$where .= "c.nome = ".$dados["nome"];
 		}
 		
@@ -581,7 +581,7 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function gruposCriadosUsuario($idUsuario){
-		$query = "SELECT count(*) as qtd FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (criador_id = $idUsuario)";
+		$query = "SELECT count(*) as qtd FROM compartilhamentos WHERE (ativo = 1) AND (criador_id = $idUsuario)";
 		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die("Erro na solicitação da quantidade de grupos total do usuário."); }
 		
 		return $res;

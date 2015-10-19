@@ -18,11 +18,11 @@
 	$ga->carregaDados($u->getGrupoAcessoId());
 	$nome = stripslashes($u->getNome());
 	$telegramID = $u->getTelegramId();
-	$login = stripslashes(utf8_decode($u->getLogin()));
+	$login = stripslashes($u->getLogin());
 	$emailID = $u->getIdEmail();
 	$email = $u->getEmail();
 	$tel = $u->getTelefone();
-	$nomeGrupoAcesso = stripslashes(utf8_decode($ga->getNome()));
+	$nomeGrupoAcesso = stripslashes($ga->getNome());
 	$usuarioDesde = $u->getPrimeiroAcessoData();
 
 	//estatísticas - usuário
@@ -46,11 +46,11 @@
 	$jogo = $c->jogoPreferido();
 	
 	$gtgValorTotal = $gtg->valorTotal;
-	$moedaNome = stripslashes(utf8_decode($moeda->nome));
+	$moedaNome = stripslashes($moeda->nome);
 	$moedaPais = $moeda->pais;
 	$moedaQtd = $moeda->qtd;
 	
-	$jogoNome = stripslashes(utf8_decode($jogo->nomeJogo));
+	$jogoNome = stripslashes($jogo->nomeJogo);
 	$jogoPlataforma = $jogo->plataforma;
 	$jogoQtd = $jogo->qtd;
 	
@@ -447,8 +447,8 @@
 									while($dados = $recomendacoes->fetch_object()){
 										$rec .= "
 											<li class='list-group-item list-group-item-warning'>
-												<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
-												<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes(utf8_decode($dados->texto))."
+												<span class='glyphicon glyphicon-user'></span> ".stripslashes($dados->login)."<small> em ".$dados->data."</small>
+												<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes($dados->texto)."
 											</li><br />
 											";
 									}
@@ -479,8 +479,8 @@
 									while($dados = $recomendacoesE->fetch_object()){
 										$rec .= "
 											<li class='list-group-item list-group-item-warning'>
-												<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
-												<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes(utf8_decode($dados->texto))."
+												<span class='glyphicon glyphicon-user'></span> ".stripslashes($dados->login)."<small> em ".$dados->data."</small>
+												<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes($dados->texto)."
 											</li><br />
 											";
 									}
@@ -563,7 +563,7 @@
 										$saida .= "
 											<li class='list-group-item list-group-item-text'>
 												<span class='glyphicon glyphicon-thumbs-down'></span> ".stripslashes($dados->nome)."<br />
-												&nbsp;&nbsp;<span class='glyphicon glyphicon-arrow-right'></span><small> Motivo: ".stripslashes(utf8_decode($dados->motivo))."</small>
+												&nbsp;&nbsp;<span class='glyphicon glyphicon-arrow-right'></span><small> Motivo: ".stripslashes($dados->motivo)."</small>
 											</li>
 											";
 										}

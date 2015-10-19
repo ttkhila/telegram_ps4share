@@ -15,9 +15,9 @@
 	
 	//dados cadastrais
 	$u->carregaDados($user);
-	$nome = stripslashes(utf8_decode($u->getNome()));
+	$nome = stripslashes($u->getNome());
 	$telegramID = $u->getTelegramId();
-	$login = stripslashes(utf8_decode($u->getLogin()));
+	$login = stripslashes($u->getLogin());
 	$email = $u->getIdEmail();
 	
 	//Recomendações
@@ -37,7 +37,7 @@
 <body>
 	<?php $menu = file_get_contents('menu.php'); echo login($menu); //insere menu ?>
 	<!-- Conteúdo Principal: Início -->
-	<h2 class="page-header">Perfil do Usuário - <?php echo stripslashes(utf8_decode($u->getLogin())); ?></h2>
+	<h2 class="page-header">Perfil do Usuário - <?php echo stripslashes($u->getLogin()); ?></h2>
 	
 	<div class="row">
 		<div class="panel panel-primary" id="div-edita-perfil">
@@ -62,7 +62,7 @@
 										Precisa ser cadastrada no app e pode ser <br />usada para fazer contato com o mesmo."></span>
 							</div>	
 							<div class="col-sm-6">
-								<label><?php if(!empty($telegramID)) echo "@".stripslashes(utf8_decode($telegramID)); else echo "Não Cadastrado"; ?></label>
+								<label><?php if(!empty($telegramID)) echo "@".stripslashes($telegramID); else echo "Não Cadastrado"; ?></label>
 							</div>
 						</div>
 					</li>
@@ -120,8 +120,8 @@
 						while($dados = $recomendacoes->fetch_object()){
 							$rec .= "
 								<li class='list-group-item list-group-item-warning'>
-									<span class='glyphicon glyphicon-user'></span> ".stripslashes(utf8_decode($dados->login))."<small> em ".$dados->data."</small>
-									<br /><label>- ".stripslashes(utf8_decode($dados->texto))."</label>
+									<span class='glyphicon glyphicon-user'></span> ".stripslashes($dados->login)."<small> em ".$dados->data."</small>
+									<br /><label>- ".stripslashes($dados->texto)."</label>
 								</li><br />
 								";
 						}

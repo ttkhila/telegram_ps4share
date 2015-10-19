@@ -195,6 +195,16 @@ div#dialog table th, td{padding:5px;}
 #modal-conteudo-fechamento-grupo{padding:10px;}
 .label-personalizada{background-color: #DEB887; border:solid 1px #CD853F; padding:5px; border-radius:4px; text-align: center;}
 
+.div-float-edit{
+	/*position: absolute;
+	background-color:#fff; */
+	/*display:none;*/
+	padding:2px;
+}
+.div-float-edit input[type=text]{
+	/*background-color:#eaeaea;*/
+}
+
 .div-input-valor {
 	width: 200px;
 	position:absolute;
@@ -222,3 +232,5 @@ div#dialog table th, td{padding:5px;}
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
 }
+
+.sp-clicavel{ cursor: pointer; }

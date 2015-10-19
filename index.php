@@ -168,7 +168,7 @@
 										echo "
 										<tr id='aviso_".$dados->id."'>
 											<td>$lido</td>
-											<td align='justify'>".stripslashes(utf8_decode($dados->texto))."</td>
+											<td align='justify'>".stripslashes($dados->texto)."</td>
 											<td class='readrow'>$lido_icon</td>
 											<td class='deleterow'><div title='Apagar aviso' class='glyphicon glyphicon-remove'></div></td>
 										</tr>";
@@ -210,13 +210,13 @@
 									if($jogos->num_rows > 1) { 
 										$games = "";
 										while($jogo = $jogos->fetch_object()){
-											$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+											$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 											$nomeAbrev = $jogo->nome_abrev;
 											$games  .= "- $nome ($nomeAbrev)<br />";
 										}
 									} else {
 										$jogo = $jogos->fetch_object();
-										$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+										$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 										$nomeAbrev = $jogo->nome_abrev;
 										$games  = "- $nome ($nomeAbrev)";
 									}
@@ -280,13 +280,13 @@
 									if($jogos->num_rows > 1) { 
 										$games = "";
 										while($jogo = $jogos->fetch_object()){
-											$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+											$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 											$nomeAbrev = $jogo->nome_abrev;
 											$games  .= "- $nome ($nomeAbrev)<br />";
 										}
 									} else {
 										$jogo = $jogos->fetch_object();
-										$nome = str_replace("'", " ", stripslashes(utf8_decode($jogo->jogo)));
+										$nome = str_replace("'", " ", stripslashes($jogo->jogo));
 										$nomeAbrev = $jogo->nome_abrev;
 										$games  = "- $nome ($nomeAbrev)";
 									}
@@ -294,11 +294,11 @@
 									$linhas .= "
 										<tr>
 											<td>$games</td>
-											<td title='Nome: ".stripslashes(utf8_decode($co->vendedorNome))."'>".stripslashes(utf8_decode($co->vendedorLogin))."</td>
+											<td title='Nome: ".stripslashes($co->vendedorNome)."'>".stripslashes($co->vendedorLogin)."</td>
 											<td>".$c->getNomeVaga($vaga, 1)."</td>
 											<td>
 												<button class='glyphicon glyphicon-thumbs-up btn btn-warning btn-xs' title='Avaliar compra' name='btn-avalia-compra' id='avalia-compra_".$co->recomendacaoID."' data-toggle='modal' 
-													data-target='#avaliacao' data-login-vendedor='".stripslashes(utf8_decode($co->vendedorLogin))."'></button>
+													data-target='#avaliacao' data-login-vendedor='".stripslashes($co->vendedorLogin)."'></button>
 											</td>
 											<td>
 												<button class='glyphicon glyphicon-remove-circle btn btn-warning btn-xs' title='Finaliza sem avaliar' name='btn-finaliza-compra' id='finaliza-compra_".$co->recomendacaoID."'></button>
