@@ -439,7 +439,8 @@ class compartilhamentos{
 		$where = $this->checaWhere($where);
 		//return $where;
 		$query = "SELECT c.id as idGrupo, c.original1_id, c.original2_id, c.original3_id, DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dataCompra, c.fechado, c.criador_id, u4.login as loginCriador, 
-				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u2.login as login2, u3.login as login3  
+				h.comprador_id, h.vaga, h.data_venda, h.valor_venda, j.id as idJogo, j.nome as nomeJogo, u1.login as login1, u1.ativo as ativo1, u1.banido as banido1, u2.login as login2, u2.ativo as ativo2, u2.banido as banido2, 
+				u3.login as login3, u3.ativo as ativo3, u3.banido as banido3 
 				FROM compartilhamentos c, historicos h, jogos_compartilhados jc, jogos j, usuarios u1, usuarios u2, usuarios u3, usuarios u4 
 				WHERE $where (jc.compartilhamento_id = c.id) AND (h.compartilhamento_id = c.id) AND (jc.jogo_id = j.id) AND (h.a_venda = 1) AND (c.ativo = 1) 
 				AND (u1.id = c.original1_id)  AND (u2.id = c.original2_id) AND (u3.id = c.original3_id) AND (u4.id = c.criador_id) GROUP BY c.id ORDER BY j.nome";

@@ -1307,13 +1307,80 @@ $("#tab-user").on("click", "[name='edita-cadastro']", function(e){
 	 * SALVAR
 	 * 
 	 */
-	
-	
-	
 });  
 
 //********************************************************************************  
-
+//ATIVAR/INATIVAR USUARIO
+$("#tab-user").on("click", "[name='btn-inativar-user']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var $valor = parseInt($(this).data('role'));
+	if($valor == 1) flag = "ativar";
+	else flag = "inativar";
+	if(!confirm("Tem certeza que deseja "+flag+" este usuário?")) return false;
+	
+	var botao = $(this);
+	var $tr = $(this).parent('td').parent('tr');
+	var $id = $tr.attr('id').split("_")[1]; //id do usuário
+	var $campo = "ativo";
+	var $tabela = "Usuario";
+	//alert($valor); return;
+	
+	var pars = { id: $id, campo: $campo, tabela: $tabela, valor: $valor, funcao: 'onOffBoolean' };
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		success: function(data){ 
+			console.log(data); 
+			if($valor == 1){ 
+				$tr.removeClass("linha-inativa");	
+				botao.text("Inativar");
+				botao.data('role', '0');
+			} else {
+				$tr.addClass("linha-inativa");
+				botao.text("Ativar");
+				botao.data('role', '1');
+			}
+		}
+	});
+});
+//********************************************************************************  
+//BANIR/DESBANIR USUARIO
+$("#tab-user").on("click", "[name='btn-banir-user']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var $valor = parseInt($(this).data('role'));
+	if($valor == 1) flag = "banir";
+	else flag = "'des'banir";
+	if(!confirm("Tem certeza que deseja "+flag+" este usuário?")) return false;
+	
+	var botao = $(this);
+	var $tr = $(this).parent('td').parent('tr');
+	var $id = $tr.attr('id').split("_")[1]; //id do usuário
+	var $campo = "banido";
+	var $tabela = "Usuario";
+	//alert($valor); return;
+	
+	var pars = { id: $id, campo: $campo, tabela: $tabela, valor: $valor, funcao: 'onOffBoolean' };
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		success: function(data){ 
+			console.log(data); 
+			if($valor == 1){ 
+				$tr.addClass("linha-banida");	
+				botao.text("'Des'banir");
+				botao.data('role', '0');
+			} else {
+				$tr.removeClass("linha-banida");
+				botao.text("Banir");
+				botao.data('role', '1');
+			}
+		}
+	});
+});
 //******************************************************************************** 
 
 //******************************************************************************** 

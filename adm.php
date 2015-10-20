@@ -245,7 +245,7 @@
 									podem ser editados.
 								</div>
 							
-								<table class="table table-striped tablesorter" id="tab-user">
+								<table class="table table-hover tablesorter" id="tab-user">
 									<thead>
 										<tr>
 											<th class="header">ID (login)</th>
@@ -255,17 +255,42 @@
 											<th class="header">Telegram ID</th>
 											<th class="header">ID E-mail</th>
 											<th class="header">Grupo de Acesso</th>
-											<th>Ações</th>
+											<th>
+												Ações
+												<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='top' data-html='true' 
+													title='
+														<ul>
+															<li>
+																<b>Inativar:</b> Usuário fica sem acesso ao sistema, mas a apresentação de seu login não fica com nenhum alerta visível para outros usuários. 
+																Essa opção pode ser usada quando o usuário, por exemplo, tem alguma pendência cadastral ou quando se quer suspender o usuário por determinado tempo.
+															</li>
+															<li>
+																<b>Banir:</b> Usuário fica sem acesso ao sistema e a apresentação de seu login fica com status <em>"Usuário Banido"</em> visível para outros usuários. 
+																Essa opção pode ser revertida.
+															</li>
+															<li>
+																<b>Excluir:</b> Usuário é excluído do sistema, assim como todas as referências aos grupos que participava. Essa opção deve ser usada com cautela, 
+																pois não pode ser revertida e pode causar inconsistência de dados.
+															</li>
+														</ul>'
+												</span> 
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 									<?php
 										while($user = $allUser->fetch_object()){
+											$status = "";
+											if($user->ativo == 0){ $status .= "linha-inativa "; $role = 1; $txtButton = "Ativar"; }
+											else { $status .= ""; $role = 0; $txtButton = "Inativar"; }
+											
+											if($user->banido == 0){ $status .= ""; $roleBan = 1; $txtButtonBan = "Banir"; }
+											else { $status .= "linha-banida "; $roleBan = 0; $txtButtonBan = "'Des'banir"; }
 											echo "
-												<tr id='tr-usuario_".$user->id."'>
+												<tr id='tr-usuario_".$user->id."' class='$status'>
 													<td rel='login'>
 														<div class='div-float-edit form-inline' style='display:none;'>
-															<input type='text' value='".stripslashes($user->login)."' />
+															<input type='text' value='".stripslashes($user->login)."' style='width:125px;' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
 														<span class='sp-clicavel'>".stripslashes($user->login)."</span>
@@ -286,7 +311,7 @@
 													</td>
 													<td rel='telefone'>
 														<div class='div-float-edit' style='display:none;'>
-															<input type='text' class='mskTel' value='".$user->telefone."' style='width:110px;' />
+															<input type='text' class='mskTel' value='".$user->telefone."' style='width:105px;' />
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
 														<span class='mskTel sp-clicavel'>".$user->telefone."</span>
@@ -300,7 +325,11 @@
 														<span class='sp-clicavel'>".$user->id_email."</span>
 													</td>
 													<td rel='grupo'>".stripslashes($user->grupo)."</td>
-													<td>&nbsp;</td>
+													<td>
+														<button data-role='$role' class='btn btn-xs btn-default' name='btn-inativar-user'>$txtButton</button>
+														<button data-role='$roleBan' class='btn btn-xs btn-warning' name='btn-banir-user'>$txtButtonBan</button>
+														<button class='btn btn-xs btn-danger' name='btn-excluir-user'>Excluir</button>
+													</td>
 												</tr>";
 										}
 									?>

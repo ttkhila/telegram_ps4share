@@ -26,12 +26,27 @@ function realizaLogin(){
     
     if(is_null($resp)){
         $result = array(0, "Usuário/Senha Inválidos");
-    } else { //LOGIN OK! Carregar os dados 
+    } else { //LOGIN OK! Checar inatividade e banimento
+	
+	//checar user banido
+	$banido = $u->is_banido($resp->id);
+	if ($banido == 1){
+		echo json_encode(array(0, "Usuário Banido! Contate a administração."));
+		exit;
+	}
+    
+	//checar user inativo
+	$ativo = $u->is_ativo($resp->id);
+	if ($ativo == 0){
+		echo json_encode(array(0, "Usuário Inativo! Contate a administração."));
+		exit;
+	}
+     
         $primeiro_acesso = $resp->primeiro_acesso;
         if ($primeiro_acesso == 1){
-			echo json_encode(array(2, $resp->id));
-			exit;
-		}	
+		echo json_encode(array(2, $resp->id));
+		exit;
+	}	
         
         session_start();
         $_SESSION['login'] = stripslashes($resp->login); //PSN ID
@@ -1755,9 +1770,18 @@ function salvaDadosCadastroAdm(){
 	}
 	exit;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------
+function onOffBoolean(){
+	$id = $_POST['id'];
+	$campo = $_POST['campo']; 
+	$tabela = $_POST['tabela'];
+	$novoValor = $_POST['valor'];
+	//echo $tabela; exit;
+	$t = carregaClasse($tabela);
+	$t->on_off_boolean($id, $campo, $novoValor);
 
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

@@ -230,7 +230,24 @@ class usuarios{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
-	
+	//altera valores num campo booleano (0 / 1)
+	public function on_off_boolean ($usuarioID, $campo, $novoValor){
+		$query = "UPDATE usuarios SET $campo = $novoValor WHERE id = $usuarioID";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function is_ativo($id){
+		$query = "SELECT ativo FROM usuarios WHERE id = $id";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res->ativo;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function is_banido($id){
+		$query = "SELECT banido FROM usuarios WHERE id = $id";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res->banido;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	
 
 
