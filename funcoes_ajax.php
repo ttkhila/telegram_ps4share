@@ -1229,6 +1229,15 @@ function montaResultadoBuscaClassificados($dados){
 	$j = carregaClasse("Jogo");
 	$u = carregaClasse("Usuario");
 	while($d = $dados->fetch_object()){
+		
+		/*
+		 *  Não mostrar vagas de usuaŕios inativos ou banidos
+		 *  Arrumar solução para 'vagas em aberto' de usuarios com esses status - atualmente está mostrando
+		if($d->vaga == "1" && ($d->ativo1 == 0 || $d->banido1 == 1)){ continue; 
+		} else if ($d->vaga == "2" && ($d->ativo2 == 0 || $d->banido2 == 1)){ continue; 
+		} else if ($d->vaga == "3" && ($d->ativo3 == 0 || $d->banido3 == 1)){ continue; }
+		*/
+		
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
 		$title = "";
 		while($jogo = $jogos->fetch_object()){
@@ -1239,9 +1248,42 @@ function montaResultadoBuscaClassificados($dados){
 		
 		$grupo = $d->idGrupo;
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
-		if($d->original1_id == 0) { $login1 = "Vaga aberta"; $orig1 = $d->original2_id; } else { $login1 = stripslashes($d->login1); $orig1 = $d->original1_id; }
-		if($d->original2_id == 0){ $login2 = "Vaga aberta"; $orig2 = $d->original1_id; } else { $login2 = stripslashes($d->login2); $orig2 = $d->original2_id; }
-		if($d->original3_id == 0){ $login3 = "Vaga aberta"; $orig3 = (!empty($d->original1_id)) ? $d->original1_id : $d->original2_id; } else { $login3 = stripslashes($d->login3); $orig3 = $d->original3_id; }
+		if($d->original1_id == 0) { 
+			$login1 = "Vaga aberta"; $orig1 = $d->original2_id; $ativo1 = $d->ativo2; $banido1 = $d->banido2;
+		} else { 
+			if($d->banido1 == 1) $login1 = stripslashes($d->login1)." <small class='sm-ban'>(usuário banido)</small>"; 
+			else $login1 = stripslashes($d->login1);
+			$orig1 = $d->original1_id; $ativo1 = $d->ativo1; $banido1 = $d->banido1;
+		}
+		
+		if($d->original2_id == 0){ 
+			$login2 = "Vaga aberta"; $orig2 = $d->original1_id; $ativo2 = $d->ativo1; $banido2 = $d->banido1;
+		} else { 
+			if($d->banido2 == 1) $login2 = stripslashes($d->login2)." <small class='sm-ban'>(usuário banido)</small>";
+			else $login2 = stripslashes($d->login2); 
+			$orig2 = $d->original2_id; $ativo2 = $d->ativo2; $banido2 = $d->banido2;
+		}
+		
+		if($d->original3_id == 0){ 
+			$login3 = "Vaga aberta"; 
+			if(!empty($d->original1_id)){
+				$orig3 = $d->original1_id;
+				$ativo3 = $d->ativo1; $banido3 = $d->banido1;
+			} else {
+				$orig3 = $d->original2_id; 
+				$ativo3 = $d->ativo2; $banido3 = $d->banido2;
+			}
+			//$orig3 = (!empty($d->original1_id)) ? $d->original1_id : $d->original2_id; 
+		} else { 
+			if($d->banido3 == 1) $login3 = stripslashes($d->login3)." <small class='sm-ban'>(usuário banido)</small>";
+			else $login3 = stripslashes($d->login3); 
+			$orig3 = $d->original3_id; $ativo3 = $d->ativo3; $banido3 = $d->banido3;
+		}
+		
+		//verifica usuarios inativos e/ou banidos
+		if($d->vaga == "1" && ($ativo1 == 0 || $banido1 == 1)){ continue; 
+		} else if ($d->vaga == "2" && ($ativo2 == 0 || $banido2 == 1)){ continue; 
+		} else if ($d->vaga == "3" && ($ativo3 == 0 || $banido3 == 1)){ continue; }
 
 		$saida .= "
 			<tr>
