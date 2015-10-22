@@ -256,7 +256,9 @@ function mostraGrupo(){
 		$u->carregaDados($c->getOrig1()); 
 		$c->carregaDadosHistoricos($idGrupo, 1);
 		$c2->carregaUltimoHistorico($idGrupo, 1);
-		$orig1 = stripslashes($u->getLogin()); 
+		$orig1 = stripslashes($u->getLogin());
+		$banido = $u->getBanido();
+		if($banido == 1) $orig1 .=  " <sup class='sm-ban'>*</sup>";
 		$orig1Nome = stripslashes($u->getNome());
 		$orig1ID = $u->getId();
 		$link1 = "<a href='perfil_usuario.php?user=$orig1ID' target='_blank'>";
@@ -282,6 +284,8 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "2");
 		$c2->carregaUltimoHistorico($idGrupo, '2');
 		$orig2 = stripslashes($u->getLogin());
+		$banido = $u->getBanido();
+		if($banido == 1) $orig2 .=  " <sup class='sm-ban'>*</sup>";
 		$orig2Nome = stripslashes($u->getNome());
 		$orig2ID = $u->getId();
 		$link2 = "<a href='perfil_usuario.php?user=$orig2ID' target='_blank'>";
@@ -307,6 +311,8 @@ function mostraGrupo(){
 		$c->carregaDadosHistoricos($idGrupo, "3");
 		$c2->carregaUltimoHistorico($idGrupo, '3');
 		$orig3 = stripslashes($u->getLogin());
+		$banido = $u->getBanido();
+		if($banido == 1) $orig3 .=  " <sup class='sm-ban'>*</sup>";
 		$orig3Nome = stripslashes($u->getNome()); 
 		$orig3ID = $u->getId();
 		$link3 = "<a href='perfil_usuario.php?user=$orig3ID' target='_blank'>";
@@ -533,7 +539,12 @@ function mostraHistorico(){
 			$saida .= "<td>$data_venda (criação da conta)</td>";
 		}
 		if($d->comprador_id == 0) $saida .= "<td>Vaga em aberto</td>"; //vaga não foi vendida no fechamento do grupo
-		else $saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)."</td>";
+		else { 
+			if($d->banido == 1) //usuário banido
+				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)." <sup class='sm-ban'>*</sup></td>";
+			else
+				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)."</td>";
+		}
 		$cont ++;
 	}
 	$saida .= "</tr>";
@@ -541,15 +552,16 @@ function mostraHistorico(){
 	if($dadosHist->num_rows > 0){ //a conta já foi repassada ao menos uma vez depois da criação
 		while($d = $dadosHist->fetch_object()){ //dados do histórico da conta já repassada
 			if($d->senha_alterada == 1) $img = "<img src='img/senha_alterada.jpg' title='alterou senha' />"; else $img = "";
+			if($d->banido_comprador == 1) $banido = " <sup class='sm-ban'>*</sup>"; else $banido = "";
 			$phpdate = strtotime($d->data_venda);
 			$data_venda = date( 'd-m-Y', $phpdate );
 			$saida .= "<tr><td>$data_venda</td>";
 			if($d->vaga == '1') { //Original 1
-				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+				$saida .= "<td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)."$banido $img</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '2') { //Original 2
-				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td><td>&nbsp;</td></tr>";
+				$saida .= "<td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)."$banido $img</td><td>&nbsp;</td></tr>";
 			} else if($d->vaga == '3') { //Fantasma
-				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)." $img</td></tr>";
+				$saida .= "<td>&nbsp;</td><td>&nbsp;</td><td title='".stripslashes($d->nome_comprador)."'>".stripslashes($d->login_comprador)."$banido $img</td></tr>";
 			}	
 		}
 	}
@@ -1230,14 +1242,6 @@ function montaResultadoBuscaClassificados($dados){
 	$u = carregaClasse("Usuario");
 	while($d = $dados->fetch_object()){
 		
-		/*
-		 *  Não mostrar vagas de usuaŕios inativos ou banidos
-		 *  Arrumar solução para 'vagas em aberto' de usuarios com esses status - atualmente está mostrando
-		if($d->vaga == "1" && ($d->ativo1 == 0 || $d->banido1 == 1)){ continue; 
-		} else if ($d->vaga == "2" && ($d->ativo2 == 0 || $d->banido2 == 1)){ continue; 
-		} else if ($d->vaga == "3" && ($d->ativo3 == 0 || $d->banido3 == 1)){ continue; }
-		*/
-		
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
 		$title = "";
 		while($jogo = $jogos->fetch_object()){
@@ -1248,10 +1252,10 @@ function montaResultadoBuscaClassificados($dados){
 		
 		$grupo = $d->idGrupo;
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
-		if($d->original1_id == 0) { 
+		if($d->original1_id == 0) { //vaga em aberto - bot
 			$login1 = "Vaga aberta"; $orig1 = $d->original2_id; $ativo1 = $d->ativo2; $banido1 = $d->banido2;
 		} else { 
-			if($d->banido1 == 1) $login1 = stripslashes($d->login1)." <small class='sm-ban'>(usuário banido)</small>"; 
+			if($d->banido1 == 1) $login1 = stripslashes($d->login1)." <small class='sm-ban'>(usuário banido)</small>"; //usuario banido - coloca mensagem
 			else $login1 = stripslashes($d->login1);
 			$orig1 = $d->original1_id; $ativo1 = $d->ativo1; $banido1 = $d->banido1;
 		}
@@ -1800,6 +1804,9 @@ function salvaDadosCadastroAdm(){
 		case 'id_email':
 			$v->set("ID E-mail", $valor)->is_required()->min_length(6,true)->max_length(6,true)->is_alpha_num('_-');
 			$valor = addslashes($valor);
+			break;
+		case 'grupo_acesso_id':
+			$v->set("Grupo Acesso", $valor)->is_required();
 			break;
 	} 
 

@@ -1224,10 +1224,12 @@ $("#tab-user").on("click", "[name='edita-cadastro']", function(e){
 	var $tipo = $(this).parent().parent('td').attr('rel'); //tipo de campo (email. telefone, nome, etc)
 	var $id = $(this).parent().parent('td').parent('tr').attr('id').split("_")[1]; //id do usuário
 	var campo = $(this).siblings('input');
-	var valor = $(this).siblings('input').val();
+	var tipoCampo = $(this).siblings()[0].tagName; //INPUT ou SELECT (grupo)
+	if(tipoCampo == "SELECT") var textoCampo = $(this).siblings('select').find(":selected").text();
+	var valor = $(this).siblings(tipoCampo).val();
 	var campoOrig = $(this).parent().parent().children('span');
 	var divPai = $(this).parent();
-	//alert("gguygyuguy");return;
+	//alert(textoCampo);return;
 	
 	switch($tipo){
 		case 'nome':
@@ -1283,7 +1285,8 @@ $("#tab-user").on("click", "[name='edita-cadastro']", function(e){
 			console.log(data); 
 			if (data == "0"){ //indicação efetuada
 				divPai.hide();
-				campoOrig.text(valor);
+				if(tipoCampo == "SELECT") campoOrig.text(textoCampo);
+				else campoOrig.text(valor);
 				campoOrig.show();
 			}else { //erros
 				$error = "";

@@ -8,13 +8,15 @@
 		$adm = $u->is_adm($_SESSION['ID']);
 		if(!$adm) header('Location: index.php');
 	}
-	//include_once 'classes/recomendacoes.class.php';
-	//include_once 'classes/grupos_acesso.class.php';
-	//include_once 'classes/compartilhamentos.class.php';
+	include_once 'classes/grupos_acesso.class.php';
 	include 'funcoes.php';
+	
+	$ga = new grupos_acesso();
 	
 	$indPend = $u->getIndicadosPendentes();
 	$allUser = $u->retornaTudoQuery();
+	
+	$grupos = $ga->retornaTudo('nome');
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script type="text/javascript" src="js/lib/jquery.tablesorter.min.js"></script>
@@ -279,6 +281,7 @@
 									</thead>
 									<tbody>
 									<?php
+										$saida = "";
 										while($user = $allUser->fetch_object()){
 											$status = "";
 											if($user->ativo == 0){ $status .= "linha-inativa "; $role = 1; $txtButton = "Ativar"; }
@@ -286,7 +289,7 @@
 											
 											if($user->banido == 0){ $status .= ""; $roleBan = 1; $txtButtonBan = "Banir"; }
 											else { $status .= "linha-banida "; $roleBan = 0; $txtButtonBan = "'Des'banir"; }
-											echo "
+											$saida .= "
 												<tr id='tr-usuario_".$user->id."' class='$status'>
 													<td rel='login'>
 														<div class='div-float-edit form-inline' style='display:none;'>
@@ -324,7 +327,26 @@
 														</div>
 														<span class='sp-clicavel'>".$user->id_email."</span>
 													</td>
-													<td rel='grupo'>".stripslashes($user->grupo)."</td>
+													<td rel='grupo_acesso_id'>
+														<div class='div-float-edit' style='display:none;'>
+															<select>";
+															while ($g = $grupos->fetch_object()){
+																if($user->grupo_acesso_id == $g->id)
+																$saida .= "
+																	<option value='".$g->id."' selected>".stripslashes($g->nome)."</option>
+																";
+																else
+																$saida .= "
+																	<option value='".$g->id."'>".stripslashes($g->nome)."</option>
+																";
+															}
+															$grupos->data_seek(0);
+											$saida .= "
+															</select>
+															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
+														</div>
+														<span class='sp-clicavel'>".stripslashes($user->grupo)."</span>
+													</td>
 													<td>
 														<button data-role='$role' class='btn btn-xs btn-default' name='btn-inativar-user'>$txtButton</button>
 														<button data-role='$roleBan' class='btn btn-xs btn-warning' name='btn-banir-user'>$txtButtonBan</button>
@@ -332,6 +354,7 @@
 													</td>
 												</tr>";
 										}
+										echo $saida;
 									?>
 									</tbody>
 								</table>

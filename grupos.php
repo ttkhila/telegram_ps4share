@@ -208,6 +208,7 @@
 						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-primary'></div>&nbsp;Colocar vaga a venda (item ainda não anunciado)</li>
 						<li class='list-group-item'><div class='glyphicon glyphicon-shopping-cart btn btn-xs btn-default'></div>&nbsp;Colocar vaga a venda (item já anunciado)</li>
 						<li class='list-group-item'><div class='glyphicon glyphicon-trash btn btn-xs btn-primary'></div>&nbsp;Excluir usuário da vaga (somente grupos abertos)</li>
+						<li class='list-group-item'><sup class='sm-ban'>*</sup>&nbsp;Usuário banido</li>
 					</ul>
 				</div>
 				<input type="hidden" id="hidFlag" value="0" />

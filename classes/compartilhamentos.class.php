@@ -228,14 +228,14 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosHistoricoInicial($idGrupo){
 		//Dados históricos da criação do grupo
-		$query = "SELECT h.*, u.nome, u.login FROM historicos h, usuarios u 
+		$query = "SELECT h.*, u.nome, u.login, u.banido FROM historicos h, usuarios u 
 			WHERE (h.comprador_id = u.id) AND (h.vendedor_id = 0) AND (h.compartilhamento_id = $idGrupo) ORDER BY h.id";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosHistorico($idGrupo){
-		$query = "SELECT h.*, u1.nome as nome_comprador, u1.login as login_comprador, u2.nome as nome_vendedor, u2.login as login_vendedor FROM historicos h, usuarios u1, usuarios u2 
+		$query = "SELECT h.*, u1.nome as nome_comprador, u1.login as login_comprador, u1.banido as banido_comprador, u2.nome as nome_vendedor, u2.login as login_vendedor FROM historicos h, usuarios u1, usuarios u2 
 			WHERE (h.comprador_id = u1.id) AND (h.vendedor_id = u2.id) AND (h.compartilhamento_id = $idGrupo) AND (h.vendedor_id <> 0) ORDER BY h.id";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;

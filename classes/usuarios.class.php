@@ -11,6 +11,7 @@ class usuarios{
 	private $primeiro_acesso;
 	private $primeiro_acesso_data;
 	private $ativo;	
+	private $banido;
 	private $pontos;
 	private $id_email;
 	private $grupo_acesso_id;
@@ -42,6 +43,8 @@ class usuarios{
 	public function getPrimeiroAcessoData(){return $this->primeiro_acesso_data;} 
 	public function setAtivo($valor){$this->ativo = $valor;}
 	public function getAtivo(){return $this->ativo;}
+	public function setBanido($valor){$this->banido = $valor;}
+	public function getBanido(){return $this->banido;}
 	public function setPontos($valor){$this->pontos = $valor;}
 	public function getPontos(){return $this->pontos;}
 	public function setIdEmail($valor) { $this->id_email = $valor; }
@@ -63,6 +66,7 @@ class usuarios{
 		array_push($dados, $this->getPrimeiroAcesso());
 		array_push($dados, $this->getPrimeiroAcessoData());
 		array_push($dados, $this->getAtivo());
+		array_push($dados, $this->getBanido());
 		array_push($dados, $this->getPontos());
 		array_push($dados, $this->getIdEmail());
 		array_push($dados, $this->getGrupoAcessoId());
@@ -81,6 +85,7 @@ class usuarios{
         $this->setPrimeiroAcesso($res->primeiro_acesso);
         $this->setPrimeiroAcessoData($res->primeiro_acesso_data);
         $this->setAtivo($res->ativo);
+         $this->setBanido($res->banido);
         $this->setPontos($res->pontos);
         $this->setIdEmail($res->id_email);  
         $this->setGrupoAcessoId($res->grupo_acesso_id);
@@ -88,7 +93,7 @@ class usuarios{
 //---------------------------------------------------------------------------------------------------------------
 	public function getAutocomplete($q){
 		$q = $this->con->escape($q);
-		$sql = "SELECT * FROM usuarios where locate('$q',login) > 0  AND ativo = 1 order by locate('$q',login) limit 10";
+		$sql = "SELECT * FROM usuarios where locate('$q',login) > 0 ORDER BY locate('$q',login) limit 10";
 		return $res = $this->con->multiConsulta( $sql );
 	}
 //---------------------------------------------------------------------------------------------------------------
