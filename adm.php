@@ -270,10 +270,6 @@
 																<b>Banir:</b> Usuário fica sem acesso ao sistema e a apresentação de seu login fica com status <em>"Usuário Banido"</em> visível para outros usuários. 
 																Essa opção pode ser revertida.
 															</li>
-															<li>
-																<b>Excluir:</b> Usuário é excluído do sistema, assim como todas as referências aos grupos que participava. Essa opção deve ser usada com cautela, 
-																pois não pode ser revertida e pode causar inconsistência de dados.
-															</li>
 														</ul>'
 												</span> 
 											</th>
@@ -288,7 +284,7 @@
 											else { $status .= ""; $role = 0; $txtButton = "Inativar"; }
 											
 											if($user->banido == 0){ $status .= ""; $roleBan = 1; $txtButtonBan = "Banir"; }
-											else { $status .= "linha-banida "; $roleBan = 0; $txtButtonBan = "'Des'banir"; }
+											else { $status .= "linha-banida "; $roleBan = 0; $txtButtonBan = "Reintegrar"; }
 											$saida .= "
 												<tr id='tr-usuario_".$user->id."' class='$status'>
 													<td rel='login'>
@@ -350,7 +346,6 @@
 													<td>
 														<button data-role='$role' class='btn btn-xs btn-default' name='btn-inativar-user'>$txtButton</button>
 														<button data-role='$roleBan' class='btn btn-xs btn-warning' name='btn-banir-user'>$txtButtonBan</button>
-														<button class='btn btn-xs btn-danger' name='btn-excluir-user'>Excluir</button>
 													</td>
 												</tr>";
 										}
@@ -529,15 +524,14 @@
 						</div><!-- collapseOne -->
 					</div><!-- panel panel-default -->
 				
-					<div class="panel panel-default">
+					<div class="panel panel-default"><!-- Resultado da busca -->
 						<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-							<div class="panel-body">
-								
+							<div class="panel-body">	
 							</div><!-- panel-body -->
 						</div><!-- collapseTwo -->
 					</div><!-- panel panel-default -->
 					
-					<div class="panel panel-warning">
+					<div class="panel panel-warning"><!-- Grupos Inativos -->
 						<div class="panel-heading" role="tab" id="headingThree">
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
@@ -547,7 +541,6 @@
 						</div>
 						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
 							<div class="panel-body">
-								bla
 							</div><!-- panel-body -->
 						</div><!-- collapseThree -->
 					</div><!-- panel panel-default -->

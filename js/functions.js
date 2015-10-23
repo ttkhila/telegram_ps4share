@@ -356,6 +356,7 @@ $("#collapseOne").on("click", "#btn-grupo-novo", function(e){
 	$dados.push("moeda_id%=%"+$("#moedas option:selected").val());
 	$moeda_nome = $("#moedas option:selected").text(); 
 	$dados.push("fechado%=%"+$fechado);
+	$dados.push("detalhes_jogo%=%"+$("#detalhes_jogo").val());
 	$("#sp-erro-msg").fadeOut();
 	//console.log($dados);return;
 
@@ -1302,14 +1303,6 @@ $("#tab-user").on("click", "[name='edita-cadastro']", function(e){
 			botao.removeAttr('disabled');
 		}
 	});
-	
-	/*
-	 * 
-	 * 
-	 * FALTA GRUPOS ACESSO E AÇÕES (INATIVAR E EXCLUIR USUÁRIO)
-	 * SALVAR
-	 * 
-	 */
 });  
 
 //********************************************************************************  
@@ -1354,7 +1347,7 @@ $("#tab-user").on("click", "[name='btn-banir-user']", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var $valor = parseInt($(this).data('role'));
 	if($valor == 1) flag = "banir";
-	else flag = "'des'banir";
+	else flag = "reintegrar";
 	if(!confirm("Tem certeza que deseja "+flag+" este usuário?")) return false;
 	
 	var botao = $(this);
@@ -1374,7 +1367,7 @@ $("#tab-user").on("click", "[name='btn-banir-user']", function(e){
 			console.log(data); 
 			if($valor == 1){ 
 				$tr.addClass("linha-banida");	
-				botao.text("'Des'banir");
+				botao.text("Reintegrar");
 				botao.data('role', '0');
 			} else {
 				$tr.removeClass("linha-banida");
@@ -1385,9 +1378,67 @@ $("#tab-user").on("click", "[name='btn-banir-user']", function(e){
 	});
 });
 //******************************************************************************** 
-
+$("#aba-grupos").on("click", "[name='btn-troca-edit-grupo']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	$(this).parent().hide();
+	$(this).parent().siblings('span').show();
+	//alert($(this).parent().parent().tagName);
+});  
 //******************************************************************************** 
+// Salva Edição de Grupos - ADM
+$("#aba-grupos").on("click", "[name='btn-grava-edicao-grupo']", function(e){
+	if(!confirm("Confirma a alteração do campo?")) return false;
+	var botao = $(this);
+	var divClone = botao.clone();
+	
+	var $idGrupo = parseInt($(this).parent().parent().parent().parent('ul').attr('id').split("_")[1]);
+	var $tipo = $(this).parent().parent('div').attr('rel'); //tipo (email, detalhes jogo, etc)	
+	var campo = $(this).siblings('input');
+	var valor = $(this).siblings('input').val();
+	var divPai = $(this).parent('span');
+	//alert();
+	
+	switch($tipo){
+		case 'email':
+			var match = valor.match(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,3})$/);
+			if(!match || match == "null") {
+				alert("E-mail inválido");
+				campo.focus();
+				return false;
+			}
+			break;
+	}
 
+	var pars = { tipo: $tipo, id: $idGrupo, val: valor, funcao: 'salvaDadosGrupoAdm'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == "0"){ //indicação efetuada
+				divPai.hide();
+				divPai.siblings('div').html(valor+" <button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button></div>");
+				divPai.siblings('div').show();
+			}else { //erros
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"\n";
+				});
+				alert($error);
+			}
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************
 
 });

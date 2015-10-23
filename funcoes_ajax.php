@@ -3,6 +3,11 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
+/*
+ *  Novo campo na tabela compartilhamentos:
+ *  detalhes_jogo (VARCHAR 60)
+ */
+
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -130,8 +135,7 @@ function novoGrupo(){
 		$campos = array(); 
 		$valores = array(); 
 		$outrosDados = array();
-		//$consolidados = array("nome", "email", "original1_id", "original2_id", "original3_id", "moeda_id", "fechado");
-		$consolidados = array("email", "original1_id", "original2_id", "original3_id", "moeda_id", "fechado");
+		$consolidados = array("email", "original1_id", "original2_id", "original3_id", "moeda_id", "fechado", "detalhes_jogo");
 		foreach($dados as $value){
 			$parte = explode("%=%", $value);
 			if(in_array($parte[0], $consolidados)) { //está entre os dados que coincidem nome do campo no form com nome do campo no BD
@@ -1249,6 +1253,8 @@ function montaResultadoBuscaClassificados($dados){
 			$nomeAbrev = $jogo->nome_abrev;
 			$title .= "- $nome ($nomeAbrev)<br />";
 		}
+		if(trim($d->detalhes_jogo) != "" || !empty($d->detalhes_jogo)) //conta possui detalhes de jogo incluído
+			$title .= "<small class='badge'>Obs.: ".stripslashes($d->detalhes_jogo)."</small>";
 		
 		$grupo = $d->idGrupo;
 		if($d->fechado == 1) $stt = "Fechado"; else $stt = "Aberto";
@@ -1352,15 +1358,12 @@ function montaResultadoBuscaGruposAdm($dados){
 				</li>";
 		}
 		
-		if ($d->original1_id == 0){
-			$d->login1 = "Vaga em aberto";
-		}
-		if ($d->original2_id == 0){
-			$d->login2 = "Vaga em aberto";
-		}
-		if ($d->original3_id == 0){
-			$d->login3 = "Vaga em aberto";
-		}
+		if ($d->original1_id == 0) $d->login1 = "Vaga em aberto";
+		if ($d->original2_id == 0) $d->login2 = "Vaga em aberto";
+		if ($d->original3_id == 0) $d->login3 = "Vaga em aberto";
+		
+		if(trim($d->emailGrupo) == "") $emailGrupo = "Não possui e-mail cadastrado"; else $emailGrupo = $d->emailGrupo;
+		if(trim($d->detalhes_jogo) == "") $detalhesJogo = "Não possui detalhes informados"; else $detalhesJogo = $d->detalhes_jogo;
 		$saida .= "
 			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
 				<div class='panel-heading'>
@@ -1408,7 +1411,38 @@ function montaResultadoBuscaGruposAdm($dados){
 							<li class='list-group-item list-group-item-warning'>Jogo(s):</li>
 							$title
 						</ul>
-					</div>					
+					</div>			
+					
+					
+					<div class='col-md-12'>
+						<ul class='list-group' id='ul-grupo_".$d->idGrupo."' name='ul-grupos'>
+							<li class='list-group-item list-group-item-info'>Dados adicionais:</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='form-group' rel='email'>
+									<label>E-mail da conta:</label>
+									<span style='display:none'>
+										<input class='form-control' type='text' name='emailConta' id='emailConta' value='".$emailGrupo."' />
+										<button name='btn-grava-edicao-grupo' class='btn btn-success'>Gravar</button>
+									</span>
+									<div>".$emailGrupo."
+									<button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button></div>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='form-group' rel='detalhes_jogo'>
+									<label>Detalhes do(s) jogo(s):</label>
+									<span style='display:none'>
+										<input class='form-control' type='text' name='detalhesJogoConta' id='detalhesJogoConta' value='".$detalhesJogo."' maxlength='50' />
+										<button name='btn-grava-edicao-grupo' class='btn btn-success'>Gravar</button>
+									</span>
+									<div>".$detalhesJogo."
+									<button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button></div>
+								</div>
+							</li>
+						</ul>	
+					</div>
+					
+							
 				</div>
 			</div><br />
 		";
@@ -1832,7 +1866,31 @@ function onOffBoolean(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function salvaDadosGrupoAdm(){
+	$tipo = $_POST['tipo'];
+	$id = $_POST['id'];
+	$valor = $_POST['val'];
+	
+	$c = carregaClasse("Compartilhamento");
+	$v = carregaClasse("Validacao");
+	switch($tipo){
+		case 'email':
+			$v->set("E-mail", $valor)->is_required()->is_email()->between_length(8,100);
+			break;
+		case 'detalhes_jogo':
+			$v->set("Detalhes do Jogo", $valor)->is_required()->max_length(50,true);
+			break;
+	} 
 
+	if($v->validate()){
+		$c->alteraCampoGruposAdm($tipo, $valor, $id);
+		echo json_encode("0");
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

@@ -5,13 +5,7 @@
 	require_once 'classes/compartilhamentos.class.php';
 	require_once 'classes/jogos.class.php';
 	include 'funcoes.php';
-
-
-	//$nomeGrupo = "teg380: Uncharted: The Nathan Drake Collection + Resident Evil: Revelations 2 - + Everybody's Gone to the Rapture + Fairy Fencer F Advent Dark Force";
-	//$tam = strlen($nomeGrupo);
-	//$nomeGrupo = substr_replace($nomeGrupo, "", (97-$tam))."...";
-	//echo "antes: ".$tam." / Depois: ".strlen($nomeGrupo)."<br /> Result: ".$nomeGrupo; exit;
-
+	
 	$c = new compartilhamentos();
 	$j = new jogos();
 	$selfID = $_SESSION['ID'];
@@ -107,8 +101,18 @@
 					</div>
 					<div id="div-jogos-extras" class="form-group"></div><!--campos dinamicos -->
 					<div class="form-group col-md-12">
-						<div class="col-md-12">   
+						<div class="col-md-offset-2 col-md-10">   
 							<button class="btn btn-primary" id="btn-add-jogo" type="button">+ Jogo</button>
+						</div>
+					</div>
+					<div class="form-group col-md-12">
+						<label for="detalhes_jogo" class="control-label col-md-2">Detalhes jogo(s)</label>
+						<div class="col-md-8">
+							<input type="text" class="form-control" name="detalhes_jogo" id="detalhes_jogo" maxlength="50" placeholder="Digite aqui detalhes do jogo e SOMENTE DO JOGO." />
+						</div>  	
+						<div class="col-md-2">
+							<span class="glyphicon glyphicon-info-sign text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
+								title="(opcional) Insere informações adicionais sobre<br />o(s) jogos(s) da conta, como Season Pass ou<br />DLCs incluídas."></span>
 						</div>
 					</div>
 
