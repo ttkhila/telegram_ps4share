@@ -1439,6 +1439,36 @@ $("#aba-grupos").on("click", "[name='btn-grava-edicao-grupo']", function(e){
 		}
 	});
 });
+//******************************************************************************** 
+$("#aba-grupos").on("click", "[name='btn-troca-delete-grupo']", function(e){
+	if(!confirm("Confirma a exclusão dos detalhes do jogo?")) return false;
+	var botao = $(this);
+	var divClone = botao.clone();
+	
+	var $idGrupo = parseInt($(this).parent().parent().parent().parent('ul').attr('id').split("_")[1]);
+	var divIrma = $(this).parent().siblings('span');
+	//alert($idGrupo); return;
+
+	var pars = { id: $idGrupo, funcao: 'excluiDetalhesJogosGrupoAdm'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			divIrma.find("[name='detalhesJogoConta']").val("Não possui detalhes informados");
+			botao.parent('div').html(
+				"Não possui detalhes informados <button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button>&nbsp;<button name='btn-troca-delete-grupo' class='btn btn-xs btn-danger'>Apagar</button></div>"
+			);
+			
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});  
 //********************************************************************************
 
 });

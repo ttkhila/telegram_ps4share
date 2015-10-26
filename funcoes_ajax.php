@@ -1359,10 +1359,11 @@ function montaResultadoBuscaGruposAdm($dados){
 		
 		if(trim($d->emailGrupo) == "") $emailGrupo = "Não possui e-mail cadastrado"; else $emailGrupo = $d->emailGrupo;
 		if(trim($d->detalhes_jogo) == "") $detalhesJogo = "Não possui detalhes informados"; else $detalhesJogo = $d->detalhes_jogo;
+		if($d->fechado == 1) $fechado = "<img src='img/closed.png' title='Grupo Fechado' />"; else $fechado = "<img src='img/open.png' title='Grupo Aberto' />";
 		$saida .= "
 			<div class='panel panel-primary' id='panel-grupo_".$d->idGrupo."'>
 				<div class='panel-heading'>
-					".stripslashes($d->nomeGrupo)." (criador: ".stripslashes($d->loginCriador).")&nbsp;&nbsp;
+					".stripslashes($d->nomeGrupo)." (criador: ".stripslashes($d->loginCriador).")&nbsp;&nbsp;$fechado&nbsp;&nbsp;
 					<div class='btn-group btn-group-xs' role='group'>
 						<button type='button' class='btn btn-warning' id='inativa-grupo_".$d->idGrupo."' name='btn-inativar-grupo'>
 							<span class='glyphicon glyphicon-eye-close'></span> Inativar Grupo
@@ -1430,8 +1431,11 @@ function montaResultadoBuscaGruposAdm($dados){
 										<input class='form-control' type='text' name='detalhesJogoConta' id='detalhesJogoConta' value='".$detalhesJogo."' maxlength='50' />
 										<button name='btn-grava-edicao-grupo' class='btn btn-success'>Gravar</button>
 									</span>
-									<div>".$detalhesJogo."
-									<button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button></div>
+									<div>
+										".$detalhesJogo."
+										<button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button>
+										<button name='btn-troca-delete-grupo' class='btn btn-xs btn-danger'>Apagar</button>
+									</div>
 								</div>
 							</li>
 						</ul>	
@@ -1887,7 +1891,13 @@ function salvaDadosGrupoAdm(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function excluiDetalhesJogosGrupoAdm(){
+	$id = $_POST['id'];
+	
+	$c = carregaClasse("Compartilhamento");
+	$c->deletaDetalhesGruposAdm($id);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
