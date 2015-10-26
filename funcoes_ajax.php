@@ -3,11 +3,6 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
-/*
- *  Novo campo na tabela compartilhamentos:
- *  detalhes_jogo (VARCHAR 60)
- */
-
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -1117,7 +1112,7 @@ function gravaFechamentoGrupo(){
 	//$fator = 3.14; //provisório //Não está funcionando para ambiente externo dentro do banco
 	$moeda = $c->recupera_dados_moedas($moeda_id);
 	if($moeda_id == 1) $fator = 1;//real
-	else $fator = 3.14; //$fator = $c->converteMoeda($moeda->pais);
+	else $fator = 3.14;//$fator = $c->converteMoeda($moeda->pais);
 
 	$valor_convertido = $valorTotal * $fator;
 	$valor_convertido = str_replace(",", "", number_format($valor_convertido, 2));

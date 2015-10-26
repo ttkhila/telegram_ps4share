@@ -564,7 +564,7 @@ class compartilhamentos{
 	}
 //---------------------------------------------------------------------------------------------------------------
 /***************************************************
- ***************  ESTATÍSTICAS *********************
+ *********  ESTATÍSTICAS - Início ******************
  ***************************************************/
 	 public function gruposTotaisUsuario($idUsuario){
 		$query = "SELECT count(*) as qtd, sum(h.valor_pago) as valorTotal, sum(h.a_venda) as qtdVenda FROM historicos h, compartilhamentos c WHERE (c.ativo = 1) AND (c.id = h.compartilhamento_id) AND (h.comprador_id = $idUsuario)";
@@ -658,6 +658,10 @@ class compartilhamentos{
 
 		return $res;
 	}
+/***************************************************
+ *********  ESTATÍSTICAS - Fim ******************
+ ***************************************************/	
+	
 //---------------------------------------------------------------------------------------------------------------
 	public function alteraCampoGruposAdm($campo, $valor, $id){
 		$query = "UPDATE compartilhamentos SET $campo = '$valor' WHERE id = $id";
