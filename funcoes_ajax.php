@@ -1899,7 +1899,36 @@ function excluiDetalhesJogosGrupoAdm(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function enviaAvisoAdm(){
+	$tipo = $_POST['tipo'];
+	$valor = $_POST['valor'];
+	$msg = addslashes($_POST['msg']);
+	$u = carregaClasse("Usuario");
+	$a = carregaClasse("Aviso");
+	
+	switch($tipo){
+		case 1:
+			$arrUsu = $u->retornaTudoIDArray();
+			$a->insereAviso($arrUsu, $msg);
+			break;
+		case 2:
+			$usu = $u->getUsuariosPorGrupoAcesso($valor);
+			if($usu){
+				while($av = $usu->fetch_object()){
+					$a->insereAviso($av->id, $msg);
+				}
+			} else { //Não tem usuario no grupo
+				echo "Não há usuários no grupo selecionado";
+				exit;
+			}
+			break;
+		case 3:
+			$a->insereAviso($valor, $msg);
+			break;
+	}
+	echo "Enviado!";
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

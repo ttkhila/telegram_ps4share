@@ -86,14 +86,14 @@
 					<div class="form-group col-md-12">
 						<h3>
 							Jogos <span class="glyphicon glyphicon-info-sign btn text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
-								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos um jogo."></span>
+								title="&Eacute; obrigat&oacute;rio o preenchimento de pelo menos o Jogo 1."></span>
 						</h3>
 					</div>
 					<div class="form-group col-md-12">
 						<label for="jogo1_id" class="control-label col-sm-2">Jogo1</label>
 						<div class="col-sm-8">     
 							<input type="hidden" class="form-control" name="jogo_id[]" id="jogo1_id" required /> 
-							<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1" required />
+							<input type="text" class="form-control" name="jogo[]" id="jogo1_autocomplete" placeholder="Digite parte do nome do jogo 1." required />
 						</div>
 						<div class="col-sm-2">
 							<span id="jogo1_check"><img src="" /></span>
@@ -112,7 +112,7 @@
 						</div>  	
 						<div class="col-md-2">
 							<span class="glyphicon glyphicon-info-sign text-danger" data-toggle="tooltip" data-placement="right" data-html="true" 
-								title="(opcional) Insere informações adicionais sobre<br />o(s) jogos(s) da conta, como Season Pass ou<br />DLCs incluídas."></span>
+								title="(opcional) Insere informações adicionais sobre<br />o(s) jogos(s) da conta, como Season Pass ou<br />DLCs incluídas.<br /><small><em>Máximo de 50 caracteres.</em></small>"></span>
 						</div>
 					</div>
 

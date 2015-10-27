@@ -206,6 +206,17 @@
 		
 		$(".mskTel").mask("(00) 0000-00009");
 		
+		$('#usuario-aviso_autocomplete').simpleAutoComplete('autocomplete_ajax.php',{
+		autoCompleteClassName: 'autocomplete',
+			selectedClassName: 'sel',
+			attrCallBack: 'rel',
+			identifier: 'original'
+		},usuarioAvisoCallback);
+
+		function usuarioAvisoCallback( par ){ 
+			$('#usuario-aviso_autocomplete').val("");
+			$("#selUsuario").append("<option value='"+par[0]+"'>"+par[1]+"</option>");
+		}
 	});	
 </script>
 </head>
@@ -270,7 +281,7 @@
 																<b>Banir:</b> Usuário fica sem acesso ao sistema e a apresentação de seu login fica com status <em>"Usuário Banido"</em> visível para outros usuários. 
 																Essa opção pode ser revertida.
 															</li>
-														</ul>'
+														</ul>'>
 												</span> 
 											</th>
 										</tr>
@@ -355,7 +366,7 @@
 								</table>
 							</div><!-- panel-body -->
 						</div><!-- collapseOne4 -->
-					</div><!-- panel panel-info -->
+					</div><!-- panel panel-primary -->
 					
 					<div class="panel panel-warning">
 						<div class="panel-heading" role="tab" id="headingOne3">
@@ -548,9 +559,88 @@
 				</div><!-- panel-group -->
 			</div><!-- ABA GRUPOS - FIM -->
 			
-			<div class="tab-pane" id="aba-avisos">
-				 Em construção
-			</div>
+			<div class="tab-pane" id="aba-avisos"><!-- ABA AVISOS - INICIO -->	
+				<div class="alert alert-warning" style="margin-top:5px;">
+					<span class="glyphicon glyphicon-info-sign"></span> Escolha uma das opções de envio de avisos abaixo
+				 </div>
+				
+				 <div class='panel-group' id="accordion-avisos" role="tablist" aria-multiselectable="true">
+					<div class='panel panel-success'>
+						<div class='panel-heading' role="tab" id="headingOne-avisos">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion-avisos" href="#collapseOne-avisos" aria-expanded="false" aria-controls="collapseOne-avisos">
+									<span class="glyphicon glyphicon-envelope"></span> Enviar aviso a todos os usuários
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne-avisos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne-avisos">
+							<div class='panel-body'>
+								<div class='form-group'>
+									<label>Mensagem</label>
+									<textarea maxlength="200" class='form-control'></textarea>
+									<small>Máximo 200 caracteres</small><br /><br />
+									<button name='btn-envia-avisos' class='btn btn-primary' id='aviso_1'>Enviar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class='panel panel-primary'>
+						<div class='panel-heading' role="tab" id="headingTwo-avisos">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion-avisos" href="#collapseTwo-avisos" aria-expanded="false" aria-controls="collapseTwo-avisos">
+									<span class="glyphicon glyphicon-envelope"></span> Enviar aviso a um grupo de usuários
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTwo-avisos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo-avisos">
+							<div class='panel-body'>
+								<div class='form-group'>
+									<label>Enviar a: </label>
+									<select class="form-control">
+									<?php
+										while ($g = $grupos->fetch_object()){
+											echo "<option value='".$g->id."'>".stripslashes($g->nome)."</option>";
+										}
+									?>
+									</select>
+									<br />
+									<label>Mensagem</label>
+									<textarea maxlength="200" class='form-control'></textarea>
+									<small>Máximo 200 caracteres</small><br /><br />
+									<button name='btn-envia-avisos' class='btn btn-primary' id='aviso_2'>Enviar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class='panel panel-danger'>
+						<div class='panel-heading' role="tab" id="headingThree-avisos">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion-avisos" href="#collapseThree-avisos" aria-expanded="false" aria-controls="collapseThree-avisos">
+									<span class="glyphicon glyphicon-envelope"></span> Enviar aviso a usuários selecionados
+								</a>
+							</h4>
+						</div>
+						<div id="collapseThree-avisos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree-avisos">
+							<div class='panel-body'>
+								<div class='form-group'>
+									<label>Usuario</label>
+									<input type="text" name="usuario-aviso" class="form-control" id="usuario-aviso_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
+									<br />
+									<label>Selecionados</label>
+									<select class="form-control" id="selUsuario" multiple="selUsuario" style="height:150px;"></select>
+									<br />
+									<label>Mensagem</label>
+									<textarea maxlength="200" class='form-control'></textarea>
+									<small>Máximo 200 caracteres</small><br /><br />
+									<button name='btn-envia-avisos' class='btn btn-primary' id='aviso_3'>Enviar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				 </div>
+			</div><!-- ABA AVISOS - FIM -->
 			
 			<div class="tab-pane" id="aba-relatorios">
 				 Em construção

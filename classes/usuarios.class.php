@@ -223,6 +223,16 @@ class usuarios{
 		return $arrUsuarios;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	//retorna todos os IDS dos usuarios
+	public function retornaTudoIDArray($ordem = 'id'){
+		$arrUsuarios = array();
+		$res = $this->con->multiConsulta("SELECT * FROM usuarios WHERE id <> 0 ORDER BY $ordem"); 
+		while($u = $res->fetch_object()){
+			array_push($arrUsuarios, $u->id);
+		}
+		return $arrUsuarios;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function retornaTudoQuery(){
 		$query = "SELECT u.*, ga.nome as grupo FROM usuarios u, grupos_acesso ga 
 			WHERE (u.grupo_acesso_id = ga.id) AND (u.id <> 0) ORDER BY u.id";

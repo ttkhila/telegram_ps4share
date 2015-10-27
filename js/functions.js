@@ -30,6 +30,15 @@ function resetaHtml(orig, clone){
 	orig.replaceWith(clone);
 }
 //***********************************************************************
+//Transforma os elementos OPTION de um select em Array
+function select_array(elem){
+	var $arr = new Array();
+	elem.find("option").each(function(){ 
+		$arr.push($(this).val());
+	});
+	return $arr;
+}  
+//***********************************************************************
 //LOGIN
 $("#frmLogin").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
@@ -1470,5 +1479,49 @@ $("#aba-grupos").on("click", "[name='btn-troca-delete-grupo']", function(e){
 	});
 });  
 //********************************************************************************
+// ENVIO de AVISOS - ADM
+$("#aba-avisos").on("click", "[name='btn-envia-avisos']", function(e){
+	var botao = $(this);
+	var divClone = botao.clone();
+	var $tipo = parseInt($(this).attr('id').split("_")[1]); // 1=TODOS; 2=GRUPO; 3=SELEÇÃO
+	var textarea = $(this).siblings("textarea");
+	var $msg = $(this).siblings("textarea").val();
+	if($.trim($msg) == ""){
+		alert("Mensagem vazia!");
+		return false;
+	}
+	
+	switch($tipo){
+		case 1:
+			$valor = "";
+			break;
+		case 2:	
+			$valor = $(this).siblings("select").val(); //id grupo
+			break;
+		case 3:
+			sel = $(this).siblings("select");
+			if(sel.text() == ""){ alert("Nenhum usuário selecionado!"); return false; }
+			$valor = select_array(sel);
+			break;
+	}
+	
+	var pars = { tipo: $tipo, valor: $valor, msg: $msg, funcao: 'enviaAvisoAdm'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			textarea.val("");
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+			if ($tipo == 3) sel.text("");
+			alert(data);
+		}
+	});
+});
 
 });
