@@ -753,14 +753,17 @@ $(".container-grupos").on("click", "[name='img-excluir']", function(){
 //********************************************************************************
 $('#frm-cadastra-jogos').submit(function(e){
 	e.preventDefault();
+	var botao = $(this).find(".btn-success");
+	var divClone = botao.clone(); 
+	
 	$formulario = $(this);
 	if($("#nome-jogo").val() == ""){
-		$("#sp-sucesso-msg").hide();
-		$("#sp-erro-msg")
+		$("#p-erro-msg")
 			.fadeIn()
-			.html("Preencha o nome do jogo.<span class='badge'>x</span>");
-		$("#nome-jogo").focus();
-		return false;
+			.html("Preencha o nome do jogo.")
+			.delay(2000)
+			.fadeOut('slow');
+		return false;	
 	}
 	var $form = $(this).serialize();
 	$form = decodeURI(replaceAll($form, '+', ' ')); //retira alguns caracteres especiais
@@ -773,30 +776,42 @@ $('#frm-cadastra-jogos').submit(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
 		success: function(data){ 
 			console.log(data);
 			if(data[0] == 1){ //erro
-				$("#sp-sucesso-msg").hide();
-				$("#sp-erro-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
+				$("#p-erro-msg")
+					.fadeIn()
+					.html(data[1])
+					.delay(2000)
+					.fadeOut('slow');
 			} else { //ok
-				$("#sp-erro-msg").hide();
-				$("#sp-sucesso-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
+				$("#p-sucesso-msg")
+					.fadeIn()
+					.html(data[1])
+					.delay(2000)
+					.fadeOut('slow');
 				$formulario[0].reset();
 			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
 		}
 	});
 });
 //********************************************************************************
 $('#frm-altera-jogos').submit(function(e){
 	e.preventDefault();
+	var botao = $(this).find(".btn-success");
+	var divClone = botao.clone(); 
+	
 	$formulario = $(this);
 	if($("#nome-jogo-altera").val() == ""){
-		$("#sp-sucesso-msg").hide();
-		$("#sp-erro-msg")
+		$("#p2-erro-msg")
 			.fadeIn()
-			.html("Preencha o nome do jogo.<span class='badge'>x</span>");
+			.html("Preencha o nome do jogo.")
+			.delay(2000)
+			.fadeOut('slow');
 		$("#nome-jogo-altera").focus();
 		return false;
 	}
@@ -811,24 +826,32 @@ $('#frm-altera-jogos').submit(function(e){
 		dataType: "json",
 		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
 		data: pars,
-		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
-		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
 		success: function(data){ 
 			console.log(data);
 			if(data[0] == 1){ //erro
-				$("#sp-sucesso-msg").hide();
-				$("#sp-erro-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
+				$("#p2-erro-msg")
+					.fadeIn()
+					.html(data[1])
+					.delay(2000)
+					.fadeOut('slow');
 			} else { //ok
-				$("#sp-erro-msg").hide();
-				$("#sp-sucesso-msg").fadeIn().html(data[1]+"<span class='badge'>x</span>");
+				$("#p2-sucesso-msg")
+					.fadeIn()
+					.html(data[1])
+					.delay(2000)
+					.fadeOut('slow');
 				$("#jogo-nome-altera_autocomplete").val("");
 				$formulario[0].reset();
 			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
 		}
 	});
 });
 //********************************************************************************
-$("#aba-altera-jogos").on("click", "[name='a-ativar']", function(e){
+$("#frm-altera-jogos").on("click", "[name='a-ativar']", function(e){
 	e.preventDefault();
 	var $flag = parseInt($(this).attr('rel'));
 	var $id = parseInt($("#jogo-nome-altera_id").val());
@@ -846,8 +869,11 @@ $("#aba-altera-jogos").on("click", "[name='a-ativar']", function(e){
 			if($flag == 1) $html = "Jogo Ativo -> <a href='#' name='a-ativar' rel='0'>Desativar Jogo</a>";
 			else $html = "Jogo Desativado -> <a href='#' name='a-ativar' rel='1'>Ativar Jogo</a>";
 			$("#sp-ativo-altera").html($html);
-			$("#sp-erro-msg").hide();
-			$("#sp-sucesso-msg").fadeIn().html(data+"<span class='badge'>x</span>");
+			$("#p2-sucesso-msg")
+				.fadeIn()
+				.html(data)
+				.delay(2000)
+				.fadeOut('slow');
 		}
 	});
 });

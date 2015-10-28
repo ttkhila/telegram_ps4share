@@ -9,7 +9,11 @@
 		if(!$adm) header('Location: index.php');
 	}
 	include_once 'classes/grupos_acesso.class.php';
+	include_once 'classes/jogos.class.php';
 	include 'funcoes.php';
+
+	$j = new jogos();
+	$plat = $j->getPlataformas();
 	
 	$ga = new grupos_acesso();
 	
@@ -231,6 +235,7 @@
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
 			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
+			<li><a href="#aba-jogos" data-toggle="tab">Jogos</a></li>
 			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
 		</ul>
 		
@@ -247,7 +252,7 @@
 								</a>
 							</h4>
 						</div>
-						<div id="collapseOne4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne4">
+						<div id="collapseOne4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne4">
 							<div class="panel-body">
 							
 								<div class="alert alert-info" style="margin-top:5px;">
@@ -376,7 +381,7 @@
 								</a>
 							</h4>
 						</div>
-						<div id="collapseOne3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne3">
+						<div id="collapseOne3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne3">
 							<div class="panel-body">
 							<?php
 								if (!$indPend) $saida = "<div class='col-md-12'><label>Não há indicações pendentes de confirmação.</label></div>";
@@ -641,6 +646,117 @@
 					</div>
 				 </div>
 			</div><!-- ABA AVISOS - FIM -->
+			
+			<div class="tab-pane" id="aba-jogos"><!-- ABA JOGOS - INICIO -->
+				 <div class='panel-group' id="accordion-jogos" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
+					<div class='panel panel-primary'>
+						<div class='panel-heading' role="tab" id="headingOne-jogos">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion-jogos" href="#collapseOne-jogos" aria-expanded="false" aria-controls="collapseOne-jogos">
+									<span class="glyphicon glyphicon-plus"></span> Incluir
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne-jogos" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne-jogos">
+							<div class='panel-body'>		
+								<form id="frm-cadastra-jogos" name="frm-cadastra-jogos" class="form-horizontal" method="post">
+									<div class="form-group">
+										<label for="nome-jogo" class="col-sm-1 control-label">Nome:</label>
+										<div class="col-sm-4">
+											<input type="text" id="nome-jogo" name="nome-jogo" class="form-control" maxlength="100" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="plataforma-altera" class="col-sm-1 control-label">Plataforma:</label>
+										<div class="col-sm-4">
+											<select class="form-control" id="plataforma" name="plataforma">
+												<?php
+												while($p = $plat->fetch_object()){
+													echo "<option value='".$p->id."'>".stripslashes($p->nome)."</option>";
+												}
+												?>
+											</select>
+										</div>
+									</div>
+									<div class='form-group'>
+										<div class="col-sm-offset-1 col-sm-4">
+											<p class="bg-danger" id="p-erro-msg" style="display:none;"></p>
+											<p class="bg-success" id="p-sucesso-msg" style="display:none;"></p>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="" class="col-sm-1 control-label"></label>
+										<div class="btn-group col-sm-4">
+											<button class="btn btn-success">Confirma</button>
+										</div>
+									</div>
+								</form>	
+							</div>
+						</div>
+					</div>
+					
+					<div class='panel panel-warning'>
+						<div class='panel-heading' role="tab" id="headingTwo-jogos">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion-jogos" href="#collapseTwo-jogos" aria-expanded="false" aria-controls="collapseTwo-jogos">
+									<span class="glyphicon glyphicon-edit"></span> Alterar
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTwo-jogos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo-jogos">
+							<div class='panel-body'>
+								<div class="form-group-sm" style="margin-bottom:40px;">
+									<label class="col-sm-1 control-label">Busca:</label>
+									<input class="form-control" type="text" name="jogo-nome-altera" 
+										id="jogo-nome-altera_autocomplete" autocomplete="off" style="width:250px;" placeholder="Digite parte do nome do jogo..." />
+								</div>
+
+								<form id="frm-altera-jogos" name="frm-altera-jogos" class="form-horizontal" method="post" style="display:none;">
+									<input type="hidden" name="jogo-nome-altera_id" id="jogo-nome-altera_id" />
+									<div class="form-group">
+										<label for="nome-jogo-altera" class="col-sm-1 control-label">Nome:</label>
+										<div class="col-sm-4">
+											<input class="form-control" type="text" id="nome-jogo-altera" name="nome-jogo-altera" maxlength="100" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<label for="plataforma-altera" class="col-sm-1 control-label">Plataforma:</label>
+										<div class="col-sm-4">
+											<select class="form-control" id="plataforma-altera" name="plataforma-altera">
+												<?php
+												$plat->data_seek(0);
+												while($p = $plat->fetch_object()){
+													echo "<option value='".$p->id."'>".stripslashes($p->nome)."</option>";
+												}
+												?>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="" class="col-sm-1 control-label"></label>
+										<div class="col-sm-4">
+											<span class="control-label" id="sp-ativo-altera"></span>
+										</div>
+									</div>
+									<div class='form-group'>
+										<div class="col-sm-offset-1 col-sm-4">
+											<p class="bg-danger" id="p2-erro-msg" style="display:none;"></p>
+											<p class="bg-success" id="p2-sucesso-msg" style="display:none;"></p>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="" class="col-sm-1 control-label"></label>
+										<div class="btn-group col-sm-4">
+											<button class="btn btn-success">Alterar</button>
+										</div>
+									</div>		
+								</form>	
+							</div>
+						</div>
+					</div>
+				</div><!-- panel-group -->
+			</div><!-- ABA JOGOS - FIM -->
 			
 			<div class="tab-pane" id="aba-relatorios">
 				 Em construção
