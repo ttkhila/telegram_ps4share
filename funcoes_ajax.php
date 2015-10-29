@@ -1400,16 +1400,13 @@ function montaResultadoBuscaGruposAdm($dados){
 								</div>
 							</li>
 						</ul>
-					</div>
-					
+					</div>		
 					<div class='col-md-4'>
 						<ul class='list-group'>
 							<li class='list-group-item list-group-item-warning'>Jogo(s):</li>
 							$title
 						</ul>
 					</div>			
-					
-					
 					<div class='col-md-12'>
 						<ul class='list-group' id='ul-grupo_".$d->idGrupo."' name='ul-grupos'>
 							<li class='list-group-item list-group-item-info'>Dados adicionais:</li>
@@ -1436,6 +1433,13 @@ function montaResultadoBuscaGruposAdm($dados){
 										<button name='btn-troca-edit-grupo' class='btn btn-xs btn-primary'>Editar</button>
 										<button name='btn-troca-delete-grupo' class='btn btn-xs btn-danger'>Apagar</button>
 									</div>
+								</div>
+							</li>
+							<li class='list-group-item list-group-item-default'>
+								<div class='form-group'>
+									<label>Histórico Detalhado da Conta</label>
+									<div>
+									<button class='btn btn-xs btn-success' name='btn-historico-detalhado' id='btn-historico-detalhado_".$d->idGrupo."'>Visualizar</button></div>
 								</div>
 							</li>
 						</ul>	

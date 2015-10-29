@@ -231,9 +231,9 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Usuários</a></li>
+			<li><a href="#aba-cadastros" data-toggle="tab">Usuários</a></li>
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
-			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
+			<li class="active"><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
 			<li><a href="#aba-jogos" data-toggle="tab">Jogos</a></li>
 			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
@@ -241,7 +241,7 @@
 		
 		<div id="my-tab-content" class="tab-content">
 
-			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
+			<div class="tab-pane" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
 				<div class="panel-group" id="accordion3" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
 					
 					<div class="panel panel-primary">
@@ -482,7 +482,7 @@
 				</div><!-- panel-group -->
 			</div><!-- ABA LOGS- FIM -->
 
-			<div class="tab-pane" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
+			<div class="tab-pane active" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
 				  <div class="alert alert-warning" style="margin-top:5px;">
 					<span class="glyphicon glyphicon-exclamation-sign"></span> <b>Importante:</b> Aqui os administradores podem gerenciar aspectos nos grupos que não podem ser resolvidos em outro local, como uma possível exclusão de 
 					grupo ou mudança de algum dado que seria impossível em outro local, como o e-mail da conta ou remoção de algum usuário da mesma.<br />Utilize com <b>cuidado</b>

@@ -1549,5 +1549,12 @@ $("#aba-avisos").on("click", "[name='btn-envia-avisos']", function(e){
 		}
 	});
 });
-
+//******************************************************************************** 
+//Histórico detalhado - ADM
+$("#aba-grupos").on("click", "[name='btn-historico-detalhado']", function(e){
+	var idGrupo = parseInt($(this).attr('id').split('_')[1]);
+	var url = "historico_detalhado.php?grupo="+idGrupo;
+	window.open(url, '_blank');
+});
+//******************************************************************************** 
 });
