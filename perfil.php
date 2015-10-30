@@ -113,7 +113,7 @@
 			<li class="active"><a href="#aba-dados_cadastrais" data-toggle="tab"><span class="glyphicon glyphicon-user"></span> Dados Cadastrais</a></li>
 			<li><a href="#aba-estatisticas" data-toggle="tab"><span class="glyphicon glyphicon-stats"></span> Estatísticas</a></li>
 			<li><a href="#aba-recomendacoes" data-toggle="tab"><span class="glyphicon glyphicon-thumbs-up"></span> Recomendações</a></li>
-			<!--<li><a href="#aba-indicacoes" data-toggle="tab"><span class="glyphicon glyphicon-hand-right"></span> Indicações</a></li>-->
+			<li><a href="#aba-indicacoes" data-toggle="tab"><span class="glyphicon glyphicon-hand-right"></span> Indicações</a></li>
 			<li><a href="#aba-preferencias" data-toggle="tab"><span class="glyphicon glyphicon-cog"></span> Preferências</a></li>
 		</ul>
 		

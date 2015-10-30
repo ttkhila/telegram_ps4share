@@ -1557,4 +1557,80 @@ $("#aba-grupos").on("click", "[name='btn-historico-detalhado']", function(e){
 	window.open(url, '_blank');
 });
 //******************************************************************************** 
+//Cadastro de Indicado
+$("#frm-cadastro").submit(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var $nome = $.trim($("#nome").val());
+	var $login = $.trim($("#login").val());
+	var $tel = $.trim($("#telefone").val());
+	var $senha = $.trim($("#senha").val());
+	var $senha2 = $.trim($("#senha2").val());
+	//alert($nome+" / "+$login+" / "+$tel+" / "+$senha+" / "+$senha2);
+
+	if($nome == ""){
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("O NOME é obrigatório!")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#nome").focus();
+		return false;
+	}
+	
+	var match = $login.match(/(^[\w-]{3,16})$/);
+	if(!match || match == "null") {
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("Login Inválido! O login deve ter entre 3 e 16 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#login").focus();
+		return false;
+	}
+
+	if($.trim($tel) == "" || $.trim($tel) == "("){
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("Celular Inválido")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#telefone").focus();
+		return false;
+	}
+
+	match = $senha.match(/(^[\w-!#@+]{6,10})$/); 
+	if(!match || match == "null") {
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("Senha inválida! A senha deve ter entre 6 e 10 caracteres, podendo conter letras, números e os seguintes caracteres especiais: (_ - ! # @ +).")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#senha").focus();
+		return false;
+	}
+	
+	if($senha !== $senha2){
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("A redigitação da senha não confere com a senha original.")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#senha").focus();
+		return false;
+	}
+
+	/*
+	 *  Criar campo na tabela de indicação para incluir um código para validar esse cadastro
+	 *  Fazer o ajax da gravação do cadastro
+	 *  Gerar data de inclusão do usuário no sistema (primeiro_acesso_data)
+	 *  Apagar o código gerado acima para que o link de cadastro não seja acessado novamente pelo mesmo usuário
+	 * 
+	 * 
+	 */	
+	
+});
+
+
+
+
 });

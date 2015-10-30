@@ -16,6 +16,7 @@
 	$dados1 = $c->getDadosHistoricoInicial($grupoID);
 	$dados = $c->getDadosHistorico($grupoID);
 	
+	//dados da criação da conta
 	$saida1 = "<div class='row'>";
 	$cont = 0;
 	while($d = $dados1->fetch_object()){ //dados da criação da conta
@@ -40,6 +41,7 @@
 	}
 	$saida1 .= "</div><hr>";
 	
+	//dados a partir do primeiro repasse em diante
 	$saida = "";
 	if($dados->num_rows > 0){ //a conta já foi repassada ao menos uma vez depois da criação
 		while($d = $dados->fetch_object()){ //dados do histórico da conta já repassada
@@ -79,11 +81,12 @@
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
 	$(function(){ 
-		
+		$("[name='btn-fechar-tela']").click(function(){ window.close(); });
 	});
 </script>
 </head>
 <body>
+	<center><button name="btn-fechar-tela" class='btn btn-danger'>Fechar Tela</button></center>
 	<h3 class="page-header">Histórico de conta</h3>
 	<div class="panel panel-primary">
 		<div class='panel-heading'><center><?php echo stripslashes($c->getNome()); ?></center></div>
@@ -100,6 +103,6 @@
 			<sup class='sm-ban'>*</sup> Usuário Banido
 		</div>
 	</div>
-			
+	<center><button name="btn-fechar-tela" class='btn btn-danger'>Fechar Tela</button></center>	
 </body>
 </html>

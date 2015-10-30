@@ -231,9 +231,9 @@
 	
 	<div>
 		<ul class="nav nav-tabs" id="abas-adm" data-tabs="tabs">
-			<li><a href="#aba-cadastros" data-toggle="tab">Usuários</a></li>
+			<li class="active"><a href="#aba-cadastros" data-toggle="tab">Usuários</a></li>
 			<li><a href="#aba-logs" data-toggle="tab">Logs</a></li>
-			<li class="active"><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
+			<li><a href="#aba-grupos" data-toggle="tab">Grupos</a></li>
 			<li><a href="#aba-avisos" data-toggle="tab">Avisos</a></li>
 			<li><a href="#aba-jogos" data-toggle="tab">Jogos</a></li>
 			<li><a href="#aba-relatorios" data-toggle="tab">Relatórios</a></li>
@@ -241,8 +241,56 @@
 		
 		<div id="my-tab-content" class="tab-content">
 
-			<div class="tab-pane" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
+			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
 				<div class="panel-group" id="accordion3" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
+					
+					<div class="panel panel-warning">
+						<div class="panel-heading" role="tab" id="headingOne3">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne3" aria-expanded="true" aria-controls="collapseOne3">
+									<span class="glyphicon glyphicon-time"></span> Indicações Pendentes
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne3">
+							<div class="panel-body">
+							<?php
+								if (!$indPend) $saida = "<div class='col-md-12'><label>Não há indicações pendentes de confirmação.</label></div>";
+								else {
+									$saida = "
+										<table class='table table-striped'>
+											<thead>
+												<tr>
+													<th>Nome</th>
+													<th>E-mail</th>
+													<th>Celular</th>
+													<th>Indicado por</th>
+													<th>Ação</th>
+												</tr>
+											</thead>
+											<tbody>
+									";
+									while ($dados = $indPend->fetch_object()){
+										$saida .= "
+											<tr>
+												<td>".stripslashes($dados->nome)."</td>
+												<td>".stripslashes($dados->email)."</td>
+												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
+												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
+												<td>
+													<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
+													<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
+												</td>
+											</tr>
+										";
+									}
+									$saida .= "</tbody></table>";
+								}
+								echo $saida;
+							?>
+							</div><!-- panel-body -->
+						</div><!-- collapseOne3 -->
+					</div><!-- panel panel-warning -->
 					
 					<div class="panel panel-primary">
 						<div class="panel-heading" role="tab" id="headingOne4">
@@ -372,54 +420,6 @@
 							</div><!-- panel-body -->
 						</div><!-- collapseOne4 -->
 					</div><!-- panel panel-primary -->
-					
-					<div class="panel panel-warning">
-						<div class="panel-heading" role="tab" id="headingOne3">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne3" aria-expanded="true" aria-controls="collapseOne3">
-									<span class="glyphicon glyphicon-time"></span> Indicações Pendentes
-								</a>
-							</h4>
-						</div>
-						<div id="collapseOne3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne3">
-							<div class="panel-body">
-							<?php
-								if (!$indPend) $saida = "<div class='col-md-12'><label>Não há indicações pendentes de confirmação.</label></div>";
-								else {
-									$saida = "
-										<table class='table table-striped'>
-											<thead>
-												<tr>
-													<th>Nome</th>
-													<th>E-mail</th>
-													<th>Celular</th>
-													<th>Indicado por</th>
-													<th>Ação</th>
-												</tr>
-											</thead>
-											<tbody>
-									";
-									while ($dados = $indPend->fetch_object()){
-										$saida .= "
-											<tr>
-												<td>".stripslashes($dados->nome)."</td>
-												<td>".stripslashes($dados->email)."</td>
-												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
-												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
-												<td>
-													<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
-													<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
-												</td>
-											</tr>
-										";
-									}
-									$saida .= "</tbody></table>";
-								}
-								echo $saida;
-							?>
-							</div><!-- panel-body -->
-						</div><!-- collapseOne3 -->
-					</div><!-- panel panel-warning -->
 
 				</div><!-- panel-group -->
 			</div><!-- ABA CADASTROS - FIM -->
@@ -482,7 +482,7 @@
 				</div><!-- panel-group -->
 			</div><!-- ABA LOGS- FIM -->
 
-			<div class="tab-pane active" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
+			<div class="tab-pane" id="aba-grupos"><!-- ABA GRUPOS - INICIO -->
 				  <div class="alert alert-warning" style="margin-top:5px;">
 					<span class="glyphicon glyphicon-exclamation-sign"></span> <b>Importante:</b> Aqui os administradores podem gerenciar aspectos nos grupos que não podem ser resolvidos em outro local, como uma possível exclusão de 
 					grupo ou mudança de algum dado que seria impossível em outro local, como o e-mail da conta ou remoção de algum usuário da mesma.<br />Utilize com <b>cuidado</b>
