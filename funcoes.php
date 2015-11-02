@@ -81,4 +81,18 @@ between_last ('[', ']', 'sin[90]*cos[180]');
 
 */
 //---------------------------------------------------------------------------------------
+function geraSenha(){
+	$palavra = array('tar', 'gar', 'for', 'jar', 'mar', 'dir', 'dor', 'zar', 'dum', 'ges', 'gis', 'mor', 
+						'por', 'par', 'zeu', 'meu', 'din', 'mou', 'nau', 'val', 'liu', 'xor', 'vis', 
+						'nos', 'mes', 'ter', 'tri', 'fiu', 'nat', 'dio', 'zoz', 'teb', 'kaf', 'koy', 'ret', 
+						'tad', 'kob', 'los');
+	$num1 = rand(0,9);
+	$num2 = rand(0,9);
+	$num3 = rand(0,9);
+
+	$idx = rand(0,count($palavra)-1);
+	$senha = $palavra[$idx].$num1.$num2.$num3;
+
+	return $senha;
+}
 ?>

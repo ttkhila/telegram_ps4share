@@ -1,55 +1,64 @@
 <?php
 	session_start();
 	include 'funcoes.php';
-/*
-	if (file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml')){
-		$feed1 = file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml');
-		$rss1 = new SimpleXmlElement($feed1);
-		$cont = 1;
-		$feed1 = array();
-		foreach($rss1->channel->item as $entrada) {
-			array_push($feed1, "
-			<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
-				<h4 class='list-group-item-text small'><b>Adrenaline UOL</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
-				<p class='list-group-item-text'>".$entrada->title."</p>
-			</a>");
-			if($cont > 3) break;
-			$cont++;
-		}
-	} //Adrenaline UOL
 	
-	if (file_get_contents('http://rss.baixakijogos.com.br/feed')){
-		$feed2 = file_get_contents('http://rss.baixakijogos.com.br/feed'); 
-		$rss2 = new SimpleXmlElement($feed2);
-		$cont = 1;
-		$feed2 = array();
-		foreach($rss2->channel->item as $entrada) {
-			array_push($feed2, "
-			<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
-				<h4 class='list-group-item-text small'><b>Baixaki Jogos</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
-				<p class='list-group-item-text'>".$entrada->title."</p>
-			</a>");
-			if($cont > 3) break;
-			$cont++;
-		}
-	}//Baixaki Jogos
+	if(isset($_SESSION['ID'])){
+		include 'classes/usuarios.class.php';
+		$u = new usuarios();
+		$prefs = $u->retornaPreferencias($_SESSION['ID']);
+		$feed = $prefs->feed;
+	} else $feed = 1;
+
+	if ($feed == 1){ //feeds habilitados ou usuario deslogado. Se $feed = 0, não mostra feeds
+		if (@file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml')){
+			$f1 = file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml');
+			$rss1 = new SimpleXmlElement($f1);
+			$cont = 1;
+			$feed1 = array();
+			foreach($rss1->channel->item as $entrada) {
+				array_push($feed1, "
+				<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+					<h4 class='list-group-item-text small'><b>Adrenaline UOL</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+					<p class='list-group-item-text'>".$entrada->title."</p>
+				</a>");
+				if($cont > 2) break;
+				$cont++;
+			}
+		} //Adrenaline UOL
+		
+		if (@file_get_contents('http://rss.baixakijogos.com.br/feed')){
+			$f2 = file_get_contents('http://rss.baixakijogos.com.br/feed'); 
+			$rss2 = new SimpleXmlElement($f2);
+			$cont = 1;
+			$feed2 = array();
+			foreach($rss2->channel->item as $entrada) {
+				array_push($feed2, "
+				<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+					<h4 class='list-group-item-text small'><b>Baixaki Jogos</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+					<p class='list-group-item-text'>".$entrada->title."</p>
+				</a>");
+				if($cont > 2) break;
+				$cont++;
+			}
+		}//Baixaki Jogos
+		
+		if (@file_get_contents('http://www.eurogamer.pt/?format=rss&type=news')){
+			$f3 = file_get_contents('http://www.eurogamer.pt/?format=rss&type=news'); 
+			$rss3 = new SimpleXmlElement($f3);
+			$cont = 1;
+			$feed3 = array();
+			foreach($rss3->channel->item as $entrada) {
+				array_push($feed3, "
+				<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
+					<h4 class='list-group-item-text small'><b>Eurogamer</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
+					<p class='list-group-item-text'>".$entrada->title."</p>
+				</a>");
+				if($cont > 2) break;
+				$cont++;
+			}
+		} //Eurogamer
+	}
 	
-	if (file_get_contents('http://www.eurogamer.pt/?format=rss&type=news')){
-		$feed3 = file_get_contents('http://www.eurogamer.pt/?format=rss&type=news'); 
-		$rss3 = new SimpleXmlElement($feed3);
-		$cont = 1;
-		$feed3 = array();
-		foreach($rss3->channel->item as $entrada) {
-			array_push($feed3, "
-			<a class='list-group-item list-group-item alert-link' href='".$entrada->link."' target='_blank'>
-				<h4 class='list-group-item-text small'><b>Eurogamer</b> - ".substr($entrada->pubDate, 0, 24)."</h4>
-				<p class='list-group-item-text'>".$entrada->title."</p>
-			</a>");
-			if($cont > 3) break;
-			$cont++;
-		}
-	} //Eurogamer
-*/	
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script>
@@ -323,7 +332,7 @@
 	<div class="list-group alert">
 		<div class='list-group-item list-group-item-success'>Últimas notícias</div>
 		
-	 	
+	 	<!--
 		<a class='list-group-item list-group-item alert-link' href='#' target='_blank'>
 			<h4 class='list-group-item-text small'><b>Site</b> - Data</h4>
 			<p class='list-group-item-text'>Título da notícia</p>
@@ -336,14 +345,21 @@
 			<h4 class='list-group-item-text small'><b>Site</b> - Data</h4>
 			<p class='list-group-item-text'>Título da notícia</p>
 		</a>
+		-->
 		<?php
-			/*
-			for ($i=0; $i<4; $i++){
-				if(isset($feed1[$i])) echo $feed1[$i];
-				if(isset($feed2[$i])) echo $feed2[$i];
-				if(isset($feed3[$i])) echo $feed3[$i];	
+			
+			if($feed == 0){ //feeds desabilitados
+				echo "
+					<div class='list-group-item list-group-item-text'>Feed/RSS Desabilitado pelo usuário</div>
+				";
+			} else {
+				for ($i=0; $i<3; $i++){
+					if(isset($feed1[$i]) && isset($f1)) echo $feed1[$i];
+					if(isset($feed2[$i]) && isset($f2)) echo $feed2[$i];
+					if(isset($feed3[$i]) && isset($f3)) echo $feed3[$i];	
+				}
 			}
-		*/	
+			
 		?>
 	</div>
 	

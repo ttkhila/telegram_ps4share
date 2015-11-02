@@ -3,6 +3,15 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
+/*
+ * Nova tabela: PREFERENCIAS
+ * Campos: usuario_id [INT] - PK
+ * feed [TINYINT] 0/1
+ * 
+ * novo campo na tabela USUARIOS:
+ * senha_temp - VARCHAR[10]
+ */
+
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -41,19 +50,21 @@ function realizaLogin(){
 		echo json_encode(array(0, "Usuário Inativo! Contate a administração."));
 		exit;
 	}
-     
-        $primeiro_acesso = $resp->primeiro_acesso;
+  		$primeiro_acesso = $resp->primeiro_acesso;
         if ($primeiro_acesso == 1){
 		echo json_encode(array(2, $resp->id));
 		exit;
 	}	
-        
-        session_start();
-        $_SESSION['login'] = stripslashes($resp->login); //PSN ID
-        $_SESSION['ID'] = $resp->id; //Usuário ID
-        $result = array(1);//sucesso
+    
+    //apaga alguma senha temporária que possa existir
+    $u->deletaSenhaTemp($resp->id);
+	
+    session_start();
+    $_SESSION['login'] = stripslashes($resp->login); //PSN ID
+    $_SESSION['ID'] = $resp->id; //Usuário ID
+    $result = array(1);//sucesso
 
-       // --- LOG -> Início ---
+    // --- LOG -> Início ---
 	$log = carregaClasse('Log');
 	$dt = $log->dateTimeOnline(); //date e hora no momento atual
 	$usuLogin = $_SESSION['login']; $usuID = $_SESSION['ID'];
@@ -78,6 +89,45 @@ function realizaLogout(){
 	$acao = stripslashes($usuLogin)." se deslogou!";
 	$log->insereLog(array($usuID, $usuLogin, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+//recuperação de senha
+function recuperaSenha(){
+	require 'funcoes.php';
+	$u = carregaClasse("Usuario");
+	$login = addslashes(strip_tags(trim($_POST['login'])));
+	$senha = geraSenha();
+	//echo $senha; exit;
+	$usu = $u->getUsuario($login);
+	if(!$usu){
+		echo "ID não encontrada!";
+		exit;
+	}
+	$usuarioID = $usu->id;
+	$usuarioEmail = $usu->email;
+	
+	//grava senha temporaria
+	$u->gravaSenhaTemp($usuarioID, $senha);
+	
+	//$url = "http://localhost/telegram_ps4share/troca_senha.php?id=$usuarioID"; //localhost
+	$url = "http://ps4share.com.br/troca_senha.php?id=$usuarioID"; //ps4share.com.br
+	
+	//ENVIA EMAIL
+	$tituloEmail = "Telegram Share - Solicitação de troca de senha!";
+	$txtEmail = "
+		Você solicitou uma troca de senha conosco. Caso não tenha sido você, apenas ignore essa mensagem.<br />
+		Para concluir essa troca de senha, acesse: <a href='$url'>$url</a> e 
+		siga as instruções na tela.<br />
+		Você precisará do código <b>$senha</b> para concluir o processo.<br />
+		Agradecemos o contato.<br /><br />
+		Atenciosamente,<br />A Administração
+	";
+	if(!envia_email($tituloEmail, $txtEmail, $usuarioEmail)){
+		echo "Problemas no envio do e-mail";
+		exit;
+	}
+	echo "1";
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
@@ -1138,6 +1188,7 @@ function gravaFechamentoGrupo(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+//RECUSA INDICAÇÃO
 function mostraNegativaIndicacao(){
 	$idIndicacao = $_POST['id'];
 	$idIndicador = $_POST['indicador'];
@@ -1191,10 +1242,11 @@ function gravaRecusaIndicacao(){
 	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
 	$indicadoNome = stripslashes($indicacao->nome);
 	$indicadoPor = $indicacao->indicado_por;
+	$indicadoEmail = $indicacao->email;
 	$a = carregaClasse("Aviso");
-	$texto = "A indicação do usuário <b>'$indicadoNome'</b> foi recusada pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
-	$texto = addslashes($texto);
-	$a->insereAviso($indicadoPor, $texto);
+	$texto2 = "A indicação do usuário <b>'$indicadoNome'</b> foi RECUSADA pela administração do grupo em ".date('d-m-Y').". Consulte motivo em Meu Perfil->Indicações->Minhas Indicações->Negadas";
+	$texto2 = addslashes($texto2);
+	$a->insereAviso($indicadoPor, $texto2);
 	
 	$u->carregaDados($indicadoPor);
 	// --- LOG -> Início ---
@@ -1207,13 +1259,147 @@ function gravaRecusaIndicacao(){
 	$log->insereLog(array($recusanteID, $recusanteLogin, $dt, addslashes($acao)));
 	// --- LOG -> Fim ---
 	
-	/*
-	 * FALTA ENVIAR EMAIL AO INDICADO
-	 * 
-	 */
+	//ENVIA EMAIL AO INDICADO COM MOTIVO DA RECUSA
+	$tituloEmail = "Telegram Share - Indicação Recusada!";
+	if($texto != "" && !empty($texto)) $texto = "Motivo da recusa:<br />".$texto;
+	else $texto = "";
+	$txtEmail = "
+		Comunicamos que sua indicação ao grupo de Partilhas Telegram Share infelizmente foi recusada pela administração.<br />
+		Tão logo acerte as pendências, peça a alguém para indicá-lo novamente. Consulte abaixo o motivo da recusa.<br /><br />
+	".$texto."<br /><br />Cordialmente,<br />A Administração";
+	if(!envia_email($tituloEmail, $txtEmail, $indicadoEmail)){
+		echo json_encode("Problemas no envio do e-mail");
+		exit;
+	}
 
 	echo json_encode(1);
 	exit;
+} 
+
+//----------------------------------------------------------------------------------------------------------------------------
+//CONFIRMA INDICAÇÃO
+function mostraConfirmacaoIndicacao(){
+	$idIndicacao = $_POST['id'];
+	$idIndicador = $_POST['indicador'];
+	$u = carregaClasse("Usuario");
+	$u->carregaDados($idIndicador);
+	$indicacao = $u->getDadosIndicacao($idIndicacao);
+	
+	$login = stripslashes($u->getLogin());
+	$tela = "
+		<form role='form'>
+			<input type='hidden' id='indicacao_id' value='$idIndicacao' />
+			<div class='alert alert-warning'>
+				<b>Aviso:</b> O indicado receberá um e-mail com instruções de cadastro. O indicador receberá um aviso informando da aceitação do indicado.<br />
+				Confirma a aceitação do indicado?
+			</div>
+			<div class='form-group'>
+				<label>Indicado: </label>
+				<label>".stripslashes($indicacao->nome)."</label>
+			</div>
+			<div class='form-group'>
+				<label>Indicador: </label>
+				<label>".$login."</label>
+			</div>
+			<div class='form-group'>
+				<label>Mensagem ao indicado (opcional):</label>
+				<textarea class='form-control' maxlength='250' id='txtTexto' autofocus></textarea>
+				<small>Máximo de 250 caracteres</small>
+				<p class='bg-danger' id='sp-erro-msg-modal' style='display:none;'></p>
+			</div>
+			<div class='modal-footer'>
+				<button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+				<button type='submit' id='btn-confirma-indicacao' class='btn btn-primary'>Confirmar </button>
+			</div>
+		</form>
+	";
+	echo json_encode($tela);
+	exit;
+} 
+//----------------------------------------------------------------------------------------------------------------------------
+function gravaConfirmacaoIndicacao(){
+	session_start();
+	$indicacaoID = $_POST['indicacao'];
+	$texto = trim($_POST['texto']);
+	
+	$texto = addslashes(trim($texto));
+	$u = carregaClasse("Usuario");
+	$cod = $u->geraCodigoEmail($indicacaoID);
+	//echo json_encode($cod); exit;
+	$u->gravaConfirmacaoIndicacao($indicacaoID, $texto, $cod);
+
+	//grava aviso
+	$indicacao = $u->getDadosIndicacao($indicacaoID); //dados da indicação
+	$indicadoNome = stripslashes($indicacao->nome);
+	$indicadoPor = $indicacao->indicado_por;
+	$indicadoEmail = $indicacao->email;
+	$a = carregaClasse("Aviso");
+	$texto2 = "A indicação do usuário <b>'$indicadoNome'</b> foi ACEITA pela administração do grupo em ".date('d-m-Y').". Consulte seus indicados em Perfil->Indicações->Minhas Indicações->Confirmadas";
+	$texto2 = addslashes($texto2);
+	$a->insereAviso($indicadoPor, $texto2);
+	
+	$u->carregaDados($indicadoPor);
+	// --- LOG -> Início ---
+	$log = carregaClasse('Log');
+	$dt = $log->dateTimeOnline(); //date e hora no momento atual
+	$confirmadorID = $_SESSION['ID'];
+	$confirmadorLogin = $_SESSION['login'];
+	$indicadorLogin = stripslashes($u->getLogin());
+	$acao = "Aceitou uma indicação ao grupo (Usuário aceito[nome]: '$indicadoNome' / Indicador: '$indicadorLogin')";
+	$log->insereLog(array($confirmadorID, $confirmadorLogin, $dt, addslashes($acao)));
+	// --- LOG -> Fim ---
+	
+	//ENVIA EMAIL AO INDICADO
+	$tituloEmail = "Telegram Share - Indicação Aceita!";
+	if($texto != "" && !empty($texto)) $texto = "Recado da administração:<br />".$texto;
+	else $texto = "";
+	$txtEmail = "
+		É com orgulho que comunicamos que sua indicação ao grupo de partilhas Telegram Share foi aceita.<br />
+		A partir de agora você pode obter games com preços mais acessíveis e ainda conhecer novos amigos para jogar e se divertir.<br />
+		Acesse: <a href='ps4share.com.br/cadastro.php?cod=".$cod."'>ps4share.com.br/cadastro.php?cod=".$cod."</a> e complete seu cadastro.<br /><br />
+		Não deixe de ler as regras do grupo para maior segurança ao compartilhar games. 
+		<a href='https://docs.google.com/document/d/1toC_9YFka5hcTcVSPHgK4ZlbQVYNUEXYcUvPxq9Zgfk/pub'>Clique aqui</a> para acessar as regras.<br /><br />
+		Seja bem-vindo!<br />A administração<br /><br />
+	".$texto;
+	if(!envia_email($tituloEmail, $txtEmail, $indicadoEmail)){
+		echo json_encode("Problemas no envio do e-mail");
+		exit;
+	}
+
+	echo json_encode(1);
+	exit;
+} 
+//----------------------------------------------------------------------------------------------------------------------------
+function envia_email($titulo, $texto, $email){
+	require 'classes/phpmailer/PHPMailerAutoload.php';
+	include 'config_email.php';
+	$mail = new PHPMailer;
+	
+	$mail->SMTPDebug = 0;                    	// Enable verbose debug output
+	
+	$mail->isSMTP();                        	// Set mailer to use SMTP
+	$mail->SMTPAuth = true;                		// Enable SMTP authentication
+	$mail->Host = $HOST;  						// Specify main and backup SMTP servers
+	$mail->Username = $USERNAME;           		// SMTP username
+	$mail->Password = $PASSWORD;          		// SMTP password 
+	$mail->SMTPSecure = 'tls';         			// Enable TLS encryption, `ssl` also accepted      
+	$mail->IsHTML(true);              			// TCP port to connect to
+	$mail->Port = 587;  						// TLS Secure
+	
+	$mail->setFrom($FROM, 'Telegram Share');
+	$mail->addReplyTo($REPLYTO, 'Telegram Share');
+
+	$mail->addAddress($email);
+	$mail->addAddress('contato@ps4share.com.br');
+
+	$mail->Subject = $titulo;
+	$mail->Body    = $texto;
+	$mail->CharSet = 'UTF-8';
+
+	if(!$mail->send()) {
+	    return false;
+	} 
+	return true;
 }
 //----------------------------------------------------------------------------------------------------------------------------
 function executaFiltro(){
@@ -1934,9 +2120,52 @@ function enviaAvisoAdm(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function gravaCadastroIndicado(){
+	$nome = addslashes(strip_tags($_POST['nome']));
+	$login = addslashes(strip_tags($_POST['login']));
+	$tel = $_POST['tel'];
+	$senha = $_POST['senha'];
+	$idEmail = $_POST['idEmail'];
+	$email = $_POST['email'];
+	
+	$v = carregaClasse("Validacao");
+	$u = carregaClasse("Usuario");
+	
+	$v->set("Nome", $nome)->is_required()->between_length(3,60);
+	$v->set("Login", $login)->is_required()->is_alpha_num('-_')->max_length(16,true);
+	$v->set("Celular", $tel)->is_required()->is_phone(); 
+	$v->set("Senha", $senha)->is_required()->is_alpha_num();
+	
+	//checa duplicidade de login
+	$dup = $u->checaDuplicidade($login);
+	if($dup) $v->set('Duplicidade', '')->set_error("A ID informada já está cadastrada no sistema!");
 
+	if($v->validate()){
+		$senha = md5($senha);
+		$u->insereUsuario($nome, $login, $email, $tel, $idEmail, $senha, date('Y-m-d'), 0);
+		
+		//apaga o código de email gerado para o link não ser mais acessado
+		$u->deletaCodEmail($email);
+		echo json_encode("0");
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
+function gravaPreferencias(){
+	session_start();
+	$usuarioID = $_SESSION['ID'];
+	$feed = $_POST['feed'];
+	
+	$u = carregaClasse("Usuario");
+	$arrPref = array("feed" => $feed); //adicionar preferencias a medida que forem sendo criadas
+	$u->gravaPreferencias($arrPref, $usuarioID);
+	
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

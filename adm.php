@@ -278,7 +278,7 @@
 												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
 												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
 												<td>
-													<a href='#' id='aceita-indicacao_".$dados->id."'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
+													<a role='button' href='#' id='aceitar-indicacao_".$dados->id."' name='btn-aceitar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#aceita-indicacao'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
 													<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
 												</td>
 											</tr>
@@ -775,6 +775,21 @@
 				</div>
 				<div class="modal-body">
 					<div class="window" id="modal-indicacao-negada"></div>
+				</div><!-- modal-body -->
+			</div>
+		</div>
+	</div><!-- modal fade -->
+	
+	<!-- MODAL - Aceita Indicação -->
+	<div class="modal fade" id="aceita-indicacao" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel3">Confirmação de Indicação</h4>
+				</div>
+				<div class="modal-body">
+					<div class="window" id="modal-indicacao-confirmada"></div>
 				</div><!-- modal-body -->
 			</div>
 		</div>

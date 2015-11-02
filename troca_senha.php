@@ -10,14 +10,13 @@
 </script>
 </head>
 <body>
-	<?php $menu = file_get_contents('menu.php'); echo login($menu); //insere menu ?>
 	<!-- Conteúdo Principal: Início -->
-	<h1 class="page-header">Primeiro Acesso</h1>
+	<h1 class="page-header">Troca de Senha</h1>
 	
-	<form class="form-inline" action="processa-nova-senha.php" method="post">
+	<form class="form-inline" action="senha_nova_solicitacao.php" method="post">
 		<input type="hidden" id="hidId" name="hidId" value="<?php echo $id; ?>" />
 		<div class="form-group col-md-12">
-			<label for="passEmail" class="control-label col-sm-3">Senha recebida no e-mail:</label>
+			<label for="passEmail" class="control-label col-sm-3">Código recebido no e-mail:</label>
 			<input type="password" class="form-control col-sm-9" name="passEmail" id="passEmail" maxlength="10" required />
 		</div><br /><br />
 		<div class="form-group col-md-12">
@@ -37,6 +36,6 @@
 		</div>
 	</form><br /><br />
 	
-	
-	<?php $rodape = file_get_contents('rodape.html'); echo $rodape; //insere rodapé ?>
+
+</body>
 </html>

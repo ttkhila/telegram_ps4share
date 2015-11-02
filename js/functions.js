@@ -97,6 +97,55 @@ $("#deslogar").click(function(e){
 		}
 	});
 });
+//********************************************************************************
+//Recuperar senha (esqueci a senha)
+$("#frm-recupera-senha").submit(function(e){
+	e.preventDefault();
+	var form = $(this);
+	var botao = form.find("button");;
+	var divClone = botao.clone();
+	
+	var $login = $("#loginForRecoveryPass").val();	
+	var match = $login.match(/(^[\w-]{3,16})$/);
+	if(!match || match == "null") {
+		$("#sp-erro-msg2")
+			.fadeIn()
+			.html("Login Inválido! O login deve ter entre 3 e 16 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#loginForRecoveryPass").focus();
+		return false;
+	}
+
+	var pars = { login: $login, funcao: 'recuperaSenha'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			if (data == "1"){
+				$("#sp-sucesso-msg")
+					.fadeIn()
+					.html("Enviamos uma mensagem para seu e-mail cadastrado conosco.<br />Cheque para mais informações sobre como mudar a senha.")
+					.delay(6000)
+					.fadeOut('slow');
+				form.delay(5000).slideUp(500);
+			} else {
+				$("#sp-erro-msg2")
+					.fadeIn()
+					.html(data)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //********************************************************************************	
 //TOOLTIP
 $('body').tooltip({
@@ -1043,10 +1092,67 @@ $("#modal-indicacao-negada").on("submit", "form", function(e){
 		}
 	});
 });
-
-
-
-
+//********************************************************************************
+//Aceitação de Indicação de Usuário
+$("[name='btn-aceitar-indicacao']").click(function(){
+	var idIndicacao = parseInt($(this).attr('id').split("_")[1]);
+	var idIndicador = parseInt($(this).data('id'));
+	//alert(idIndicador);return;
+	var pars = { id: idIndicacao, indicador: idIndicador, funcao: 'mostraConfirmacaoIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { $("img.pull-right").fadeIn('fast'); },
+		complete: function(){ $("img.pull-right").fadeOut('fast'); },
+		success: function(data){ 
+			console.log(data);
+			//alert(data);
+			abreModal("#modal-indicacao-confirmada", data);
+		}
+	});
+});
+//********************************************************************************
+$("#modal-indicacao-confirmada").on("submit", "form", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this).find("button[type=submit]");
+	var divClone = botao.clone();
+	var $texto = $("#txtTexto").val();
+	var $indicacao = $("#indicacao_id").val();
+	//alert($indicacao); return;
+	var pars = { indicacao: $indicacao, texto: $texto, funcao: 'gravaConfirmacaoIndicacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1){
+				$("#modal-indicacao-confirmada").find("[data-dismiss=modal]").trigger("click"); //fecha modal
+				
+				var elem = $("#aba-cadastros").find("#aceitar-indicacao_"+$indicacao);
+				var $killrow = elem.parent().parent();
+				$killrow.addClass("danger");
+				$killrow.fadeOut(1000, function(){
+					$(this).remove(); //remove a linha da tabela em tempo de execução
+				});
+	
+			}else {
+				$("#modal-indicacao-confirmada").find("#sp-erro-msg-modal")
+					.fadeIn()
+					.html(data);
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 
 //********************************************************************************
 $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
@@ -1560,6 +1666,10 @@ $("#aba-grupos").on("click", "[name='btn-historico-detalhado']", function(e){
 //Cadastro de Indicado
 $("#frm-cadastro").submit(function(e){
 	e.preventDefault(); //previne o evento 'normal'
+	var form = $(this);
+	var botao = $(this).find("button");;
+	var divClone = botao.clone();
+	
 	var $nome = $.trim($("#nome").val());
 	var $login = $.trim($("#login").val());
 	var $tel = $.trim($("#telefone").val());
@@ -1598,11 +1708,11 @@ $("#frm-cadastro").submit(function(e){
 		return false;
 	}
 
-	match = $senha.match(/(^[\w-!#@+]{6,10})$/); 
+	match = $senha.match(/(^[\w]{6,10})$/); 
 	if(!match || match == "null") {
 		$("#sp-erro-msg")
 			.fadeIn()
-			.html("Senha inválida! A senha deve ter entre 6 e 10 caracteres, podendo conter letras, números e os seguintes caracteres especiais: (_ - ! # @ +).")
+			.html("Senha inválida! A senha deve ter entre 6 e 10 caracteres alfanuméricos")
 			.delay(2500)
 			.fadeOut('slow');
 		$("#senha").focus();
@@ -1618,19 +1728,73 @@ $("#frm-cadastro").submit(function(e){
 		$("#senha").focus();
 		return false;
 	}
-
-	/*
-	 *  Criar campo na tabela de indicação para incluir um código para validar esse cadastro
-	 *  Fazer o ajax da gravação do cadastro
-	 *  Gerar data de inclusão do usuário no sistema (primeiro_acesso_data)
-	 *  Apagar o código gerado acima para que o link de cadastro não seja acessado novamente pelo mesmo usuário
-	 * 
-	 * 
-	 */	
 	
+	var initLogin = $login.substr(0, 3).toLowerCase();
+	var finTel = $tel.substr(-3, 3);
+	var $idEmail = initLogin+""+finTel;
+	var $email = $("#emailAT").text();
+	//alert($email); return;
+	
+	var pars = { nome: $nome, login: $login, tel: $tel, senha: $senha, idEmail: $idEmail, email: $email, funcao: 'gravaCadastroIndicado'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		dataType: "json",
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			if (data == "0"){ //cadastro efetuado
+				$(location).attr('href', 'index.php');
+			}else { //erros
+			
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"\n";
+				});
+				alert($error);
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+
+		}
+	});
 });
+//******************************************************************************** 
+//Preferencias
+$("#frm-preferencias").submit(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var form = $(this);
+	var botao = form.find("button");;
+	var divClone = botao.clone();
+	
+	var $feed = $("[name='feed']:checked").val();
+	//alert($feed); return;
+	
+	var pars = { feed: $feed, funcao: 'gravaPreferencias'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			alert("Preferências Salvas!");
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
+//******************************************************************************** 
 
+//******************************************************************************** 
 
-
+//******************************************************************************** 
 
 });

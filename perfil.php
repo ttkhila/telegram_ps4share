@@ -63,8 +63,16 @@
 	//Indicados Pendentes
 	$ind = $u->getIndicadosPendentesPorIndicador($_SESSION['ID']);
 	
+	//Indicados Confirmados
+	$indConf = $u->getIndicadosConfirmadosPorIndicador($_SESSION['ID']);
+	
 	//Indicações Negadas
 	$indNeg = $u->getIndicacoesNegadasPorIndicador($_SESSION['ID']);
+	
+	//PREFERENCIAS
+	$pref = $u->retornaPreferencias($_SESSION['ID']);	
+	if($pref->feed == 1){ $hab = "checked"; $desab = ""; }
+	else { $hab = ""; $desab = "checked"; } 
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <style>
@@ -500,6 +508,13 @@
 					<div class="panel panel-primary">
 						<div class="panel-heading"><span class="glyphicon glyphicon-list-alt"></span> Formulário de Indicação ao Grupo de Partilhas Telegram - Dados do Indicado</div>
 						<div class="panel-body">
+						<div class="alert alert-warning">
+							<span class="glyphicon glyphicon-exclamation-sign"></span> <b>Importante:</b> Atentar para o item 2.4 das regras de partilha do grupo, que diz:<br />
+							2.4 - Novas inclusões de usuários serão avaliadas previamente, e caso seja incluso, o indicador será responsável pela indicação, 
+							isto é, caso o indicado venha a dar calote em um participante do grupo, o indicador arcará com o prejuízo;
+								(Prazo mínimo para indicação 2 meses a partir da primeira partilha no grupo)
+						</div>
+							
 							<form role="form">
 								<div class="form-group">
 									<label for="nome">Nome <span class="text-danger">*</span></label>
@@ -549,7 +564,21 @@
 							<div class="panel panel-success">
 								<div class="panel-heading"><span class="glyphicon glyphicon-ok-circle"></span> Confirmadas</div>
 								<div class="panel-body">
-									Em construção
+									<?php
+									if(!$indConf){ $saida = "<div class='col-md-12'><label>Não há indicações suas confirmadas até o momento.</label></div>"; }
+									else {
+										$saida = "<ul class='list-group'>";
+										while($dados = $indConf->fetch_object()){
+										$saida .= "
+											<li class='list-group-item list-group-item-default'>
+												<span class='glyphicon glyphicon-circle-arrow-right'></span> ".stripslashes($dados->nome)."<small> - Celular: ".$dados->telefone."</small>
+											</li>
+											";
+										}
+										$saida .= "</ul>";
+									}
+									echo $saida;
+								?>
 								</div>
 							</div>
 							<div class="panel panel-danger">
@@ -580,7 +609,25 @@
 			</div><!-- aba-indicacoes -->
 			
 			<div class="tab-pane" id="aba-preferencias"><!-- ABA PREFERÊNCIAS  -->
-				 Em construção
+				 <div class="panel panel-primary" style="margin-top:5px;">
+				 	<div class="panel-heading">Defina suas preferências</div>
+				 	<div class="panel-body">
+				 		<form role="form" id="frm-preferencias">
+					 		<div class="form-group">
+					 			<label>Feed:</label>
+					 			<label class="radio-inline">
+					 				<input type="radio" id="feed1" name="feed" value="1" <?php echo $hab; ?> />Habilitar
+					 			</label>
+					 			<label class="radio-inline">
+					 				<input type="radio" id="feed0" name="feed" value="0" <?php echo $desab; ?> />Desabilitar
+					 			</label>
+					 		</div>
+					 		<div class="form-group">
+					 			<button type="submit" class="btn btn-primary">Salvar</button>
+					 		</div>
+					 	</form>
+				 	</div>
+				 </div>
 			</div><!-- aba-preferencias -->
 			
 		</div>

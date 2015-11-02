@@ -7,6 +7,7 @@ class usuarios{
 	private $email;
 	private $telefone;
 	private $senha;
+	private $senha_temp;
 	private $telegram_id;
 	private $primeiro_acesso;
 	private $primeiro_acesso_data;
@@ -35,6 +36,8 @@ class usuarios{
 	public function getTelefone(){return $this->telefone;}
 	public function setSenha($valor){$this->senha = $valor;}
 	public function getSenha(){return $this->senha;}
+	public function setSenhaTemp($valor){$this->senha_temp = $valor;}
+	public function getSenhaTemp(){return $this->senha_temp;}
 	public function setTelegramId($valor){$this->telegram_id = $valor;}
 	public function getTelegramId(){return $this->telegram_id;}
 	public function setPrimeiroAcesso($email){$this->primeiro_acesso = $email;}
@@ -62,6 +65,7 @@ class usuarios{
 		array_push($dados, $this->getEmail());
 		array_push($dados, $this->getTelefone());
 		array_push($dados, $this->getSenha());
+		array_push($dados, $this->getSenhaTemp());
 		array_push($dados, $this->getTelegramId());
 		array_push($dados, $this->getPrimeiroAcesso());
 		array_push($dados, $this->getPrimeiroAcessoData());
@@ -81,6 +85,7 @@ class usuarios{
         $this->setEmail($res->email); 
         $this->setTelefone($res->telefone); 
         $this->setSenha($res->senha); 
+		$this->setSenhaTemp($res->senha_temp); 
         $this->setTelegramId($res->telegram_id); 
         $this->setPrimeiroAcesso($res->primeiro_acesso);
         $this->setPrimeiroAcessoData($res->primeiro_acesso_data);
@@ -189,8 +194,15 @@ class usuarios{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function getIndicacoesNegadasPorIndicador($indicadorID){
+	public function getIndicacoesNegadasPorIndicador($indicadorID){ 
 		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND negado = 1 ORDER BY id desc";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if ($res->num_rows == 0) return false;
+		return $res;
+	} 
+//---------------------------------------------------------------------------------------------------------------
+	public function getIndicadosConfirmadosPorIndicador($indicadorID){ 
+		$query = "SELECT * FROM indicados WHERE indicado_por = $indicadorID AND negado = 0 AND pendente = 0 ORDER BY id desc";
 		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		if ($res->num_rows == 0) return false;
 		return $res;
@@ -203,14 +215,42 @@ class usuarios{
 		
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getIndicadoPorCodigo($codigo){
+		$query = "SELECT * FROM indicados WHERE codigo = '$codigo'";
+		//die ($query);
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if($res->num_rows == 0) //não encontrou o código
+			return false;
+			
+		return $res->fetch_object();
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function gravaRecusaIndicacao($idIndicacao, $motivo){
 		$query = "UPDATE indicados SET negado = 1, pendente = 0, motivo = '$motivo' WHERE id = $idIndicacao";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
-	public function insereUsuario($nome, $login, $email, $tel, $emailID){
-		$query = "INSERT INTO usuarios (nome, login, email, telefone, id_email) 
-			VALUES ('$nome', '$login', '$email', '$tel', '$emailID')";
+	public function gravaConfirmacaoIndicacao($idIndicacao, $motivo, $codigo){
+		$query = "UPDATE indicados SET negado = 0, pendente = 0, motivo = '$motivo', codigo = '$codigo' WHERE id = $idIndicacao";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function insereUsuario($nome, $login, $email, $tel, $emailID, $senha='', $dataPrimeiroAcesso='NULL', $primeiro_acesso = 1){
+		$query = "INSERT INTO usuarios (nome, login, email, telefone, id_email, senha, primeiro_acesso_data, primeiro_acesso) 
+			VALUES ('$nome', '$login', '$email', '$tel', '$emailID', '$senha', '$dataPrimeiroAcesso', $primeiro_acesso)";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+    public function checaDuplicidade($login){
+        $query = "SELECT * FROM usuarios WHERE login = '$login'";
+        $res = $this->con->multiConsulta($query);
+
+        if($res->num_rows > 0) return true; //duplicidade    
+        return false;
+    }
+//---------------------------------------------------------------------------------------------------------------	
+	public function deletaCodEmail($email){
+		$query = "UPDATE indicados SET codigo = '' WHERE email = '$email'";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -263,10 +303,69 @@ class usuarios{
 		return $res->banido;
 	}
 //---------------------------------------------------------------------------------------------------------------
-	
+	public function geraCodigoEmail($id){
+	$palavra = array('xyz', 'hBs', 'Gsd', 'Mkg', 'Rck', 'QhD', 'asv', 'tlq', 'Paa', 'SCZ', 'Bvo', 'PMl', 
+						'UfH', 'nDb', 'sfS', 'Jnj', 'Yze', 'frX', 'bRi', 'McO', 'Wcc', 'Xwt', 'fyp', 
+						'Jjc', 'nsh', 'KgQ', 'Bed', 'W2h', 'Sxz', 'MyE', 'ako', 'TGt', 'VWr', 'iem', 'hos', 
+						'Qar', 'lme', 'zPh');
+	$num1 = rand(0,9);
+	$num2 = rand(0,9);
+	$num3 = rand(0,9);
 
+	$idx = rand(0,count($palavra)-1);
+	$idx2 = rand(0,count($palavra)-1);
+	$idx3 = rand(0,count($palavra)-1);
+	$senha = $id.$palavra[$idx].$num1.$palavra[$idx2].$num2.$palavra[$idx3].$num3;
 
+	return $senha;
+}
+//---------------------------------------------------------------------------------------------------------------
+//Cria os campos da tabela preferencias
+	public function criaPreferencias($id){
+		$query = "INSERT INTO preferencias (usuario_id) VALUE ($id)";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 
+//PREFERENCIAS
+	public function retornaPreferencias($id){
+		$query = "SELECT * FROM preferencias WHERE usuario_id = $id";
+		try{ $res = $this->con->uniConsulta($query); } catch(Exception $e) { die($e.message); }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	//Salvar
+	public function gravaPreferencias($arrPrefs, $usuarioID){
+		foreach($arrPrefs as $key => $value){
+			$query = "UPDATE preferencias SET $key = $value WHERE usuario_id = $usuarioID";
+			try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+		}
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function getUsuario($login){
+		$query = "SELECT * FROM usuarios WHERE login = '$login'";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if($res->num_rows == 0) return false; //não encontrou usuario
+		return $res->fetch_object();
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaSenhaTemp($id, $senha){
+		$query = "UPDATE usuarios SET senha_temp = '$senha' WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function deletaSenhaTemp($id){
+		$query = "UPDATE usuarios SET senha_temp = '' WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function checaCodTrocaSenha($id, $senhaEmail){
+		$query = "SELECT * FROM usuarios WHERE id= '$id' AND senha_temp = '$senhaEmail'";
+		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		if($res->num_rows == 0) return false; //não encontrou usuario
+		return true;
+	}
+//---------------------------------------------------------------------------------------------------------------
 
 
 
@@ -503,15 +602,6 @@ class usuarios{
 		
 		return array(1, "CADASTRO ALTERADO COM SUCESSO!");
 	}
-//---------------------------------------------------------------------------------------------------------------
-    public function checaDuplicidade($login){
-    	
-    	$login = addslashes($login);
-        $query = "SELECT usuario_id FROM usuarios WHERE login = '$login'";
-        $res = $this->con->multiConsulta($query);
-
-        return $res->num_rows;    
-    }
 //--------------------------------------------------------------------------------------------------------------- 
   
     public function busca($tipos, $pagina, $perPage){ // 10 = registros por pÃ¡gina
