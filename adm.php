@@ -18,6 +18,8 @@
 	$ga = new grupos_acesso();
 	
 	$indPend = $u->getIndicadosPendentes();
+	$indConf = $u->getIndicadosConfirmados();
+	$indNeg = $u->getIndicadosNegados();
 	$allUser = $u->retornaTudoQuery();
 	
 	$grupos = $ga->retornaTudo('nome');
@@ -244,7 +246,7 @@
 			<div class="tab-pane active" id="aba-cadastros" style="margin-top:5px;"><!-- ABA CADASTROS - INICIO -->
 				<div class="panel-group" id="accordion3" role="tablist" aria-multiselectable="true" style="margin-top:5px;">
 					
-					<div class="panel panel-warning">
+					<div class="panel panel-warning"> <!-- Indicações pendentes -->
 						<div class="panel-heading" role="tab" id="headingOne3">
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne3" aria-expanded="true" aria-controls="collapseOne3">
@@ -281,6 +283,94 @@
 													<a role='button' href='#' id='aceitar-indicacao_".$dados->id."' name='btn-aceitar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#aceita-indicacao'><span class='glyphicon glyphicon-ok-sign'></span> [aceitar]</a><br />
 													<a role='button' href='#' id='negar-indicacao_".$dados->id."' name='btn-negar-indicacao' data-id='".$dados->indicado_por."' data-toggle='modal' data-target='#nega-indicacao'><span class='glyphicon glyphicon-ban-circle'></span> [negar]</a><br />
 												</td>
+											</tr>
+										";
+									}
+									$saida .= "</tbody></table>";
+								}
+								echo $saida;
+							?>
+							</div><!-- panel-body -->
+						</div><!-- collapseOne3 -->
+					</div><!-- panel panel-warning -->
+					
+					<div class="panel panel-success"> <!-- Indicações confirmadas -->
+						<div class="panel-heading" role="tab" id="headingOne5">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne5" aria-expanded="true" aria-controls="collapseOne5">
+									<span class="glyphicon glyphicon-ok-circle"></span> Indicações Confirmadas
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne5">
+							<div class="panel-body">
+							<?php
+								if (!$indConf) $saida = "<div class='col-md-12'><label>Não há indicações confirmadas até o momento.</label></div>";
+								else {
+									$saida = "
+										<table class='table table-striped'>
+											<thead>
+												<tr>
+													<th>Nome</th>
+													<th>E-mail</th>
+													<th>Celular</th>
+													<th>Indicado por</th>
+												</tr>
+											</thead>
+											<tbody>
+									";
+									while ($dados = $indConf->fetch_object()){
+										$saida .= "
+											<tr>
+												<td>".stripslashes($dados->nome)."</td>
+												<td>".stripslashes($dados->email)."</td>
+												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
+												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
+											</tr>
+										";
+									}
+									$saida .= "</tbody></table>";
+								}
+								echo $saida;
+							?>
+							</div><!-- panel-body -->
+						</div><!-- collapseOne3 -->
+					</div><!-- panel panel-warning -->
+					
+					<div class="panel panel-danger"> <!-- Indicações negadas -->
+						<div class="panel-heading" role="tab" id="headingOne6">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne6" aria-expanded="true" aria-controls="collapseOne6">
+									<span class="glyphicon glyphicon-ok-circle"></span> Indicações Negadas
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne6">
+							<div class="panel-body">
+							<?php
+								if (!$indNeg) $saida = "<div class='col-md-12'><label>Não há indicações negadas até o momento.</label></div>";
+								else {
+									$saida = "
+										<table class='table table-striped'>
+											<thead>
+												<tr>
+													<th>Nome</th>
+													<th>E-mail</th>
+													<th>Celular</th>
+													<th>Motivo</th>
+													<th>Indicado por</th>
+												</tr>
+											</thead>
+											<tbody>
+									";
+									while ($dados = $indNeg->fetch_object()){
+										$saida .= "
+											<tr>
+												<td>".stripslashes($dados->nome)."</td>
+												<td>".stripslashes($dados->email)."</td>
+												<td><label id='lbl_tel'>".$dados->telefone."</label></td>
+												<td>".stripslashes($dados->motivo)."</td>
+												<td><a href='perfil_usuario.php?user=".$dados->indicado_por."' target='_blank' title='".stripslashes($dados->nomeUsu)."'>".stripslashes($dados->login)."</a></td>
 											</tr>
 										";
 									}

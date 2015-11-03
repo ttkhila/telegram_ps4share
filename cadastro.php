@@ -8,6 +8,9 @@
 	if(!$u->getIndicadoPorCodigo($codigo) || $codigo == "") die("Código Inválido");
 	
 	$dados = $u->getIndicadoPorCodigo($codigo);
+	$indicado_por = $dados->indicado_por;
+	$u->carregaDados($indicado_por);
+	$loginIndicador = stripslashes($u->getLogin());
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 	<script type="text/javascript" src="js/lib/jquery.mask.min.js"/></script>
@@ -51,6 +54,11 @@
 									title="Sua senha deve ter entre 6 e 10 caracteres alfanuméricos."></span>
 								<input type="password" class="form-control" name="senha" id="senha" maxlength="10" pattern="(^[\w]{6,10})$" required="" placeholder="Digite uma senha " />
 								<input type="password" class="form-control" name="senha2" id="senha2" maxlength="10" pattern="(^[\w]{6,10})$" required="" placeholder="Re-digite a senha" />
+							</div>
+							<div class="form-group">
+								<input type="hidden" name="hidInd" id="hidInd" value="<?php echo $indicado_por; ?>" />
+								<label>Indicado Por</label>
+								<div><?php echo $loginIndicador; ?></div>
 							</div>
 							<p class="bg-danger" id="sp-erro-msg" style="display:none;"></p>
 							<div class="form-group">

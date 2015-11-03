@@ -20,6 +20,9 @@
 	$login = stripslashes($u->getLogin());
 	$email = $u->getIdEmail();
 	$banido = $u->getBanido();
+	$usuarioDesde = $u->getPrimeiroAcessoData();
+	if(is_null($usuarioDesde)) $usuarioDesde = "N/A";
+	else $usuarioDesde = date( 'd/m/Y', strtotime($usuarioDesde) );
 	
 	//Recomendações
 	$recomendacoes = $r->getMinhasRecomendacoes($user);
@@ -38,7 +41,7 @@
 <body>
 	<?php $menu = file_get_contents('menu.php'); echo login($menu); //insere menu ?>
 	<!-- Conteúdo Principal: Início -->
-	<h2 class="page-header">Perfil do Usuário - <?php if($banido == 1) echo $login." <small class='sm-ban'>(Usuário Banido)</small>"; else echo $login; ?></h2>
+	<h2 class="page-header">Perfil do Usuário <?php if($banido == 1) echo $login." <small class='sm-ban'>(Usuário Banido)</small>"; else echo $login; echo " <small>(Usuário do sistema desde $usuarioDesde)</small>"; ?></h2>
 	
 	<div class="row">
 		<div class="panel panel-primary" id="div-edita-perfil">

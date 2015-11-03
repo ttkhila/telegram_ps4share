@@ -1733,9 +1733,10 @@ $("#frm-cadastro").submit(function(e){
 	var finTel = $tel.substr(-3, 3);
 	var $idEmail = initLogin+""+finTel;
 	var $email = $("#emailAT").text();
-	//alert($email); return;
+	var $indicado_por = $("#hidInd").val();
+	//alert($indicado_por); return;
 	
-	var pars = { nome: $nome, login: $login, tel: $tel, senha: $senha, idEmail: $idEmail, email: $email, funcao: 'gravaCadastroIndicado'};
+	var pars = { nome: $nome, login: $login, tel: $tel, senha: $senha, idEmail: $idEmail, email: $email, indicado_por: $indicado_por, funcao: 'gravaCadastroIndicado'};
 	$.ajax({
 		url: 'funcoes_ajax.php',
 		type: 'POST',

@@ -4,12 +4,9 @@ header('Content-Type: text/html; charset=UTF-8');
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
 /*
- * Nova tabela: PREFERENCIAS
- * Campos: usuario_id [INT] - PK
- * feed [TINYINT] 0/1
+ *  NOvo campo tabela usuarios
+ * indicado_por INT NULL
  * 
- * novo campo na tabela USUARIOS:
- * senha_temp - VARCHAR[10]
  */
 
 $fx = $_POST['funcao'];
@@ -1361,6 +1358,7 @@ function gravaConfirmacaoIndicacao(){
 		<a href='https://docs.google.com/document/d/1toC_9YFka5hcTcVSPHgK4ZlbQVYNUEXYcUvPxq9Zgfk/pub'>Clique aqui</a> para acessar as regras.<br /><br />
 		Seja bem-vindo!<br />A administração<br /><br />
 	".$texto;
+	
 	if(!envia_email($tituloEmail, $txtEmail, $indicadoEmail)){
 		echo json_encode("Problemas no envio do e-mail");
 		exit;
@@ -2127,6 +2125,7 @@ function gravaCadastroIndicado(){
 	$senha = $_POST['senha'];
 	$idEmail = $_POST['idEmail'];
 	$email = $_POST['email'];
+	$indicado_por = $_POST['indicado_por'];
 	
 	$v = carregaClasse("Validacao");
 	$u = carregaClasse("Usuario");
@@ -2142,7 +2141,10 @@ function gravaCadastroIndicado(){
 
 	if($v->validate()){
 		$senha = md5($senha);
-		$u->insereUsuario($nome, $login, $email, $tel, $idEmail, $senha, date('Y-m-d'), 0);
+		$id = $u->insereUsuario($nome, $login, $email, $tel, $idEmail, $senha, $indicado_por, date('Y-m-d'), 0);
+		
+		//cria área preferencias para io usuario
+		$u->criaPreferencias($id);
 		
 		//apaga o código de email gerado para o link não ser mais acessado
 		$u->deletaCodEmail($email);

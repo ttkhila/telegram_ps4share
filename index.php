@@ -7,7 +7,7 @@
 		$u = new usuarios();
 		$prefs = $u->retornaPreferencias($_SESSION['ID']);
 		$feed = $prefs->feed;
-	} else $feed = 1;
+	} else $feed = 0;
 
 	if ($feed == 1){ //feeds habilitados ou usuario deslogado. Se $feed = 0, não mostra feeds
 		if (@file_get_contents('http://adrenaline.uol.com.br/rss/2/25/noticias.xml')){
@@ -350,7 +350,7 @@
 			
 			if($feed == 0){ //feeds desabilitados
 				echo "
-					<div class='list-group-item list-group-item-text'>Feed/RSS Desabilitado pelo usuário</div>
+					<div class='list-group-item list-group-item-text'>Feed/RSS Desabilitado. Para habilitar, vá em \"Meu Perfil -> Preferências\". É preciso estar logado.</div>
 				";
 			} else {
 				for ($i=0; $i<3; $i++){

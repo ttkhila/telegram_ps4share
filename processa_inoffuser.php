@@ -10,14 +10,9 @@
 		$login = addslashes(utf8_encode($_POST['txtLogin']));
 		$indicado_por = $_POST['original1_id'];
 		$emailID = $_POST['txtIdEmail'];
-		//echo $nome."<br />";
-		//echo $email."<br />";
-		//echo $tel."<br />";
-		//echo $login."<br />";
-		//echo $indicado_por."<br />";
-		//echo $emailID."<br />";
 		
-		$u->insereUsuario($nome, $login, $email, $tel, $emailID);
+		$id = $u->insereUsuario($nome, $login, $email, $tel, $emailID, '', $indicado_por);
+		$u->criaPreferencias($id);
 		
 		echo "usuário inserido com sucesso!<br />";
 		echo "<a href='inoffuser.php'>Voltar</a>";
