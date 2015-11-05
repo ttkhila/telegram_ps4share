@@ -66,6 +66,17 @@ class recomendacoes{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	// PARADO AQUI 
+	public function getReplicas($usuarioID){
+		$query = "SELECT h.compartilhamento_id, r.id as recomendacaoID, r.historico_id, h.vaga, u.nome as compradorNome, u.login as compradorLogin, r.texto 
+			FROM historicos h, recomendacoes r, usuarios u 
+			WHERE (h.id = r.historico_id) AND 
+			(u.id = r.comprador_id) AND (r.efetuada = 1) AND (r.cancelada = 0) AND (r.efetuada_replica = 0) AND (r.cancelada_replica = 0) AND (r.vendedor_id = $usuarioID)
+			GROUP BY r.historico_id";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function is_this($recomendacaoID, $comprador){
 		$query = "SELECT * FROM recomendacoes WHERE id = $recomendacaoID AND comprador_id = $comprador";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }

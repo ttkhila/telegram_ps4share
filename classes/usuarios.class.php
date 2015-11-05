@@ -289,8 +289,8 @@ class usuarios{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function retornaTudoQuery(){
-		$query = "SELECT u.*, ga.nome as grupo FROM usuarios u, grupos_acesso ga 
-			WHERE (u.grupo_acesso_id = ga.id) AND (u.id <> 0) ORDER BY u.id";
+		$query = "SELECT u.*, ga.nome as grupo, indicador.login as loginIndicador FROM usuarios u, usuarios indicador, grupos_acesso ga 
+			WHERE (u.grupo_acesso_id = ga.id) AND (indicador.id = u.indicado_por) AND (u.id <> 0) ORDER BY u.id";
 		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;
 	}

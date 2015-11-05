@@ -105,7 +105,7 @@
 			});
 		});	
 		
-		$('#div-painel-minhas-compras').on('click', '[name="btn-avalia-compra"]', function(){
+		$('#div-avaliacoes-panel').on('click', '[name="btn-avalia-compra"]', function(){
 			$login = $(this).data('login-vendedor');
 			$(".modal-body #login-vendedor").text( $login );
 			
@@ -114,7 +114,7 @@
 		});
 		
 		//Cancelamento da avaliação
-		$('#div-painel-minhas-compras').on('click', '[name="btn-finaliza-compra"]', function(){
+		$('#div-avaliacoes-panel').on('click', '[name="btn-finaliza-compra"]', function(){
 			if(!confirm("A recomendação é opcional, porém ao confirmar essa opção, não haverá mais possibilidade de voltar atrás.\nConfirma essa opção?"))
 				return false;
 			$recomendacaoID = $(this).attr("id").split("_")[1];
@@ -261,7 +261,7 @@
 			</div> <!-- Fim - Minhas Vendas -->
 
 			<!-- MINHAS COMPRAS -->
-			<div class="panel panel-warning" id="div-painel-minhas-compras">
+			<div class="panel panel-warning" id="div-avaliacoes-panel">
 				<div class="panel-heading">Minhas Compras</div>
 				<div class="panel-body">
 					<div class="table pre-scrollable">
@@ -301,7 +301,7 @@
 									}
 									
 									$linhas .= "
-										<tr>
+										<tr id='tr-".$co->recomendacaoID."'>
 											<td>$games</td>
 											<td title='Nome: ".stripslashes($co->vendedorNome)."'>".stripslashes($co->vendedorLogin)."</td>
 											<td>".$c->getNomeVaga($vaga, 1)."</td>

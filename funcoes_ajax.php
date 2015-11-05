@@ -4,8 +4,11 @@ header('Content-Type: text/html; charset=UTF-8');
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
 /*
- *  NOvo campo tabela usuarios
- * indicado_por INT NULL
+ * 	Tabela RECOMENDACOES
+	texto_replica	text	utf8_unicode_ci		
+	efetuada_replica	tinyint(1)			
+	cancelada_replica	tinyint(1)		
+	data_replica	date	
  * 
  */
 

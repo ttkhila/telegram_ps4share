@@ -1155,6 +1155,7 @@ $("#modal-indicacao-confirmada").on("submit", "form", function(e){
 });
 
 //********************************************************************************
+//Grava Avaliação de compra (recomendação)
 $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
@@ -1184,7 +1185,10 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
 		success: function(data){ 
 			console.log(data); 
-			if (data == 1) location.reload();
+			if (data == 1){
+				$("#div-avaliacoes-panel").find("#tr-"+$recomendacaoID).remove();
+				$("#avaliacao").find("[data-dismiss=modal]").trigger("click");
+			}
 			else {
 				$error = "";
 				$.each(data, function(i, item) {
@@ -1200,7 +1204,14 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 			}
 		}
 	});
-	//alert("Desenvolver essa funcionalidade!");
+});
+//********************************************************************************
+//Grava Réplica ao comprador (recomendação)
+$("#mod-replica").on("click", "#btn-confirma-replica", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var botao = $(this);
+	var divClone = botao.clone(); 
+	//Desenvolver esta função e a função ajax correspondente
 });
 //********************************************************************************  
 /*

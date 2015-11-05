@@ -6,12 +6,14 @@
 	include_once 'classes/recomendacoes.class.php';
 	include_once 'classes/grupos_acesso.class.php';
 	include_once 'classes/compartilhamentos.class.php';
+	include_once 'classes/jogos.class.php';
 	include 'funcoes.php';
 	
 	$u = new usuarios();
 	$ga = new grupos_acesso();
 	$c = new compartilhamentos();
 	$r = new recomendacoes();
+	$j = new jogos();
 	
 	//dados cadastrais
 	$u->carregaDados($_SESSION['ID']);
@@ -56,9 +58,14 @@
 	
 	//Recomendações recebidas
 	$recomendacoes = $r->getMinhasRecomendacoes($_SESSION['ID']);
-	
 	//Recomendações efetuadas
 	$recomendacoesE = $r->getMinhasRecomendacoesEfetuadas($_SESSION['ID']);
+	
+	//recomendações pendentes
+	$compras = $r->getRecomendacoes($_SESSION['ID']);
+	
+	//replicas pendentes
+	$replicas = $r->getReplicas($_SESSION['ID']);
 	
 	//Indicados Pendentes
 	$ind = $u->getIndicadosPendentesPorIndicador($_SESSION['ID']);
@@ -108,6 +115,25 @@
 		$('#grupo-recomenda').on('hidden.bs.collapse', toggleChevron);
 		$('#grupo-recomenda').on('shown.bs.collapse', toggleChevron);
 		
+		//avaliação da compra - dados iniciais
+		$('#div-avaliacoes-panel').on('click', '[name="btn-avalia-compra"]', function(){
+			$login = $(this).data('login-vendedor');
+			$(".modal-body #login-vendedor").text( $login );
+			
+			$recomendacaoID = $(this).attr("id").split("_")[1];
+			$(".modal-body #recomendacao_id").val( $recomendacaoID );
+		});
+		
+		//réplica - dados iniciais
+		$('#div-replicas-panel').on('click', '[name="btn-replicar"]', function(){
+			$login = $(this).data('login-comprador');
+			$texto = $(this).data('texto-comprador');
+			$(".modal-body #login-comprador").text( $login );
+			$(".modal-body #texto-comprador").html( $texto );
+			
+			$recomendacaoID = $(this).attr("id").split("_")[1];
+			$(".modal-body #recomend_id").val( $recomendacaoID );
+		});
 		
 	});	
 </script>
@@ -500,6 +526,136 @@
 						</div>
 					</div>
 				</div><!-- ID: grupo_recomenda -->
+				
+				
+				<div class="panel panel-warning" style="margin-top:5px;"><!-- Recomendações pendentes -->
+					<div class="panel-heading"><span class="glyphicon glyphicon-warning-sign"></span> Avaliações pendentes</div>
+					<div class="panel-body" id="div-avaliacoes-panel">
+						<div class="table pre-scrollable">
+							<table class="table table-striped">
+								<?php
+									if ($compras->num_rows == 0){ $linhas = "<tr><th colspan='4'>Não há compras a serem avaliadas no momento.</th></tr>"; }
+									else {
+								?>
+								<thead>
+									<tr>
+										<th>Jogo(s) da conta</th>
+										<th>Vendedor</th>
+										<th>Vaga</th>
+										<th><span class='glyphicon glyphicon-thumbs-up btn-default btn-xs' title='Avaliar compra'></span></th>
+										<th><span class='glyphicon glyphicon-remove-circle btn-default btn-xs' title='Finaliza sem avaliar'></span></th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php
+									$linhas = "";
+									while($co = $compras->fetch_object()){
+										$id = $co->compartilhamento_id;
+										$vaga = $co->vaga;
+										$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
+										if($jogos->num_rows > 1) { 
+											$games = "";
+											while($jogo = $jogos->fetch_object()){
+												$nome = str_replace("'", " ", stripslashes($jogo->jogo));
+												$nomeAbrev = $jogo->nome_abrev;
+												$games  .= "- $nome ($nomeAbrev)<br />";
+											}
+										} else {
+											$jogo = $jogos->fetch_object();
+											$nome = str_replace("'", " ", stripslashes($jogo->jogo));
+											$nomeAbrev = $jogo->nome_abrev;
+											$games  = "- $nome ($nomeAbrev)";
+										}
+										
+										$linhas .= "
+											<tr id='tr-".$co->recomendacaoID."'>
+												<td>$games</td>
+												<td title='Nome: ".stripslashes($co->vendedorNome)."'>".stripslashes($co->vendedorLogin)."</td>
+												<td>".$c->getNomeVaga($vaga, 1)."</td>
+												<td>
+													<button class='glyphicon glyphicon-thumbs-up btn btn-warning btn-xs' title='Avaliar compra' name='btn-avalia-compra' id='avalia-compra_".$co->recomendacaoID."' data-toggle='modal' 
+														data-target='#avaliacao' data-login-vendedor='".stripslashes($co->vendedorLogin)."'></button>
+												</td>
+												<td>
+													<button class='glyphicon glyphicon-remove-circle btn btn-warning btn-xs' title='Finaliza sem avaliar' name='btn-finaliza-compra' id='finaliza-compra_".$co->recomendacaoID."'></button>
+												</td>
+											</tr>";
+										}
+									}
+									echo $linhas;
+								?>
+								</tbody>
+							</table>
+						</div>	
+					</div>
+				</div>
+				
+				<div class="panel panel-danger" style="margin-top:5px;"><!-- Réplicas pendentes -->
+					<div class="panel-heading"><span class="glyphicon glyphicon-warning-sign"></span> Réplicas pendentes</div>
+					<div class="panel-body" id="div-replicas-panel">
+						<div class="table pre-scrollable">
+							<table class="table table-striped">
+								<?php
+									if ($replicas->num_rows == 0){ $linhas = "<tr><th colspan='4'>Não há réplicas pendentes no momento.</th></tr>"; }
+									else {
+								?>
+								<thead>
+									<tr>
+										<th>Jogo(s) da conta</th>
+										<th>Comprador</th>
+										<th>Vaga</th>
+										<th>Avaliação recebida</th>
+										<th><span class='glyphicon glyphicon-thumbs-up btn-default btn-xs' title='Replicar'></span></th>
+										<th><span class='glyphicon glyphicon-remove-circle btn-default btn-xs' title='Finaliza sem réplica'></span></th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php
+									$linhas = "";
+									while($co = $replicas->fetch_object()){
+										$id = $co->compartilhamento_id;
+										$vaga = $co->vaga;
+										$jogos = $j->getJogosGrupo($id); //verifica se há mais de um jogo na conta
+										if($jogos->num_rows > 1) { 
+											$games = "";
+											while($jogo = $jogos->fetch_object()){
+												$nome = str_replace("'", " ", stripslashes($jogo->jogo));
+												$nomeAbrev = $jogo->nome_abrev;
+												$games  .= "- $nome ($nomeAbrev)<br />";
+											}
+										} else {
+											$jogo = $jogos->fetch_object();
+											$nome = str_replace("'", " ", stripslashes($jogo->jogo));
+											$nomeAbrev = $jogo->nome_abrev;
+											$games  = "- $nome ($nomeAbrev)";
+										}
+										
+										$linhas .= "
+											<tr id='tr-".$co->recomendacaoID."'>
+												<td>$games</td>
+												<td title='Nome: ".stripslashes($co->compradorNome)."'>".stripslashes($co->compradorLogin)."</td>
+												<td>".$c->getNomeVaga($vaga, 1)."</td>
+												<td>".stripslashes($co->texto)."</td>
+												<td>
+													<button class='glyphicon glyphicon-thumbs-up btn btn-warning btn-xs' title='Replicar' name='btn-replicar' id='replica_".$co->recomendacaoID."' data-toggle='modal' 
+														data-target='#mod-replica' data-login-comprador='".stripslashes($co->compradorLogin)."' data-texto-comprador='".stripslashes($co->texto)."'></button>
+												</td>
+												<td>
+													<button class='glyphicon glyphicon-remove-circle btn btn-warning btn-xs' title='Finaliza sem réplica' name='btn-cancela-replica' id='cancela-replica_".$co->recomendacaoID."'></button>
+												</td>
+											</tr>";
+										}
+									}
+									echo $linhas;
+								?>
+								</tbody>
+							</table>
+						</div>	
+					</div>
+				</div>
+				
+				
+				
 			</div><!-- aba-recomendacoes -->
 			
 			<div class="tab-pane" id="aba-indicacoes"><!-- ABA INDICAÇÕES  -->
@@ -632,19 +788,72 @@
 			
 		</div>
 		
-		
-		
-		
-		
-		
-		
-		
-	
-		
-		
-		
+		<!-- formulário de avaliação da compra -->
+		<div class="modal fade" id="avaliacao" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Avalie sua compra</h4>
+					</div><!-- modal-header -->
+					<div class="modal-body">
+						<input type="hidden" name="recomendacao_id" id="recomendacao_id" />
+						<div class="form-group">
+							<label class="control-label">Vendedor:</label>
+							<label class="control-label" name="login-vendedor" id="login-vendedor" /></label>
+						</div>
+						
+						<div class="form-group">
+							<label>Comentário (relate sua experiência nessa transação):</label>
+							<textarea class="form-control" maxlength="250" id="txtTexto" autofocus></textarea>
+							<small>Máximo de 250 caracteres</small>
+							<p class="bg-danger" id="sp-erro-msg-modal" style="display:none;"></p>
+						</div>
 
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" id="btn-confirma-avaliacao" class="btn btn-primary">Avaliar</button>
+						</div>
+					</div><!-- modal-body -->
+				</div><!-- modal-content -->
+			</div><!-- modal-dialog -->
+		</div><!-- modal fade -->
 		
+		<!-- formulário de avaliação da compra -->
+		<div class="modal fade" id="mod-replica" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel1">Forneça uma réplica ao comprador</h4>
+					</div><!-- modal-header -->
+					<div class="modal-body">
+						<input type="hidden" name="recomend_id" id="recomend_id" />
+						<div class="form-group">
+							<label class="control-label">Comprador:</label>
+							<label class="control-label" name="login-comprador" id="login-comprador" /></label>
+						</div>
+						
+						<div class="form-group">
+								<label class="control-label">Avaliação do comprador:</label>
+								<label class="control-label" name="texto-comprador" id="texto-comprador" /></label>
+						</div>
+						
+						<div class="form-group">
+							<label>Comentário (relate sua experiência nessa transação):</label>
+							<textarea class="form-control" maxlength="250" id="txtTextoReplica" autofocus></textarea>
+							<small>Máximo de 250 caracteres</small>
+							<p class="bg-danger" id="sp-erro-msg-modal-replica" style="display:none;"></p>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" id="btn-confirma-replica" class="btn btn-primary">Avaliar</button>
+						</div>
+					</div><!-- modal-body -->
+				</div><!-- modal-content -->
+			</div><!-- modal-dialog -->
+		</div><!-- modal fade -->
 	
 
 	<!-- Conteúdo Principal: Fim -->

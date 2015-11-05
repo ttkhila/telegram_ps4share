@@ -203,7 +203,10 @@
 					sorter: "text"
 				},
 				7: { 
-					sorter: false 
+					sorter: "text" 
+				},
+				8: { 
+					sorter: false
 				}
 			},
 		})
@@ -410,7 +413,8 @@
 											<th>Celular</th>
 											<th class="header">Telegram ID</th>
 											<th class="header">ID E-mail</th>
-											<th class="header">Grupo de Acesso</th>
+											<th class="header">Grupo</th>
+											<th class="header">Indicador</th>
 											<th>
 												Ações
 												<span class='glyphicon glyphicon-info-sign' data-toggle='tooltip' data-placement='top' data-html='true' 
@@ -497,6 +501,7 @@
 														</div>
 														<span class='sp-clicavel'>".stripslashes($user->grupo)."</span>
 													</td>
+													<td>".$user->loginIndicador."</td>
 													<td>
 														<button data-role='$role' class='btn btn-xs btn-default' name='btn-inativar-user'>$txtButton</button>
 														<button data-role='$roleBan' class='btn btn-xs btn-warning' name='btn-banir-user'>$txtButtonBan</button>
