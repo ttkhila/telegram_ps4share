@@ -111,28 +111,7 @@
 			
 			$recomendacaoID = $(this).attr("id").split("_")[1];
 			$(".modal-body #recomendacao_id").val( $recomendacaoID );
-		});
-		
-		//Cancelamento da avaliação
-		$('#div-avaliacoes-panel').on('click', '[name="btn-finaliza-compra"]', function(){
-			if(!confirm("A recomendação é opcional, porém ao confirmar essa opção, não haverá mais possibilidade de voltar atrás.\nConfirma essa opção?"))
-				return false;
-			$recomendacaoID = $(this).attr("id").split("_")[1];
-			
-			var pars = { recomendacao: $recomendacaoID, funcao: 'cancelaRecomendacao'};
-			$.ajax({
-				url: 'funcoes_ajax.php',
-				type: 'POST',
-				contentType: "application/x-www-form-urlencoded;charset=UFT-8",
-				data: pars,
-				beforeSend: function() {  },
-				complete: function(){  },
-				success: function(data){ 
-					location.reload();
-				}	
-			});
-		});
-			
+		});	
 	});	
 </script>
 </head>
@@ -262,7 +241,7 @@
 
 			<!-- MINHAS COMPRAS -->
 			<div class="panel panel-warning" id="div-avaliacoes-panel">
-				<div class="panel-heading">Minhas Compras</div>
+				<div class="panel-heading">Minhas Compras (avaliações)</div>
 				<div class="panel-body">
 					<div class="table pre-scrollable">
 						<table class="table table-striped">

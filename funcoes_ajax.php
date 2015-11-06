@@ -1894,10 +1894,55 @@ function gravaRecomendacao(){
 	exit;	
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function gravaReplica(){
+	session_start();
+	$vendedor = $_SESSION['ID'];
+	$recomendacaoID = $_POST['recomendacaoID'];
+	$texto = $_POST['texto'];
+	$r = carregaClasse("Recomendacao");
+	$v = carregaClasse("Validacao");
+
+	$ret = $r->is_vendedor($recomendacaoID, $vendedor);
+	if(!$ret){
+		$v->set('Registro', '')->set_error("Falha na autenticação.");
+		 $erros = $v->get_errors();
+	}
+
+	$v->set("Comentário", trim($texto))->is_required(); 
+	
+	if($v->validate()){
+		$dt = date('Y-m-d');
+		$r->gravaReplica($recomendacaoID, addslashes($texto), $dt);
+		
+		//Grava Aviso ao vendedor
+		$a = carregaClasse("Aviso");
+		$r->carregaDados($recomendacaoID);
+		$compradorID = $r->getCompradorId();
+		$vendedorLogin = $_SESSION['login'];
+		$texto = "O usuário $vendedorLogin registrou uma réplica a uma recomendação sua em ".date('d-m-Y').".";
+		$texto = addslashes($texto);
+		$a->insereAviso($compradorID, $texto);
+
+		echo json_encode(1);
+	}else{
+		 $erros = $v->get_errors();
+		 echo json_encode($erros);
+	}
+	
+	exit;	
+}
+//----------------------------------------------------------------------------------------------------------------------------
 function cancelaRecomendacao(){
 	$recomendacaoID = $_POST['recomendacao'];
 	$r = carregaClasse("Recomendacao");
 	$r->cancelaRecomendacao($recomendacaoID);
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
+function cancelaReplica(){
+	$recomendacaoID = $_POST['recomendacao'];
+	$r = carregaClasse("Recomendacao");
+	$r->cancelaReplica($recomendacaoID);
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------

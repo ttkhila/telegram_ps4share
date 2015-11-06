@@ -6,7 +6,9 @@ class recomendacoes{
 	private $comprador_id;
 	private $vendedor_id;
 	private $texto;
+	private $texto_replica;
 	private $efetuada;
+	private $efetuada_replica;
 	private $con;
 
 	public function __construct(){
@@ -25,8 +27,12 @@ class recomendacoes{
 	public function getVendedorId(){ return $this->vendedor_id; }
 	public function setTexto($valor){$this->texto = $valor;}
 	public function getTexto(){return $this->texto;}
+	public function setTextoReplica($valor){$this->texto_replica = $valor;}
+	public function getTextoReplica(){return $this->texto_replica;}
 	public function setEfetuada($valor){$this->efetuada = $valor;}
 	public function getEfetuada(){return $this->efetuada;}
+	public function setEfetuadaReplica($valor){$this->efetuada_replica = $valor;}
+	public function getEfetuadaReplica(){return $this->efetuada_replica;}
 //---------------------------------------------------------------------------------------------------------------   
     // Descarrega os dados QUE ESTÃO PREVIAMENTE CARREGADOS NAS VARIÁVEIS DA CLASSE
     // para um array
@@ -38,6 +44,8 @@ class recomendacoes{
 		array_push($dados, $this->getVendedorId());
 		array_push($dados, $this->getTexto());
 		array_push($dados, $this->getEfetuada());
+		array_push($dados, $this->getTextoReplica());
+		array_push($dados, $this->getEfetuadaReplica());
 		return $dados;
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -49,6 +57,8 @@ class recomendacoes{
         $this->setVendedorId($res->vendedor_id); 
         $this->setTexto($res->texto); 
         $this->setEfetuada($res->efetuada);  
+        $this->setTextoReplica($res->texto_replica); 
+        $this->setEfetuadaReplica($res->efetuada_replica); 
     }	
 //---------------------------------------------------------------------------------------------------------------
 	public function abreRecomendacao($historicoID, $compradorID, $vendedorID){
@@ -86,8 +96,22 @@ class recomendacoes{
 		return TRUE;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function is_vendedor($recomendacaoID, $vendedorID){
+		$query = "SELECT * FROM recomendacoes WHERE id = $recomendacaoID AND vendedor_id = $vendedorID";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
+		
+		if($res->num_rows == 0) return FALSE;
+		
+		return TRUE;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function gravaRecomendacao($id, $texto, $dt){
 		$query = "UPDATE recomendacoes SET texto = '$texto', efetuada = 1, data_recomendacao = '$dt' WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
+	public function gravaReplica($id, $texto, $dt){
+		$query = "UPDATE recomendacoes SET texto_replica = '$texto', efetuada_replica = 1, data_replica = '$dt' WHERE id = $id";
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -96,8 +120,13 @@ class recomendacoes{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function cancelaReplica($id){
+		$query = "UPDATE recomendacoes SET cancelada_replica = 1, efetuada_replica = 0 WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
+//---------------------------------------------------------------------------------------------------------------
 	public function getMinhasRecomendacoes($usuarioID){
-		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto 
+		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto, r.texto_replica, r.efetuada_replica , DATE_FORMAT(r.data_replica,'%d/%m/%Y') as data_replica 
 			FROM recomendacoes r, usuarios u 
 			WHERE (r.comprador_id = u.id) AND (r.efetuada = 1) AND (r.vendedor_id = $usuarioID) 
 			ORDER BY r.data_recomendacao desc";
@@ -106,7 +135,7 @@ class recomendacoes{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getMinhasRecomendacoesEfetuadas($usuarioID){
-		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto 
+		$query = "SELECT u.login, DATE_FORMAT(r.data_recomendacao,'%d/%m/%Y') as data, r.texto, r.texto_replica, r.efetuada_replica , DATE_FORMAT(r.data_replica,'%d/%m/%Y') as data_replica 
 			FROM recomendacoes r, usuarios u 
 			WHERE (r.vendedor_id = u.id) AND (r.efetuada = 1) AND (r.comprador_id = $usuarioID) 
 			ORDER BY r.data_recomendacao desc";

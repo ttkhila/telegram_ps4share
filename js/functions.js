@@ -1206,12 +1206,95 @@ $("#avaliacao").on("click", "#btn-confirma-avaliacao", function(e){
 	});
 });
 //********************************************************************************
+//Cancelamento da avaliação
+$('#div-avaliacoes-panel').on('click', '[name="btn-finaliza-compra"]', function(){
+	if(!confirm("A recomendação é opcional, porém ao confirmar essa opção, não haverá mais possibilidade de voltar atrás.\nConfirma a opção?"))
+		return false;
+	$recomendacaoID = $(this).attr("id").split("_")[1];
+	
+	var pars = { recomendacao: $recomendacaoID, funcao: 'cancelaRecomendacao'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {  },
+		complete: function(){  },
+		success: function(data){ 
+			$("#div-avaliacoes-panel").find("#tr-"+$recomendacaoID).remove();
+		}	
+	});
+});
+//********************************************************************************
 //Grava Réplica ao comprador (recomendação)
 $("#mod-replica").on("click", "#btn-confirma-replica", function(e){
 	e.preventDefault(); //previne o evento 'normal'
 	var botao = $(this);
 	var divClone = botao.clone(); 
-	//Desenvolver esta função e a função ajax correspondente
+	
+	$recomendacaoID = $("#recomend_id").val();
+	$texto = $("#txtTextoReplica").val();
+
+	if($texto == ""){
+		$("#mod-replica #sp-erro-msg-modal-replica")
+			.fadeIn()
+			.html("- O campo Comentário é obrigatório!")
+			.delay(2000)
+			.fadeOut('slow');
+		$("#txtTextoReplica").focus();
+		return;
+	}
+	
+	var pars = { recomendacaoID: $recomendacaoID, texto: $texto, funcao: 'gravaReplica'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data); 
+			if (data == 1){
+				$("#div-replicas-panel").find("#tr_rep-"+$recomendacaoID).remove();
+				$("#mod-replica").find("[data-dismiss=modal]").trigger("click");
+			}
+			else {
+				$error = "";
+				$.each(data, function(i, item) {
+					var qtd = item.length;
+					for(var z=0;z<qtd;z++)
+						$error += "- "+item[z]+"<br />";
+				});
+				$("#mod-replica #sp-erro-msg-modal-replica")
+					.fadeIn()
+					.html($error)
+					.delay(2500)
+					.fadeOut('slow');
+			}
+		}
+	});
+});
+//********************************************************************************
+//Cancelamento da replica
+$('#div-replicas-panel').on('click', '[name="btn-cancela-replica"]', function(){
+	if(!confirm("A réplica é opcional, porém ao confirmar essa opção, não haverá mais possibilidade de voltar atrás.\nConfirma a opção?"))
+		return false;
+	$recomendacaoID = $(this).attr("id").split("_")[1];
+	
+	var pars = { recomendacao: $recomendacaoID, funcao: 'cancelaReplica'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() {  },
+		complete: function(){  },
+		success: function(data){ 
+			$("#div-replicas-panel").find("#tr_rep-"+$recomendacaoID).remove();
+		}	
+	});
 });
 //********************************************************************************  
 /*

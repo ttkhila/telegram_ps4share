@@ -124,10 +124,19 @@
 						while($dados = $recomendacoes->fetch_object()){
 							$rec .= "
 								<li class='list-group-item list-group-item-warning'>
-									<span class='glyphicon glyphicon-user'></span> ".stripslashes($dados->login)."<small> em ".$dados->data."</small>
-									<br /><label>- ".stripslashes($dados->texto)."</label>
-								</li><br />
+									<span class='glyphicon glyphicon-user'></span><label>&nbsp;".stripslashes($dados->login)."<small> em ".$dados->data."</small></label>
+									<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes($dados->texto)."
+								</li>
 								";
+								if($dados->efetuada_replica == 1){ //mostra réplica
+									$rec .= "
+										<li class='list-group-item list-group-item-text' style='padding-left:50px;'>
+											<span class='glyphicon glyphicon-triangle-right'></span><label>Réplica de $login<small> em ".$dados->data_replica."</small></label>
+											<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes($dados->texto_replica)."
+										</li>
+									";
+								}
+								$rec .= "<br />";
 						}
 						$rec .= "</ul>";
 					}
