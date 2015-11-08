@@ -500,8 +500,16 @@
 															<button class='btn btn-xs btn-success' name='edita-cadastro'>ok</button>
 														</div>
 														<span class='sp-clicavel'>".stripslashes($user->grupo)."</span>
-													</td>
-													<td>".$user->loginIndicador."</td>
+													</td>";
+													
+												if(!is_null($user->indicado_por) || !empty($user->indicado_por)){
+													$u->carregaDados($user->indicado_por);
+													$saida .= "<td>".stripslashes($u->getLogin())."</td>";
+												} else {
+													$saida .= "<td>&nbsp;</td>";
+												}
+	
+											$saida .= "
 													<td>
 														<button data-role='$role' class='btn btn-xs btn-default' name='btn-inativar-user'>$txtButton</button>
 														<button data-role='$roleBan' class='btn btn-xs btn-warning' name='btn-banir-user'>$txtButtonBan</button>
