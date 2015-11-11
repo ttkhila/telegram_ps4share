@@ -10,7 +10,11 @@
 	}
 	$grupoID = $_GET['grupo'];
 	include_once 'classes/compartilhamentos.class.php';
+	include_once 'classes/alertas.class.php';
 	include 'funcoes.php';
+	
+	$a = new alertas();
+	
 	$c = new compartilhamentos();
 	$c->carregaDados($grupoID);
 	$dados1 = $c->getDadosHistoricoInicial($grupoID);
@@ -32,10 +36,12 @@
 		
 		if($d->comprador_id == 0) $saida1 .= "<span class='col-md-3 $classe'>Vaga em aberto</span>"; //vaga não foi vendida no fechamento do grupo
 		else { 
+			$qtdAlerta = $a->getQtdAlerta($d->comprador_id);
+			if ($qtdAlerta > 0) $alerta = "<small class='text-danger'>- $qtdAlerta alerta(s)</small>"; else $alerta = "";
 			if($d->banido == 1) //usuário banido
-				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") <sup class='sm-ban'>*</sup></span>";
+				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") <sup class='sm-ban'>*</sup> $alerta</span>";
 			else
-				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).")</span>";
+				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") $alerta</span>";
 		}
 		$cont ++;
 	}
@@ -49,6 +55,8 @@
 			if($d->banido_comprador == 1) $banido = " <sup class='sm-ban'>*</sup>"; else $banido = "";
 			$phpdate = strtotime($d->data_venda);
 			$data_venda = date( 'd-m-Y', $phpdate );
+			$qtdAlerta = $a->getQtdAlerta($d->comprador_id);
+			if ($qtdAlerta > 0) $alerta = "<small class='text-danger'>- $qtdAlerta alerta(s)</small>"; else $alerta = "";
 			$saida .= "<div class='row'>
 				<span class='col-md-offset-1 col-md-2'>$data_venda</span>";
 			if($d->vaga == '1') { //Original 1
@@ -57,21 +65,21 @@
 						</div><div class='row'><span class='col-md-offset-1 col-md-2'>$data_venda</span>";
 				}
 				$classe = 'alert alert-success';
-				$saida .= "<span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido</span><span class='col-md-3'>&nbsp;</span><span class='col-md-3'>&nbsp;</span>";
+				$saida .= "<span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido $alerta</span><span class='col-md-3'>&nbsp;</span><span class='col-md-3'>&nbsp;</span>";
 			} else if($d->vaga == '2') { //Original 2
 				if($d->senha_alterada == 1) {
 					$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3 label label-danger'><center>Senha alterada</center></span><span class='col-md-3'>&nbsp;</span>
 						</div><div class='row'><span class='col-md-offset-1 col-md-2'>$data_venda</span>";
 				}
 				$classe = 'alert alert-info';
-				$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido</span><span class='col-md-3'>&nbsp;</span>";
+				$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido $alerta</span><span class='col-md-3'>&nbsp;</span>";
 			} else if($d->vaga == '3') { //Fantasma
 				if($d->senha_alterada == 1) {
 					$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3'>&nbsp;</span><span class='col-md-3 label label-danger'><center>Senha alterada</center></span>
 						</div><div class='row'><span class='col-md-offset-1 col-md-2'>$data_venda</span>";
 				}
 				$classe = 'alert alert-warning';
-				$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3'>&nbsp;</span><span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido</span>";
+				$saida .= "<span class='col-md-3'>&nbsp;</span><span class='col-md-3'>&nbsp;</span><span class='col-md-3 $classe'>".stripslashes($d->login_comprador)." (".stripslashes($d->nome_comprador).")$banido $alerta</span>";
 			}	
 			$saida .= "</div><hr>";
 		}

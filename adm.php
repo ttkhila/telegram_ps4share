@@ -9,6 +9,7 @@
 		if(!$adm) header('Location: index.php');
 	}
 	include_once 'classes/grupos_acesso.class.php';
+	include_once 'classes/alertas.class.php';
 	include_once 'classes/jogos.class.php';
 	include 'funcoes.php';
 
@@ -16,6 +17,7 @@
 	$plat = $j->getPlataformas();
 	
 	$ga = new grupos_acesso();
+	$a = new alertas();
 	
 	$indPend = $u->getIndicadosPendentes();
 	$indConf = $u->getIndicadosConfirmados();
@@ -23,6 +25,7 @@
 	$allUser = $u->retornaTudoQuery();
 	
 	$grupos = $ga->retornaTudo('nome');
+	$alertas = $a->getAlertas();
 ?>
 <?php $topo = file_get_contents('topo.php'); echo $topo; //insere topo ?>
 <script type="text/javascript" src="js/lib/jquery.tablesorter.min.js"></script>
@@ -30,8 +33,7 @@
 <link href="css/blue/style.css" rel="stylesheet" />
 <script>
 	$(function(){ 
-	
-		
+
 		$("#btn-envia-busca").click(function(){
 			var $dados = {}; //Object JSON
 			$dados.jogo_id = $("#jogo1_id").val();
@@ -385,7 +387,7 @@
 						</div><!-- collapseOne3 -->
 					</div><!-- panel panel-warning -->
 					
-					<div class="panel panel-primary">
+					<div class="panel panel-primary"><!-- Gerenciar Cadastros -->
 						<div class="panel-heading" role="tab" id="headingOne4">
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne4" aria-expanded="true" aria-controls="collapseOne4">
@@ -524,6 +526,75 @@
 						</div><!-- collapseOne4 -->
 					</div><!-- panel panel-primary -->
 
+					<div class="panel panel-danger"><!-- Alertas -->
+						<div class="panel-heading" role="tab" id="headingOne7">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne7" aria-expanded="true" aria-controls="collapseOne7">
+									<span class="glyphicon glyphicon-alert"></span>&nbsp;Alertas
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne7">
+							<div class="panel-body">
+								<div class="panel panel-primary">
+									<div class="panel-heading">Novo Alerta</div>
+									<div class="panel-body">
+										<form id="frm-alertas" role="form">
+											<div class="form-group">
+												<label for="nome">Usuario <span class="text-danger">*</span></label>
+												<input type="hidden" name="original3_id" id="original3_id" />
+												<input type="text" name="original3" class="form-control" id="original3_autocomplete" autocomplete="off" placeholder="Digite parte do ID do usu&aacute;rio" />
+											</div>
+											<div class="form-group">
+												<label for="email">Motivo (descrição) <span class="text-danger">*</span></label>
+												<textarea maxlength="300" id="texto_alerta" class='form-control'></textarea>
+												<small>Máximo 300 caracteres</small><br />
+											</div>
+											<div class="form-group"><span class="text-danger">*</span> Campos obrigatórios</div>
+											<p class="bg-danger" id="sp-erro-alerta" style="display:none;"></p>
+											<button type="submit" class="btn btn-success">Gravar</button>
+										</form>
+									</div>
+								</div><br />
+								
+								<div class="panel panel-info">
+									<div class="panel-heading">Usuários com alertas</div>
+									<div class="panel-body">
+									<?php
+										if ($alertas->num_rows == 0){
+											$saida = "<div class='col-md-12'><label>Não há usuários com alertas no momento.</label></div>";
+										} else {
+											$saida = "
+												<table class='table table-striped'>
+													<thead>
+														<tr>
+															<th width='65%'>Usuário</th>
+															<th colspan='2' width='35%'>Quantidade de Alertas</th>
+														</tr>
+													</thead>
+													<tbody>
+											";
+											while($alert = $alertas->fetch_object()){
+												$saida .= "
+														<tr>
+															<td><strong>".stripslashes($alert->login)." (".stripslashes($alert->nome).") </strong><a href='#' name='alerta-usuario_".$alert->usuario_id."'>[+]</a></td>
+															<td colspan='2'><strong>+".$alert->qtd."</strong></td>
+														</tr>
+												";
+											}
+											$saida .= "
+													</tbody>
+												</table>
+											";	
+										}
+										echo $saida;
+									?>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
 				</div><!-- panel-group -->
 			</div><!-- ABA CADASTROS - FIM -->
 	
@@ -862,7 +933,10 @@
 			</div><!-- ABA JOGOS - FIM -->
 			
 			<div class="tab-pane" id="aba-relatorios">
-				 Em construção
+				 <!-- 
+					Variação de moedas. 2 = dolar USD
+					SELECT data_compra, fator_conversao FROM `compartilhamentos` WHERE (moeda_id = 2) AND (fechado = 1) ORDER BY data_compra
+				 -->
 			</div>
 		</div>
 		

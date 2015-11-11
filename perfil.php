@@ -526,7 +526,7 @@
 											while($dados = $recomendacoesE->fetch_object()){
 												$rec .= "
 													<li class='list-group-item list-group-item-warning'>
-														<span class='glyphicon glyphicon-user'></span><label>&nbsp;Você<small> em ".$dados->data."</small></label>
+														<span class='glyphicon glyphicon-user'></span><label>&nbsp;Para ".stripslashes($dados->login)."<small> em ".$dados->data."</small></label>
 														<br /><span class='glyphicon glyphicon-comment'></span> ".stripslashes($dados->texto)."
 													</li>
 													";

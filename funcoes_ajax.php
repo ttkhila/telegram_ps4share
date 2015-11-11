@@ -4,12 +4,30 @@ header('Content-Type: text/html; charset=UTF-8');
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
 /*
- * 	Tabela RECOMENDACOES
-	texto_replica	text	utf8_unicode_ci		
-	efetuada_replica	tinyint(1)			
-	cancelada_replica	tinyint(1)		
-	data_replica	date	
- * 
+CREATE TABLE IF NOT EXISTS `alertas` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(10) unsigned NOT NULL,
+  `texto` text COLLATE utf8_unicode_ci NOT NULL,
+  `data_alerta` date NOT NULL,
+  `autor_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=10 ;
+
+--
+-- Extraindo dados da tabela `alertas`
+--
+
+INSERT INTO `alertas` (`id`, `usuario_id`, `texto`, `data_alerta`, `autor_id`) VALUES
+(1, 2, 'sei lÃ¡, nÃ£o sei o que escrever!', '2015-11-11', 2),
+(2, 8, 'Presidente pisou na bola.', '2015-11-11', 2),
+(3, 8, 'dwqdwqd wqwqd wq wqqwd wqd', '2015-11-05', 1),
+(4, 5, 'f gewgwrgrgr wgrwgrgrgwrg\ngwrgwrg wrg', '2015-11-11', 1),
+(5, 8, 'Ric tÃ¡ de zoantion!', '2015-11-11', 4),
+(6, 2, 'wqf fqefwq', '2015-11-11', 4),
+(7, 4, 'fqwfqwwqwqqw qw q', '2015-11-11', 2),
+(8, 8, 'mais um teste de alerta para o Ricardo Matos!', '2015-11-11', 2),
+(9, 8, 'ej qw eeihqwiehuiwqhe uhwquehwuqheuwqhei\ne qwkehwqhewq uehqwuiheqir03ir0i23r 3i3r 032ir 3ir3i ri23r 032ir903i290ri32\n ry32yr3829ry9 32yr8923r8932y98r 9ry3y28ry 382yr 3298yr328ry 823yr 83yr8y32r 328ry 83y2 r832y3y 83y28r 328yr328 y382yr\n r32yr32y7r3r73t2r7t732tr7 3t27rt32 7rt32 r732tr7 t327rt32 7r', '2015-11-11', 2);
+
  */
 
 $fx = $_POST['funcao'];
@@ -50,7 +68,7 @@ function realizaLogin(){
 		echo json_encode(array(0, "Usuário Inativo! Contate a administração."));
 		exit;
 	}
-  		$primeiro_acesso = $resp->primeiro_acesso;
+  	$primeiro_acesso = $resp->primeiro_acesso;
         if ($primeiro_acesso == 1){
 		echo json_encode(array(2, $resp->id));
 		exit;
@@ -1422,12 +1440,13 @@ function is_not_null($val){
 }
 //----------------------------------------------------------------------------------------------------------------------------
 function montaResultadoBuscaClassificados($dados){
+	$num_rows = $dados->num_rows;
 	$saida = "";
-	if($dados->num_rows == 0) return "<tr><td colspan='6'><label class='text-warning'>Nenhum registro encontrado para os filtros informados!</label></td></tr>";
+	if($num_rows == 0) return "<tr><td colspan='6'><label class='text-warning'>Nenhum registro encontrado para os filtros informados!</label></td></tr>";
 	$j = carregaClasse("Jogo");
 	$u = carregaClasse("Usuario");
-	while($d = $dados->fetch_object()){
-		
+	$saida .= "<tr class='warning'><td colspan='6'><label class='text-primary'>Número de registros encontrados na busca: $num_rows</label></td></tr>";
+	while($d = $dados->fetch_object()){	
 		$jogos = $j->getJogosGrupo($d->idGrupo); //verifica se há mais de um jogo na conta
 		$title = "";
 		while($jogo = $jogos->fetch_object()){
@@ -2217,9 +2236,38 @@ function gravaPreferencias(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function gravaAlerta(){
+	session_start();
+	$adm = $_SESSION['ID'];
+	$usuarioID = $_POST['usuarioID'];
+	$texto = addslashes(strip_tags($_POST['texto']));
+	
+	$a = carregaClasse("Alerta");
+	$dt = date("Y-m-d");
+	$a->insereAlerta($usuarioID, $texto, $dt, $adm);
+	echo 1;
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
-
+function recuperaAlertas(){
+	$usuarioID = $_POST['usuarioID'];
+	$a = carregaClasse("Alerta");
+	$alertas = $a->getAlertasUsuario($usuarioID);
+	
+	$tela = "";
+	while($al = $alertas->fetch_object()){
+		$tela .= "
+			<tr name='tr-detalha-alerta_".$al->usuario_id."'>
+				<td style='padding-left:50px;'>".stripslashes($al->texto)."</td>
+				<td>Autor:<strong> ".stripslashes($al->login)."</strong></td>
+				<td>Data: <strong>".$al->dataAlerta."</strong></td>
+			</tr>
+		";
+	}
+	$tela .= "<tr name='tr-detalha-alerta_$usuarioID'><td colspan='3'>&nbsp;</td></tr>";
+	echo $tela;
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -2243,6 +2291,10 @@ function carregaClasse($secao){
 		case 'Aviso':
 			require_once 'classes/avisos.class.php';
 			$inst = new avisos();
+			break;
+		case 'Alerta':
+			require_once 'classes/alertas.class.php';
+			$inst = new alertas();
 			break;
 		case 'Recomendacao':
 			require_once 'classes/recomendacoes.class.php';

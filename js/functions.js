@@ -1887,8 +1887,86 @@ $("#frm-preferencias").submit(function(e){
 	});
 });
 //******************************************************************************** 
-
+// Alertas
+$("#frm-alertas").submit(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	var form = $(this);
+	var botao = form.find("button");;
+	var divClone = botao.clone();
+	
+	var $usuarioID = $("#original3_id").val();
+	var $texto = $.trim($("#texto_alerta").val());
+	//alert($texto); return;
+	
+	if($usuarioID == ""){
+		$("#sp-erro-alerta")
+			.fadeIn()
+			.html("Selecione um usuário.")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#original3_id").focus();
+		return false;
+	}
+	
+	if($texto == ""){
+		$("#sp-erro-alerta")
+			.fadeIn()
+			.html("Digite a descrição do alerta.")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#texto_alerta").focus();
+		return false;
+	}
+	
+	var pars = { usuarioID: $usuarioID, texto: $texto, funcao: 'gravaAlerta'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		beforeSend: function() { doAnimated(botao); botao.attr('disabled', 'disabled'); },
+		complete: function(){ resetaHtml(botao, divClone); botao.removeAttr('disabled'); },
+		success: function(data){ 
+			console.log(data);
+			if(data == 1){ 
+				alert("Alerta Gravado com Sucesso!");
+				location.reload();
+			}
+			resetaHtml(botao, divClone);
+			botao.removeAttr('disabled');
+		}
+	});
+});
 //******************************************************************************** 
+// detalhamento dos alertas
+$("#collapseOne7 table td").find("a").click(function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	$usuarioID = parseInt($(this).attr('name').split("_")[1]);
+	$a = $(this);
+	
+	if($("[name='tr-detalha-alerta_"+$usuarioID+"']").length){
+		$("[name='tr-detalha-alerta_"+$usuarioID+"']").remove();
+		$a.text('[+]');
+		return false;
+	}
+	$tr = $(this).parent().parent();
+	
+	var pars = { usuarioID: $usuarioID, funcao: 'recuperaAlertas'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		success: function(data){ 
+			console.log(data);
+			$tr.after(data);
+			$a.text('[-]');
+		}
+	});
+	
+	
+	
+});
 
 //******************************************************************************** 
 
