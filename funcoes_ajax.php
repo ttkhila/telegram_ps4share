@@ -3,33 +3,6 @@ header('Content-Type: text/html; charset=UTF-8');
 //Esse arquivo � respons�vel por carregar as fun��es usadas com ajax
 //Lembrar sempre de acrescentar o comando EXIT ao final da fun��o
 
-/*
-CREATE TABLE IF NOT EXISTS `alertas` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `usuario_id` int(10) unsigned NOT NULL,
-  `texto` text COLLATE utf8_unicode_ci NOT NULL,
-  `data_alerta` date NOT NULL,
-  `autor_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=10 ;
-
---
--- Extraindo dados da tabela `alertas`
---
-
-INSERT INTO `alertas` (`id`, `usuario_id`, `texto`, `data_alerta`, `autor_id`) VALUES
-(1, 2, 'sei lÃ¡, nÃ£o sei o que escrever!', '2015-11-11', 2),
-(2, 8, 'Presidente pisou na bola.', '2015-11-11', 2),
-(3, 8, 'dwqdwqd wqwqd wq wqqwd wqd', '2015-11-05', 1),
-(4, 5, 'f gewgwrgrgr wgrwgrgrgwrg\ngwrgwrg wrg', '2015-11-11', 1),
-(5, 8, 'Ric tÃ¡ de zoantion!', '2015-11-11', 4),
-(6, 2, 'wqf fqefwq', '2015-11-11', 4),
-(7, 4, 'fqwfqwwqwqqw qw q', '2015-11-11', 2),
-(8, 8, 'mais um teste de alerta para o Ricardo Matos!', '2015-11-11', 2),
-(9, 8, 'ej qw eeihqwiehuiwqhe uhwquehwuqheuwqhei\ne qwkehwqhewq uehqwuiheqir03ir0i23r 3i3r 032ir 3ir3i ri23r 032ir903i290ri32\n ry32yr3829ry9 32yr8923r8932y98r 9ry3y28ry 382yr 3298yr328ry 823yr 83yr8y32r 328ry 83y2 r832y3y 83y28r 328yr328 y382yr\n r32yr32y7r3r73t2r7t732tr7 3t27rt32 7rt32 r732tr7 t327rt32 7r', '2015-11-11', 2);
-
- */
-
 $fx = $_POST['funcao'];
 call_user_func($fx); //chama a função passada como parametro
 //----------------------------------------------------------------------------------------------------------------------------
@@ -2257,10 +2230,13 @@ function recuperaAlertas(){
 	$tela = "";
 	while($al = $alertas->fetch_object()){
 		$tela .= "
-			<tr name='tr-detalha-alerta_".$al->usuario_id."'>
+			<tr name='tr-detalha-alerta_".$al->usuario_id."' id='tr-num-alerta_".$al->id."'>
 				<td style='padding-left:50px;'>".stripslashes($al->texto)."</td>
 				<td>Autor:<strong> ".stripslashes($al->login)."</strong></td>
-				<td>Data: <strong>".$al->dataAlerta."</strong></td>
+				<td>
+				Data: <strong>".$al->dataAlerta."</strong>
+				&nbsp;<button class='glyphicon glyphicon-trash btn btn-xs btn-danger' title='Excluir Alerta'></button>
+				</td>
 			</tr>
 		";
 	}
@@ -2269,7 +2245,12 @@ function recuperaAlertas(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-
+function excluiAlerta(){
+	$alertaID = $_POST['alertaID'];
+	$a = carregaClasse("Alerta");
+	$a->excluiAlerta($alertaID);
+	exit;
+}
 //----------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------

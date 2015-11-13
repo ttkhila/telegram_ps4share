@@ -1962,12 +1962,44 @@ $("#collapseOne7 table td").find("a").click(function(e){
 			$tr.after(data);
 			$a.text('[-]');
 		}
-	});
-	
-	
-	
+	});	
 });
+//******************************************************************************** 
+$("#collapseOne7 table").on("click", "tr[name^='tr-detalha-alerta']", function(e){
+	e.preventDefault(); //previne o evento 'normal'
+	if(!confirm("Confirma a exclusão do alerta do usuário?")) return false;
+	usuario = parseInt($(this).attr('name').split("_")[1]);
+	$tr = $(this);
+	$alertaID = parseInt($(this).attr("id").split("_")[1]);
+	tdQtdAlerta = $tr.siblings("tr[name='tr-main-alerta_"+usuario+"']").children("td:nth-child(2)").children("strong"); //campo que informa a quantidade total de alertas de um usuário
+	$qtdAlerta = parseInt(tdQtdAlerta.text()); //quantidade de alertas
+	$qtdAlerta--; //diminui 1 do valor
+	
+	var pars = { alertaID: $alertaID, funcao: 'excluiAlerta'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		success: function(data){ 
+			$tr.remove()
+			tdQtdAlerta.html("+"+$qtdAlerta); //aplica novo valor total de alertas do usuário
+		}
+	});	
+});
+//******************************************************************************** 
 
 //******************************************************************************** 
+
+//******************************************************************************** 
+
+//******************************************************************************** 
+
+//******************************************************************************** 
+
+//******************************************************************************** 
+
+
+
 
 });

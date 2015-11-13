@@ -58,7 +58,8 @@ class alertas{
 	}
 //---------------------------------------------------------------------------------------------------------------
 	public function getAlertasUsuario($usuarioID){
-		$query = "SELECT a.texto, a.usuario_id, DATE_FORMAT(a.data_alerta,'%d/%m/%Y') as dataAlerta, u.login FROM alertas a, usuarios u 
+		$query = "SELECT a.id, a.texto, a.usuario_id, DATE_FORMAT(a.data_alerta,'%d/%m/%Y') as dataAlerta, u.login 
+			FROM alertas a, usuarios u 
 			WHERE (usuario_id = $usuarioID) AND (a.autor_id = u.id) ORDER BY data_alerta DESC";
 		try{ $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
 		return $res;
@@ -70,6 +71,10 @@ class alertas{
 		return $res->qtd;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function excluiAlerta($id){
+		$query = "DELETE FROM alertas WHERE id = $id";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 

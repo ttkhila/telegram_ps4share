@@ -14,11 +14,11 @@
 	include 'funcoes.php';
 
 	$j = new jogos();
-	$plat = $j->getPlataformas();
-	
 	$ga = new grupos_acesso();
 	$a = new alertas();
-	
+
+	$plat = $j->getPlataformas();
+
 	$indPend = $u->getIndicadosPendentes();
 	$indConf = $u->getIndicadosConfirmados();
 	$indNeg = $u->getIndicadosNegados();
@@ -526,7 +526,7 @@
 						</div><!-- collapseOne4 -->
 					</div><!-- panel panel-primary -->
 
-					<div class="panel panel-danger"><!-- Alertas -->
+					<div class="panel panel-warning"><!-- Alertas -->
 						<div class="panel-heading" role="tab" id="headingOne7">
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion3" href="#collapseOne7" aria-expanded="true" aria-controls="collapseOne7">
@@ -576,7 +576,7 @@
 											";
 											while($alert = $alertas->fetch_object()){
 												$saida .= "
-														<tr>
+														<tr name='tr-main-alerta_".$alert->usuario_id."'>
 															<td><strong>".stripslashes($alert->login)." (".stripslashes($alert->nome).") </strong><a href='#' name='alerta-usuario_".$alert->usuario_id."'>[+]</a></td>
 															<td colspan='2'><strong>+".$alert->qtd."</strong></td>
 														</tr>
@@ -932,12 +932,14 @@
 				</div><!-- panel-group -->
 			</div><!-- ABA JOGOS - FIM -->
 			
-			<div class="tab-pane" id="aba-relatorios">
-				 <!-- 
-					Variação de moedas. 2 = dolar USD
-					SELECT data_compra, fator_conversao FROM `compartilhamentos` WHERE (moeda_id = 2) AND (fechado = 1) ORDER BY data_compra
-				 -->
-			</div>
+			<div class="tab-pane" id="aba-relatorios"><!-- ABA RELATÓRIOS - INICIO -->
+				<div class="panel panel-info" style="margin-top:5px;">
+					<div class="panel-heading">Variação do Dólar ($) através do tempo</div>
+					<div class="panel-body">
+						<img src="gera_grafico.php?moeda=2" />
+					</div>
+				</div>
+			</div><!-- ABA RELATÓRIOS - FIM -->
 		</div>
 		
 	</div>

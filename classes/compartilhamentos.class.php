@@ -673,6 +673,12 @@ class compartilhamentos{
 		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function getVariacaoCambial($moeda){
+		$query = "SELECT DATE_FORMAT(c.data_compra,'%d/%m/%Y') as dia_compra, c.fator_conversao, m.nome as moedaNome FROM compartilhamentos c, moedas m 
+			WHERE (c.moeda_id = $moeda) AND (c.fechado = 1) AND (c.moeda_id = m.id) GROUP BY c.data_compra ORDER BY c.data_compra";
+		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { return $e.message; }
+		return $res;
+	}
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
