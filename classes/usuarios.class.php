@@ -252,6 +252,7 @@ class usuarios{
 	public function insereUsuario($nome, $login, $email, $tel, $emailID, $senha='', $indicado_por = 'NULL', $dataPrimeiroAcesso='NULL', $primeiro_acesso = 1){
 		$query = "INSERT INTO usuarios (nome, login, email, telefone, id_email, senha, indicado_por, primeiro_acesso_data, primeiro_acesso) 
 			VALUES ('$nome', '$login', '$email', '$tel', '$emailID', '$senha', $indicado_por, '$dataPrimeiroAcesso', $primeiro_acesso)";
+
 		try{ $res = $this->con->executa($query, 1); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}

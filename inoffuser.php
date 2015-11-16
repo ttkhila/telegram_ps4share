@@ -106,23 +106,23 @@
 	<form id="form-cadastro-planilha" role="form" method="post" action="processa_inoffuser.php">
 		<div id="form-group">
 			<label>Nome</label>
-			<input class="form-control" type="text" id="txtNome" name="txtNome" />
+			<input class="form-control" type="text" id="txtNome" name="txtNome" required />
 		</div>	
 		
 		<div id="form-group">
 			<label>ID</label>
-			<input class="form-control" type="text" id="txtLogin" name="txtLogin" />
+			<input class="form-control" type="text" id="txtLogin" name="txtLogin" required />
 		</div>
 		
 		<div id="form-group">
 			<label>Celular</label>
-			<input class="form-control" type="tel" id="txtTelefone" name="txtTelefone" />
+			<input class="form-control" type="tel" id="txtTelefone" name="txtTelefone" required />
 			<script type="text/javascript">$("#txtTelefone").mask("(00) 0000-00009");</script>
 		</div>		
 		
 		<div id="form-group">
 			<label>E-mail</label>
-			<input class="form-control" type="email" id="txtEmail" name="txtEmail" />
+			<input class="form-control" type="email" id="txtEmail" name="txtEmail" required />
 		</div>	
 		
 		<div id="form-group">                      			
@@ -133,7 +133,7 @@
 		
 		<div id="form-group">
 			<label>ID E-mail</label>
-			<input class="form-control" type="text" id="txtIdEmail" name="txtIdEmail" />
+			<input class="form-control" type="text" id="txtIdEmail" name="txtIdEmail" required />
 			<button type="button" class="btn btn-success" id="btn-id-email">Preencher</button>
 		</div><br />
 		<button type="submit" class="btn btn-primary">Enviar</button>

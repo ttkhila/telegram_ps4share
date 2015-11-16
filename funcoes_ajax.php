@@ -277,6 +277,7 @@ function mostraGrupo(){
 	$j = carregaClasse('Jogo');
 	$u = carregaClasse('Usuario'); 
 	$c->carregaDados($idGrupo);
+	$cadeado = $c->getFantasmaCadeado();
 	$saida = "";
 	$simboloMoeda = $c->recupera_dados_moedas($c->getMoedaId())->simbolo;
 	
@@ -364,6 +365,10 @@ function mostraGrupo(){
 		$titleVenda3 = ($aVenda3 == 0) ? "Colocar vaga a venda" : 
 			"Item já colocado a venda. Refazer irá alterar seu preço.";
 	}
+	
+	//cadeado - fantasma
+	if($cadeado == 1) $imgCadeado = "<span class='glyphicon glyphicon-lock' title='Usuário informou cadeado nesta vaga'></span>";
+	else $imgCadeado = "";
 
 	//identado por HTML
 	$saida .= "
@@ -413,7 +418,7 @@ function mostraGrupo(){
 						</div>
 						<div class='row'>
 							<label class='col-sm-2'>Fantasma: </label>
-							<label class='col-sm-4' style='font-weight:normal;' title='Clique para ver o perfil de $orig3Nome'>$link3$orig3</a> %%opcoes3%%
+							<label class='col-sm-4' style='font-weight:normal;' title='Clique para ver o perfil de $orig3Nome'>$link3$orig3</a> %%opcoes3%% &nbsp;$imgCadeado
 								<div name='input-valor' id='input-valor_".$idGrupo."_3' class='form-group div-input-valor'>Valor em reais (opcional):
 									<button type='button' aria-label='Close' class='close' name='sp-close-input-valor' data-dismiss='div-input-valor'>
 										<span aria-hidden='true'>&times;</span>
@@ -531,7 +536,10 @@ function mostraGrupo(){
 	if($orig3ID == $selfID && $c->getFechado() == 1) 
 		//$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='1' data-toggle='modal' 
 			//data-target='#repasse' id='img-repasse_$idGrupo' rel='3' title='Informar vaga repassada'></button>&nbsp;&nbsp;
-		$opcoes3 = "<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
+		$opcoes3 = "
+			<button class='glyphicon glyphicon-lock btn btn-danger btn-xs' name='img-cadeado' id='img-cadeado_".$idGrupo."'  
+			title='Informar cadeado nessa vaga'></button>&nbsp;&nbsp;
+			<button class='$classeVenda3' name='img-disponibiliza' id='img-disponibiliza_".$idGrupo."_3'  
 			title='$titleVenda3'></button>"; //grupo fechado. OS donos das vagas podem repassa-la ou coloca-la a venda
 	else if(($selfID == $c->getCriadorId() || $c->getOrig1() == $selfID) && $c->getOrig3() == 0 && $c->getFechado() == 0) 
 		$opcoes3 = "&nbsp;<button class='glyphicon glyphicon-transfer glyph_click btn btn-primary btn-xs' name='img-repasse' data-id='$nomeMoeda' data-toggle='modal' 
@@ -566,6 +574,7 @@ function mostraHistorico(){
 	$c->carregaDados($idGrupo);
 	$dadosIniciais = $c->getDadosHistoricoInicial($idGrupo);
 	$dadosHist = $c->getDadosHistorico($idGrupo);
+	$cadeado = $c->getFantasmaCadeado();
 	$saida = "";
 	$saida .= "<table class='table'><thead>";
 	$saida .= "<tr><th colspan=4 style='background-color:#28720F; color:#fff'>Grupo: ".stripslashes($c->getNome())."</th></tr>";
@@ -580,10 +589,12 @@ function mostraHistorico(){
 		}
 		if($d->comprador_id == 0) $saida .= "<td>Vaga em aberto</td>"; //vaga não foi vendida no fechamento do grupo
 		else { 
+			//cadeado - fantasma
+			if($cadeado == 1 && $d->vaga == '3') $imgCadeado = "<span class='glyphicon glyphicon-lock' title='Usuário informou cadeado nesta vaga'></span>"; else $imgCadeado = "";	
 			if($d->banido == 1) //usuário banido
-				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)." <sup class='sm-ban'>*</sup></td>";
+				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)." <sup class='sm-ban'>*</sup> $imgCadeado</td>";
 			else
-				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)."</td>";
+				$saida .= "<td title='".stripslashes($d->nome)."'>".stripslashes($d->login)." $imgCadeado</td>";
 		}
 		$cont ++;
 	}
@@ -734,6 +745,15 @@ function gravaDisponibilidadeVaga(){
 	exit;
 }
 //----------------------------------------------------------------------------------------------------------------------------
+function informarCadeado(){
+	$id = $_POST['id'];
+	$c = carregaClasse("Compartilhamento");
+	$c->insereCadeado($id);
+	
+	echo "Cadeado informado!";
+	exit;
+}
+//----------------------------------------------------------------------------------------------------------------------------
 function mostraGrupoAntigo(){
 	$idHist = $_POST['id'];
 	$selfID = $_POST['selfid'];
@@ -762,6 +782,7 @@ function mostraGrupoAntigo(){
 	$orig1 = $c->getOrig1();
 	$orig2 = $c->getOrig2();
 	$orig3 = $c->getOrig3();
+	$cadeado = $c->getFantasmaCadeado();
 	
 	//Original 1
 	if ($orig1 == 0){ $orig1Login = "Vaga em aberto"; $link1 = "<a name='link_vazio' href='#'>"; }
@@ -778,18 +799,26 @@ function mostraGrupoAntigo(){
 		$link2= "<a href='perfil_usuario.php?user=$orig2' target='_blank'>";
 	}
 	//Fantasma
-	if ($orig3 == 0){ $orig3Login = "Vaga em aberto"; $link3 = "<a name='link_vazio' href='#'>"; }
+	if ($orig3 == 0){ $orig3Login = "Vaga em aberto"; $link3 = "<a name='link_vazio' href='#'>"; $imgCadeado = ""; }
 	else{
 		$u->carregaDados($orig3);
 		$orig3Login = stripslashes($u->getLogin());
 		$link3= "<a href='perfil_usuario.php?user=$orig3' target='_blank'>";
+		if ($cadeado == 1) $imgCadeado = "<span class='glyphicon glyphicon-lock' title='Usuário informou cadeado nesta vaga'></span>";
+		else $imgCadeado = "";
 	}
 	
 	//JOGOS
 	$jogos = $j->getJogosGrupo($idGrupo);
 	
+	if($numVaga == 3 && $cadeado == 1) //Fantasma com cadeado
+		$textoHist = "Você foi proprietário da vaga de Fantasma desta conta e informou que ela ganhou cadeado.";
+	else
+		$textoHist = "Você foi proprietário da vaga de <b>$nomeVaga</b> e repassou para<b>
+			<a href='perfil_usuario.php?user=$comprador_id' target='_blank' title='Clique para ver o perfil de $compradorLogin'>$compradorLogin</a>
+			</b> em $data_venda por R$ $valor_pago";
+	
 	$saida = "";
-
 	$saida .= "
 		<div class='panel-group'>
 			<div class='col-md-8'>
@@ -798,14 +827,12 @@ function mostraGrupoAntigo(){
 					<div class='panel-body'>
 						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 1:</label><label title='Clique para ver o perfil de $orig1Login' class='col-sm-3'>$link1$orig1Login</a></label></div>
 						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Original 2:</label><label title='Clique para ver o perfil de $orig2Login' class='col-sm-3'>$link2$orig2Login</a></label></div>
-						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Fantasma:</label><label title='Clique para ver o perfil de $orig3Login' class='col-sm-3'>$link3$orig3Login</a></label></div>
+						<div class='row'><label class='col-sm-2 col-sm-offset-1'>Fantasma:</label><label title='Clique para ver o perfil de $orig3Login' class='col-sm-3'>$link3$orig3Login</a>&nbsp;$imgCadeado</label></div>
 					</div>
 				</div>
 				<div class='panel panel-danger'>
 					<div class='panel-heading'>
-						Você foi proprietário da vaga de <b>$nomeVaga</b> e repassou para<b>
-						<a href='perfil_usuario.php?user=$comprador_id' target='_blank' title='Clique para ver o perfil de $compradorLogin'>$compradorLogin</a>
-						</b> em $data_venda por R$ $valor_pago
+						$textoHist
 					</div>
 				</div>
 			</div>

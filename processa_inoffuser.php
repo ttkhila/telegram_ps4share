@@ -8,7 +8,8 @@
 		$email = $_POST['txtEmail'];
 		$tel = $_POST['txtTelefone'];
 		$login = addslashes(utf8_encode($_POST['txtLogin']));
-		$indicado_por = $_POST['original1_id'];
+		if($_POST['original1_id'] == "") $indicado_por = "NULL";
+		else $indicado_por = $_POST['original1_id'];
 		$emailID = $_POST['txtIdEmail'];
 		
 		$id = $u->insereUsuario($nome, $login, $email, $tel, $emailID, '', $indicado_por);

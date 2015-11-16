@@ -19,6 +19,7 @@
 	$c->carregaDados($grupoID);
 	$dados1 = $c->getDadosHistoricoInicial($grupoID);
 	$dados = $c->getDadosHistorico($grupoID);
+	$cadeado = $c->getFantasmaCadeado();
 	
 	//dados da criação da conta
 	$saida1 = "<div class='row'>";
@@ -33,15 +34,17 @@
 		if ($d->vaga == '1') $classe = 'alert alert-success';
 		else if ($d->vaga == '2') $classe = 'alert alert-info';
 		else $classe = 'alert alert-warning';
-		
+
 		if($d->comprador_id == 0) $saida1 .= "<span class='col-md-3 $classe'>Vaga em aberto</span>"; //vaga não foi vendida no fechamento do grupo
 		else { 
+			//cadeado - fantasma
+			if($cadeado == 1 && $d->vaga == '3') $imgCadeado = "<span class='glyphicon glyphicon-lock' title='Usuário informou cadeado nesta vaga'></span>"; else $imgCadeado = "";	
 			$qtdAlerta = $a->getQtdAlerta($d->comprador_id);
 			if ($qtdAlerta > 0) $alerta = "<small class='text-danger'>- $qtdAlerta alerta(s)</small>"; else $alerta = "";
 			if($d->banido == 1) //usuário banido
-				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") <sup class='sm-ban'>*</sup> $alerta</span>";
+				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") <sup class='sm-ban'>*</sup> $alerta $imgCadeado</span>";
 			else
-				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") $alerta</span>";
+				$saida1 .= "<span class='col-md-3 $classe'>".stripslashes($d->login)." (".stripslashes($d->nome).") $alerta $imgCadeado</span>";
 		}
 		$cont ++;
 	}

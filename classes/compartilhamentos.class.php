@@ -14,6 +14,7 @@ class compartilhamentos{
 	private $ativo;
 	private $fechado;
 	private $criador_id;
+	private $fantasma_cadeado;
 	//HISTÓRICOS
 	private $historico_id;
 	private $compartilhamento_id;
@@ -62,6 +63,8 @@ class compartilhamentos{
 	public function getFechado(){ return $this->fechado; }
 	public function setCriadorId($valor){ $this->criador_id = $valor; }
 	public function getCriadorId(){ return $this->criador_id; }
+	public function setFantasmaCadeado($valor){ $this->fantasma_cadeado = $valor; }
+	public function getFantasmaCadeado(){ return $this->fantasma_cadeado; }
 	//HIstóricos
 	public function setHistoricoId($valor){ $this->historico_id = $valor; }
 	public function getHistoricoId(){ return $this->historico_id; }
@@ -101,6 +104,7 @@ class compartilhamentos{
 		$this->setAtivo($d->ativo);
 		$this->setFechado($d->fechado);
 		$this->setCriadorId($d->criador_id);
+		$this->setFantasmaCadeado($d->fantasma_cadeado);
 	}	
 //---------------------------------------------------------------------------------------------------------------
 	public function carregaDadosHistoricos($id, $numVaga=0){
@@ -135,7 +139,7 @@ class compartilhamentos{
 		$dados = array("id"=>$this->getId(), "email"=>$this->getEmail(), "nome"=>$this->getNome(), "orig1"=>$this->getOrig1(), 
 			"orig2"=>$this->getOrig2(), "orig3"=>$this->getOrig3(), "valor"=>$this->getValor(), "valorConvertido"=>$this->getValorConvertido(), 
 			"fatorConversao"=>$this->getFatorConversao(), "moedaId"=>$this->getMoedaId(), "data"=>$this->getData(), 
-			"ativo"=>$this->getAtivo(), "fechado"=>$this->getFechado(), "criadorId"=>$this->getCriadorId());
+			"ativo"=>$this->getAtivo(), "fechado"=>$this->getFechado(), "criadorId"=>$this->getCriadorId(), "fantasmaCadeado"=>$this->getFantasmaCadeado());
         return $dados;
 	}
 //---------------------------------------------------------------------------------------------------------------
@@ -205,7 +209,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function getDadosPorUsuario($usuarioID){
 		$query = "SELECT c.* , u.nome as criador, u.login FROM compartilhamentos c, usuarios u
-			WHERE (c.criador_id = u.id) AND (c.ativo = 1) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR (original3_id =$usuarioID)) ORDER BY c.id DESC";
+			WHERE (c.criador_id = u.id) AND (c.ativo = 1) AND ((original1_id =$usuarioID) OR (original2_id =$usuarioID) OR ((original3_id =$usuarioID) AND (c.fantasma_cadeado = 0))) ORDER BY c.id DESC";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
 	}
@@ -220,7 +224,7 @@ class compartilhamentos{
 //---------------------------------------------------------------------------------------------------------------
 	public function getGruposAntigos($usuarioID){
 		$query = "SELECT h.id, c.nome FROM compartilhamentos c, historicos h 
-			WHERE (c.id = h.compartilhamento_id) AND (h.vendedor_id = $usuarioID) 
+			WHERE (c.id = h.compartilhamento_id) AND ((h.vendedor_id = $usuarioID) OR ((c.fantasma_cadeado = 1) AND (h.vaga = '3') AND (h.comprador_id = $usuarioID)))
 			ORDER BY h.id DESC";
 		try { $res = $this->con->multiConsulta($query); } catch(Exception $e) { die($e.message); }
 		return $res;
@@ -680,6 +684,13 @@ class compartilhamentos{
 		return $res;
 	}
 //---------------------------------------------------------------------------------------------------------------
+	public function insereCadeado($idGrupo){
+		$query = "UPDATE compartilhamentos SET fantasma_cadeado = 1 WHERE id = $idGrupo";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+		
+		$query = "UPDATE historicos SET a_venda = 0, valor_venda = 'NULL' WHERE compartilhamento_id = $idGrupo AND vaga = '3'";
+		try{ $this->con->executa($query); } catch(Exception $e) { die($e.message); }
+	}
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------	

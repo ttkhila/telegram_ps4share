@@ -669,6 +669,26 @@ $(".container-grupos").on("click", "[name='sp-close-input-valor']", function(){
 	$(this).parent().hide();
 });
 //********************************************************************************
+//Informa cadeado na vaga de Fantasma
+$(".container-grupos").on("click", "[name='img-cadeado']", function(){
+	if(!confirm("Utilize esta opção somente se recebeu cadeado na conta.\nDeseja realmente informar cadeado nesta vaga?")) return false;
+	var parte = $(this).attr('id').split("_");
+	var $id = parte[1];
+	
+	var pars = { id: $id, funcao: 'informarCadeado'};
+	$.ajax({
+		url: 'funcoes_ajax.php',
+		type: 'POST',
+		contentType: "application/x-www-form-urlencoded;charset=UFT-8",
+		data: pars,
+		success: function(data){ 
+			console.log(data);
+			alert(data);
+			location.reload();
+		}
+	});
+});
+//********************************************************************************
 //Mostra caixa de diálogo para alteração do preço de venda no painel (HOME)
 $("#div-painel-minhas-vendas").find("[name='btn-altera-valor-venda']").click(function(){
 	$id = $(this).attr('id').split('_')[1];
