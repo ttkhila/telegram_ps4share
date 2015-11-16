@@ -138,7 +138,7 @@
 		</div><br />
 		<button type="submit" class="btn btn-primary">Enviar</button>
 	</form>
-	
+	<!--
 	<br /><br /><br />
 	<h3>Converte UTF-8 para ISO</h3>
 	<form id="form-converte" role="form" method="post" action="processa_inoffuser.php">
@@ -153,6 +153,7 @@
 		<button type="button" class="btn btn-success" id="btn-converte-iso">Converter</button>
 		<button type="submit" class="btn btn-primary">Salvar</button>
 	</form>
+	-->
 	
 	<!-- Conteúdo Principal: Fim -->
 	<?php $rodape = file_get_contents('rodape.html'); echo $rodape; //insere rodapé ?>
