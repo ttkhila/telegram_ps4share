@@ -237,3 +237,5 @@ div#dialog table th, td{padding:5px;}
 .linha-inativa{ color:#999; }
 .linha-banida{ color:#f00; }
 .sm-ban{ color:#f00; }
+.div-regras { overflow-y:auto; height: 300px; }
+.lbl-indicado{ width:150px; padding-left:5px; background-color: #fc0; font-weight:bold; }

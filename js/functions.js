@@ -1789,6 +1789,17 @@ $("#frm-cadastro").submit(function(e){
 	var $tel = $.trim($("#telefone").val());
 	var $senha = $.trim($("#senha").val());
 	var $senha2 = $.trim($("#senha2").val());
+	var regras = $("#chk_regras").is(":checked");
+	if(!regras) {
+		$("#sp-erro-msg")
+			.fadeIn()
+			.html("É preciso marcar o campo confirmando que leu as regras!")
+			.delay(2500)
+			.fadeOut('slow');
+		$("#chk_regras").focus();
+		return false;
+	}
+	
 	//alert($nome+" / "+$login+" / "+$tel+" / "+$senha+" / "+$senha2);
 
 	if($nome == ""){
@@ -1797,7 +1808,7 @@ $("#frm-cadastro").submit(function(e){
 			.html("O NOME é obrigatório!")
 			.delay(2500)
 			.fadeOut('slow');
-		$("#nome").focus();
+		//$("#nome").focus();
 		return false;
 	}
 	
@@ -1808,7 +1819,7 @@ $("#frm-cadastro").submit(function(e){
 			.html("Login Inválido! O login deve ter entre 3 e 16 caracteres e conter apenas letras, números, hífen(-) e sublinhado(_).")
 			.delay(2500)
 			.fadeOut('slow');
-		$("#login").focus();
+		//$("#login").focus();
 		return false;
 	}
 
@@ -1818,7 +1829,7 @@ $("#frm-cadastro").submit(function(e){
 			.html("Celular Inválido")
 			.delay(2500)
 			.fadeOut('slow');
-		$("#telefone").focus();
+		//$("#telefone").focus();
 		return false;
 	}
 
@@ -1829,7 +1840,7 @@ $("#frm-cadastro").submit(function(e){
 			.html("Senha inválida! A senha deve ter entre 6 e 10 caracteres alfanuméricos")
 			.delay(2500)
 			.fadeOut('slow');
-		$("#senha").focus();
+		//$("#senha").focus();
 		return false;
 	}
 	
@@ -1839,7 +1850,7 @@ $("#frm-cadastro").submit(function(e){
 			.html("A redigitação da senha não confere com a senha original.")
 			.delay(2500)
 			.fadeOut('slow');
-		$("#senha").focus();
+		//$("#senha").focus();
 		return false;
 	}
 	
